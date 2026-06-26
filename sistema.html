@@ -3,13 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BRvolts - Gestão</title>
+    <title>BRvolts - Gestão em Nuvem</title>
     
+    <!-- PWA Configurações -->
     <meta name="theme-color" content="#000000">
     <meta name="apple-mobile-web-app-capable" content="yes">
     
+    <!-- Supabase e Tailwind -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #000; color: #e5e7eb; -webkit-tap-highlight-color: transparent; }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
@@ -23,19 +27,19 @@
             width: 100%; padding: 12px; background-color: #18181b; border: 1px solid #27272a; 
             border-radius: 8px; color: #fff; font-family: inherit; margin-top: 4px; outline: none;
         }
-        input:focus, textarea:focus, select:focus { border-color: #2563eb; }
+        input:focus, textarea:focus, select:focus { border-color: #3b82f6; }
         label { font-size: 0.875rem; font-weight: 600; color: #9ca3af; }
 
         input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type="number"] { -moz-appearance: textfield; }
         input[type="file"] { display: none; }
-        .file-upload-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: #27272a; border: 1px dashed #6b7280; color: #d1d5db; padding: 12px; border-radius: 8px; width: 100%; cursor: pointer; text-align: center; font-size: 0.9rem; font-weight: 600; margin-top: 4px; }
+        .file-upload-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: #27272a; border: 1px dashed #6b7280; color: #d1d5db; padding: 12px; border-radius: 8px; width: 100%; cursor: pointer; font-size: 0.9rem; font-weight: 600; margin-top: 4px; }
         
         /* Modal de Assinatura */
         #signature-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 100; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
         #sig-canvas { background: #fff; border-radius: 8px; touch-action: none; width: 100%; max-width: 500px; height: 300px; border: 2px solid #3b82f6; }
 
-        /* Menu Inferior (5 Botões) */
+        /* Menu Inferior */
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(10px); border-top: 1px solid #27272a; display: flex; justify-content: space-around; padding: 10px 5px 20px 5px; z-index: 50; }
         .nav-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 20%; background: transparent; color: #6b7280; border: none; font-size: 0.6rem; font-weight: 600; padding: 8px 0; border-radius: 8px; transition: all 0.2s; }
         .nav-btn svg { width: 22px; height: 22px; margin: 0 auto 4px auto; }
@@ -51,49 +55,38 @@
             @page { size: A4; margin: 8mm 10mm; }
             body * { visibility: hidden; }
             body { background: white; margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            
             #print-area, #print-area * { visibility: visible; }
             #print-area { display: block; position: absolute; left: 0; top: 0; width: 100%; font-family: 'Inter', sans-serif; color: #000; }
-            
             .doc-header { display: flex; justify-content: space-between; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px; }
             .doc-logo { width: 60%; }
-            .doc-logo img { max-height: 85px; width: auto; margin-bottom: 8px; }
+            .doc-logo img { max-height: 75px; width: auto; margin-bottom: 8px; }
             .doc-logo h2 { margin: 0; font-size: 13pt; font-weight: normal; margin-bottom: 2px; }
             .doc-logo p { margin: 2px 0; font-size: 9pt; color: #444; }
-            
             .doc-contacts { width: 40%; text-align: right; font-size: 9pt; color: #444; display: flex; flex-direction: column; justify-content: flex-end; }
             .doc-contacts p { margin: 3px 0; display: flex; align-items: center; justify-content: flex-end; gap: 6px; }
             .doc-contacts svg { width: 16px; height: 16px; fill: currentColor; }
-            
             .doc-info { display: flex; justify-content: space-between; background-color: #f1f5f9; padding: 8px 15px; border-radius: 4px; margin-bottom: 15px; font-size: 10pt; border: 1px solid #cbd5e1; }
             .doc-info div p { margin: 2px 0; }
-            
             .doc-section { margin-bottom: 15px; }
             .doc-section h3 { margin: 0 0 5px 0; font-size: 12pt; border-bottom: 1px solid #cbd5e1; padding-bottom: 3px; color: #0f172a; }
             .doc-section p { margin: 0; font-size: 10pt; line-height: 1.4; text-align: justify; white-space: pre-wrap; }
-            
             .print-fotos-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
             .print-fotos-grid img { width: 48%; height: 200px; object-fit: cover; border: 1px solid #cbd5e1; border-radius: 6px; page-break-inside: avoid; }
-
             .payment-grid { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px; }
             .payment-conditions { width: 55%; }
             .pix-box { width: 40%; background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 10px; font-size: 9pt; }
             .pix-box h4 { margin: 0 0 5px 0; color: #166534; font-size: 10pt; display: flex; align-items: center; gap: 4px; }
             .pix-box p { margin: 2px 0; line-height: 1.3; }
-
             .doc-total { text-align: right; font-size: 12pt; font-weight: bold; margin-top: 5px; margin-bottom: 20px; background: #f8fafc; padding: 12px; border: 1px solid #cbd5e1; display: inline-block; float: right; border-radius: 6px; min-width: 250px; }
             .doc-total span { font-size: 16pt; color: #000; }
             .clearfix { clear: both; }
-
             .doc-termos { font-size: 8pt; color: #555; margin-top: 10px; border-top: 1px dashed #cbd5e1; padding-top: 10px; page-break-inside: avoid; }
             .doc-termos p { margin: 3px 0; text-align: justify; line-height: 1.3; }
-
             .doc-signatures { display: flex; justify-content: space-between; margin-top: 35px; text-align: center; page-break-inside: avoid; }
             .signature-box { width: 45%; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; }
             .signature-img { max-height: 60px; width: auto; margin-bottom: -10px; }
             .signature-line { border-top: 1px solid #000; padding-top: 5px; font-weight: bold; font-size: 10pt; width: 100%; margin-top: 30px; }
             .signature-sub { font-size: 8pt; color: #555; }
-
             .doc-footer { margin-top: 25px; text-align: center; font-size: 8pt; color: #555; border-top: 1px solid #cbd5e1; padding-top: 15px; page-break-inside: avoid; }
             .doc-footer p { margin: 4px 0; }
             .btn-avaliacao { display: inline-flex; align-items: center; justify-content: center; background-color: #ffffff; border: 1px solid #e2e8f0; color: #0f172a; text-decoration: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 10pt; margin-top: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
@@ -111,9 +104,9 @@
 
     <div class="p-4 w-full max-w-lg mx-auto" id="app-area">
         
+        <!-- ABA DASHBOARD (INÍCIO) -->
         <div id="dashboard" class="section active">
             <h2 class="text-xl font-bold text-white mb-4">Visão Geral (Mês Atual)</h2>
-            
             <div class="grid grid-cols-2 gap-3 mb-4">
                 <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 shadow">
                     <p class="text-xs text-gray-400 font-semibold mb-1">Faturamento Bruto</p>
@@ -124,14 +117,14 @@
                     <p class="text-lg font-bold text-red-400" id="dash-despesas">R$ 0,00</p>
                 </div>
             </div>
-            
             <div class="bg-blue-900/20 p-4 rounded-xl border border-blue-900/50 shadow mb-6">
                 <p class="text-xs text-blue-400 font-semibold mb-1 uppercase tracking-wider">Lucro Líquido no Bolso</p>
                 <p class="text-3xl font-black text-blue-500" id="dash-lucro">R$ 0,00</p>
             </div>
 
+            <!-- ALERTA DE MANUTENÇÃO -->
             <div id="alerta-manutencao" class="mb-6 hidden">
-                <h3 class="text-sm font-bold text-yellow-500 mb-2 uppercase flex items-center gap-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg> Revisão Anual Vencendo</h3>
+                <h3 class="text-sm font-bold text-yellow-500 mb-2 uppercase flex items-center gap-2">⚠️ Revisão Anual Vencendo</h3>
                 <div class="bg-yellow-900/20 border border-yellow-700/50 rounded-xl overflow-hidden">
                     <ul id="lista-alertas" class="divide-y divide-yellow-900/30 text-sm"></ul>
                 </div>
@@ -143,6 +136,7 @@
             </div>
         </div>
 
+        <!-- ABA CLIENTES -->
         <div id="clientes" class="section">
             <h2 class="text-xl font-bold text-white mb-4">Novo Cliente</h2>
             <div class="space-y-4">
@@ -152,15 +146,16 @@
                     <div class="col-span-1"><label>CEP</label><input type="tel" id="cli-cep" placeholder="Números" maxlength="8"></div>
                     <div class="col-span-2"><label>Endereço Completo</label><input type="text" id="cli-end" placeholder="Rua, Número, Bairro"></div>
                 </div>
-                <button onclick="salvarCliente()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow-lg transition-transform active:scale-95">Cadastrar Cliente</button>
+                <button onclick="salvarCliente()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow-lg">Cadastrar Cliente</button>
             </div>
             <h3 class="text-sm font-bold text-gray-400 mt-8 mb-3 uppercase tracking-wider">Últimos 5 Cadastros</h3>
             <div class="bg-zinc-900 rounded-xl border border-zinc-800 overflow-hidden"><ul id="lista-clientes" class="divide-y divide-zinc-800 text-sm"></ul></div>
         </div>
 
+        <!-- ABA CATÁLOGO DE PREÇOS -->
         <div id="catalogo" class="section">
             <h2 class="text-xl font-bold text-white mb-4">Catálogo Padrão</h2>
-            <p class="text-sm text-gray-400 mb-4">Cadastre serviços e materiais frequentes para auto-completar na hora de gerar a OS.</p>
+            <p class="text-sm text-gray-400 mb-4">Cadastre serviços e materiais para preencher a OS rapidamente.</p>
             <div class="space-y-4 mb-6 p-4 bg-zinc-900 rounded-xl border border-zinc-800">
                 <div><label>Nome do Item</label><input type="text" id="cat-nome" placeholder="Ex: Instalação Wallbox 7kW"></div>
                 <div>
@@ -176,6 +171,7 @@
             <div class="bg-zinc-900 rounded-xl border border-zinc-800 overflow-hidden"><ul id="lista-catalogo" class="divide-y divide-zinc-800 text-sm"></ul></div>
         </div>
 
+        <!-- ABA ORÇAMENTOS -->
         <div id="orcamentos" class="section">
             <h2 class="text-xl font-bold text-white mb-4">Descrever Serviço</h2>
             <div class="space-y-4">
@@ -204,10 +200,7 @@
                 
                 <div>
                     <label>Fotos (Câmera ou Galeria)</label>
-                    <label for="orc-fotos" class="file-upload-btn">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                        Anexar Imagens
-                    </label>
+                    <label for="orc-fotos" class="file-upload-btn">📸 Anexar Imagens</label>
                     <input type="file" id="orc-fotos" accept="image/*" multiple onchange="processarFotos(event)">
                     <div id="preview-fotos" class="flex flex-wrap gap-2 mt-2"></div>
                 </div>
@@ -220,36 +213,38 @@
                     <input type="number" id="orc-despesas" placeholder="0.00" class="border-red-900/50 bg-red-900/10" inputmode="decimal">
                 </div>
 
-                <button onclick="salvarOrcamento()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow-lg mt-2 transition-transform active:scale-95">Salvar Orçamento</button>
+                <button onclick="salvarOrcamento()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow-lg mt-2">Salvar Orçamento</button>
             </div>
         </div>
 
+        <!-- ABA IMPRESSÃO (PDF E ZAP) -->
         <div id="os" class="section">
             <div class="text-center mb-6">
                 <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-900/30 text-blue-500 mb-3"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg></div>
-                <h2 class="text-xl font-bold text-white">Emitir e Enviar via WhatsApp</h2>
+                <h2 class="text-xl font-bold text-white">Emitir e Enviar</h2>
             </div>
             
             <div class="space-y-4">
-                <div><label>Selecione o Serviço Salvo (Últimos 10)</label><select id="os-orcamento" onchange="verificarAssinatura()"></select></div>
+                <div><label>Selecione o Serviço Salvo</label><select id="os-orcamento" onchange="verificarAssinatura()"></select></div>
                 
                 <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 flex items-center justify-between">
                     <div>
                         <p class="font-bold text-sm text-white">Assinatura Digital</p>
-                        <p class="text-xs text-gray-400" id="status-assinatura">Nenhuma assinatura vinculada.</p>
+                        <p class="text-xs text-gray-400" id="status-assinatura">Nenhuma assinatura.</p>
                     </div>
-                    <button onclick="abrirModalAssinatura()" class="bg-zinc-700 hover:bg-zinc-600 text-white text-xs font-bold py-2 px-4 rounded-lg transition">Coletar ✍️</button>
+                    <button onclick="abrirModalAssinatura()" class="bg-zinc-700 hover:bg-zinc-600 text-white text-xs font-bold py-2 px-4 rounded-lg">Coletar ✍️</button>
                 </div>
 
                 <div class="grid grid-cols-1 gap-3 pt-2 border-t border-zinc-800 mt-4">
-                    <button onclick="imprimirEEnviar('Orçamento')" class="w-full bg-[#128C7E] hover:bg-[#075E54] text-white font-bold py-4 rounded-lg flex justify-center items-center gap-2 shadow-lg">📄 Gerar Orçamento + WhatsApp</button>
-                    <button onclick="imprimirEEnviar('OS')" class="w-full bg-[#128C7E] hover:bg-[#075E54] text-white font-bold py-4 rounded-lg flex justify-center items-center gap-2 shadow-lg">📋 Gerar OS + WhatsApp</button>
-                    <button onclick="imprimirEEnviar('Recibo')" class="w-full bg-[#128C7E] hover:bg-[#075E54] text-white font-bold py-4 rounded-lg flex justify-center items-center gap-2 shadow-lg">💰 Gerar Recibo + WhatsApp</button>
+                    <button onclick="imprimirEEnviar('Orçamento')" class="w-full bg-[#128C7E] hover:bg-[#075E54] text-white font-bold py-4 rounded-lg flex justify-center items-center gap-2">📄 Gerar Orçamento + Zap</button>
+                    <button onclick="imprimirEEnviar('OS')" class="w-full bg-[#128C7E] hover:bg-[#075E54] text-white font-bold py-4 rounded-lg flex justify-center items-center gap-2">📋 Gerar OS + Zap</button>
+                    <button onclick="imprimirEEnviar('Recibo')" class="w-full bg-[#128C7E] hover:bg-[#075E54] text-white font-bold py-4 rounded-lg flex justify-center items-center gap-2">💰 Gerar Recibo + Zap</button>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- MODAL DE ASSINATURA -->
     <div id="signature-modal">
         <h3 class="text-white font-bold mb-4 text-lg">Assinatura do Cliente</h3>
         <canvas id="sig-canvas"></canvas>
@@ -260,6 +255,7 @@
         </div>
     </div>
 
+    <!-- MENU INFERIOR (5 Botões) -->
     <nav class="bottom-nav">
         <button onclick="mudarAba('dashboard')" class="nav-btn active" id="tab-dashboard"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg> Início</button>
         <button onclick="mudarAba('clientes')" class="nav-btn" id="tab-clientes"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg> Clientes</button>
@@ -268,15 +264,10 @@
         <button onclick="mudarAba('os')" class="nav-btn" id="tab-os"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg> PDF/Zap</button>
     </nav>
 
+    <!-- ÁREA DE IMPRESSÃO (PDF) -->
     <div id="print-area">
         <div class="doc-header">
-            <div class="doc-logo">
-                <img src="logo_pdf.png" alt="BRvolts Logo">
-                <h2>Soluções em Eletricidade</h2>
-                <p>CPF: 165.*** ***-30</p>
-                <p>Rua Nilo Ribeiro N° 44</p>
-                <p>Ubatiba - Maricá</p>
-            </div>
+            <div class="doc-logo"><img src="logo_pdf.png" alt="BRvolts Logo"><h2>Soluções em Eletricidade</h2><p>CPF: 165.*** ***-30</p><p>Rua Nilo Ribeiro N° 44</p><p>Ubatiba - Maricá</p></div>
             <div class="doc-contacts">
                 <p><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg> brvolts.site</p>
                 <p><svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg> @brvolts</p>
@@ -315,10 +306,7 @@
         </div>
 
         <div class="doc-signatures">
-            <div class="signature-box">
-                <div class="signature-line">Wellington Bonifácio</div>
-                <div class="signature-sub">BRvolts</div>
-            </div>
+            <div class="signature-box"><div class="signature-line">Wellington Bonifácio</div><div class="signature-sub">BRvolts</div></div>
             <div class="signature-box" id="print-box-cliente">
                 <img id="print-img-assinatura" class="signature-img" style="display:none;" src="">
                 <div class="signature-line" id="print-assinatura-cliente">Nome do Cliente</div>
@@ -337,19 +325,40 @@
         </div>
     </div>
 
+    <!-- SCRIPT DO SISTEMA E SUPABASE -->
     <script>
-        if ('serviceWorker' in navigator) {
-            const swCode = `self.addEventListener('install', (e) => e.waitUntil(self.skipWaiting()));self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));self.addEventListener('fetch', (e) => { e.respondWith(fetch(e.request).catch(() => new Response('Offline'))); });`;
-            const blob = new Blob([swCode], {type: 'application/javascript'});
-            navigator.serviceWorker.register(URL.createObjectURL(blob));
+        const supabaseUrl = 'https://mflvwscgghdvtxasgmdd.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1mbHZ3c2NnZ2hkdnR4YXNnbWRkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0ODgyNjQsImV4cCI6MjA5ODA2NDI2NH0.tB34mGuyV-Y4xGwnF-1UANJl-p534yEmvsPPcDUA4sk';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        let clientes = [];
+        let orcamentos = [];
+        let catalogo = [];
+        let fotosTemporarias = [];
+
+        async function initApp() {
+            try {
+                const [resCli, resServ, resCat] = await Promise.all([
+                    supabase.from('clientes').select('*'),
+                    supabase.from('servicos').select('*'),
+                    supabase.from('catalogo').select('*')
+                ]);
+                
+                if(resCli.data) clientes = resCli.data.map(c => ({id: c.id, nome: c.nome, tel: c.telefone, end: c.endereco}));
+                if(resServ.data) {
+                    orcamentos = resServ.data.map(s => ({
+                        id: s.id, osNumber: s.os_number, clienteId: s.cliente_id, desc: s.descricao, obs: s.observacoes,
+                        materiaisStatus: s.materiais_status, materiaisLista: s.materiais_lista, valor: s.valor_servico,
+                        despesas: s.despesas, status: s.status, data: s.data_servico, assinaturaCliente: s.assinatura_cliente,
+                        fotos: [] 
+                    }));
+                }
+                if(resCat.data) catalogo = resCat.data;
+            } catch(e) { console.error("Erro Supabase:", e); }
+            atualizarTelas();
         }
 
-        let clientes = JSON.parse(localStorage.getItem('brvolts_clientes')) || [];
-        let orcamentos = JSON.parse(localStorage.getItem('brvolts_orcamentos')) || [];
-        let catalogo = JSON.parse(localStorage.getItem('brvolts_catalogo')) || [];
-        let fotosTemporarias = []; 
-
-        window.onload = function() { atualizarTelas(); };
+        window.onload = initApp;
 
         function mudarAba(aba) {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
@@ -377,21 +386,27 @@
             });
         }
 
-        function salvarCliente() {
-            try {
-                const nome = document.getElementById('cli-nome').value;
-                const tel = document.getElementById('cli-tel').value;
-                const end = document.getElementById('cli-end').value;
-                if(!nome) return alert('Preencha pelo menos o nome do cliente!');
-                clientes.push({ id: Date.now(), nome, tel, end });
-                localStorage.setItem('brvolts_clientes', JSON.stringify(clientes));
-                document.getElementById('cli-nome').value = ''; 
-                document.getElementById('cli-tel').value = ''; 
-                const cepE = document.getElementById('cli-cep'); if(cepE) cepE.value = ''; 
-                document.getElementById('cli-end').value = '';
+        async function salvarCliente() {
+            const nome = document.getElementById('cli-nome').value;
+            const tel = document.getElementById('cli-tel').value;
+            const end = document.getElementById('cli-end').value;
+            if(!nome) return alert('Preencha pelo menos o nome do cliente!');
+            
+            const tempId = Date.now();
+            clientes.push({ id: tempId, nome, tel, end });
+            atualizarTelas();
+            
+            const { data } = await supabase.from('clientes').insert([{ nome, telefone: tel, endereco: end }]).select();
+            if(data) {
+                const idx = clientes.findIndex(c => c.id === tempId);
+                if(idx > -1) clientes[idx].id = data[0].id;
                 atualizarTelas();
-                alert('Cliente cadastrado com sucesso!');
-            } catch(e) { console.error(e); }
+            }
+
+            document.getElementById('cli-nome').value = ''; document.getElementById('cli-tel').value = ''; 
+            const cepE = document.getElementById('cli-cep'); if(cepE) cepE.value = ''; 
+            document.getElementById('cli-end').value = '';
+            alert('Cliente cadastrado com sucesso!');
         }
 
         function filtrarClientesDropdown() {
@@ -400,25 +415,31 @@
             const filtrados = clientes.filter(c => c.nome.toLowerCase().includes(termo));
             const options = [...filtrados].sort((a, b) => a.nome.localeCompare(b.nome)).map(c => `<option value="${c.id}">${c.nome}</option>`).join('');
             const orcCliente = document.getElementById('orc-cliente');
-            if(orcCliente) {
-                orcCliente.innerHTML = '<option value="" disabled selected>Selecione o cliente abaixo...</option>' + options;
-            }
+            if(orcCliente) orcCliente.innerHTML = '<option value="" disabled selected>Selecione o cliente abaixo...</option>' + options;
         }
 
-        function salvarItemCatalogo() {
+        async function salvarItemCatalogo() {
             const nome = document.getElementById('cat-nome').value;
             const tipo = document.getElementById('cat-tipo').value;
             if(!nome) return alert("Preencha o nome do item!");
-            catalogo.push({ id: Date.now(), nome, tipo });
-            localStorage.setItem('brvolts_catalogo', JSON.stringify(catalogo));
-            document.getElementById('cat-nome').value = '';
+            
+            const tempId = Date.now();
+            catalogo.push({ id: tempId, nome, tipo });
             atualizarTelas();
+
+            const { data } = await supabase.from('catalogo').insert([{ nome, tipo }]).select();
+            if(data) {
+                const idx = catalogo.findIndex(c => c.id === tempId);
+                if(idx > -1) catalogo[idx].id = data[0].id;
+                atualizarTelas();
+            }
+            document.getElementById('cat-nome').value = '';
         }
 
-        function removerItemCatalogo(id) {
+        async function removerItemCatalogo(id) {
             catalogo = catalogo.filter(c => c.id !== id);
-            localStorage.setItem('brvolts_catalogo', JSON.stringify(catalogo));
             atualizarTelas();
+            await supabase.from('catalogo').delete().eq('id', id);
         }
 
         function adicionarDoCatalogo(id) {
@@ -467,42 +488,50 @@
             return `${anoAtual}-${(maior + 1).toString().padStart(3, '0')}`;
         }
 
-        function salvarOrcamento() {
-            try {
-                const clienteId = document.getElementById('orc-cliente').value;
-                const desc = document.getElementById('orc-desc').value;
-                const obs = document.getElementById('orc-obs').value;
-                const materiaisStatus = document.getElementById('orc-materiais-status').value;
-                const materiaisLista = document.getElementById('orc-materiais').value;
-                const valor = document.getElementById('orc-valor').value || 0;
-                
-                const despesasEl = document.getElementById('orc-despesas');
-                const despesas = despesasEl ? despesasEl.value : 0;
+        async function salvarOrcamento() {
+            const clienteId = document.getElementById('orc-cliente').value;
+            const desc = document.getElementById('orc-desc').value;
+            const obs = document.getElementById('orc-obs').value;
+            const materiaisStatus = document.getElementById('orc-materiais-status').value;
+            const materiaisLista = document.getElementById('orc-materiais').value;
+            const valor = document.getElementById('orc-valor').value || 0;
+            const despesasEl = document.getElementById('orc-despesas');
+            const despesas = despesasEl ? despesasEl.value : 0;
 
-                if(!clienteId || !desc) return alert('Preencha o cliente e a descrição do serviço!');
-                
-                orcamentos.push({ 
-                    id: Date.now(), osNumber: gerarNumeroOS(), clienteId: parseInt(clienteId), 
-                    desc, obs, materiaisStatus, materiaisLista, valor: parseFloat(valor), despesas: parseFloat(despesas),
-                    data: new Date().toLocaleDateString('pt-BR'), status: 'Pendente', fotos: [...fotosTemporarias]
-                });
-                
-                localStorage.setItem('brvolts_orcamentos', JSON.stringify(orcamentos));
-                
-                document.getElementById('orc-desc').value = ''; 
-                document.getElementById('orc-obs').value = ''; 
-                document.getElementById('orc-materiais').value = ''; 
-                document.getElementById('orc-valor').value = ''; 
-                if(despesasEl) despesasEl.value = ''; 
-                document.getElementById('orc-fotos').value = ''; 
-                fotosTemporarias = []; 
-                atualizarPreviewFotos();
-                
-                alert('Serviço salvo! Vá para a aba "PDF/Zap" para gerar o documento.');
-                mudarAba('os');
-            } catch (e) {
-                alert('Erro ao salvar. Pode ser limite de memória para fotos.');
-                orcamentos.pop();
+            if(!clienteId || !desc) return alert('Preencha o cliente e a descrição do serviço!');
+            
+            const numOs = gerarNumeroOS();
+            const dataServ = new Date().toLocaleDateString('pt-BR');
+            const tempId = Date.now();
+
+            const novaOs = { 
+                id: tempId, osNumber: numOs, clienteId: parseInt(clienteId), 
+                desc, obs, materiaisStatus, materiaisLista, valor: parseFloat(valor), despesas: parseFloat(despesas),
+                data: dataServ, status: 'Pendente', fotos: [...fotosTemporarias]
+            };
+            
+            orcamentos.push(novaOs);
+            atualizarTelas();
+
+            document.getElementById('orc-desc').value = ''; document.getElementById('orc-obs').value = ''; 
+            document.getElementById('orc-materiais').value = ''; document.getElementById('orc-valor').value = ''; 
+            if(despesasEl) despesasEl.value = ''; document.getElementById('orc-fotos').value = ''; 
+            fotosTemporarias = []; atualizarPreviewFotos();
+            
+            alert('Serviço salvo com sucesso! Indo para a aba de PDF/Zap.');
+            mudarAba('os');
+
+            const { data } = await supabase.from('servicos').insert([{
+                cliente_id: clienteId, os_number: numOs, descricao: desc, observacoes: obs,
+                materiais_status: materiaisStatus, materiais_lista: materiaisLista,
+                valor_servico: parseFloat(valor), despesas: parseFloat(despesas),
+                data_servico: dataServ, status: 'Pendente'
+            }]).select();
+
+            if(data) {
+                const idx = orcamentos.findIndex(o => o.id === tempId);
+                if(idx > -1) orcamentos[idx].id = data[0].id;
+                atualizarTelas();
             }
         }
 
@@ -510,10 +539,9 @@
             const dashFat = document.getElementById('dash-faturamento');
             if(!dashFat) return;
             const mesAtual = new Date().toLocaleDateString('pt-BR').substring(3);
-            let faturamento = 0, despesas = 0, pendentes = 0;
+            let faturamento = 0, despesas = 0;
             
             orcamentos.forEach(o => {
-                if (o.status === 'Pendente') pendentes++;
                 if (o.status === 'Concluído' && o.data.substring(3) === mesAtual) {
                     faturamento += parseFloat(o.valor || 0);
                     despesas += parseFloat(o.despesas || 0);
@@ -529,7 +557,7 @@
                 const c = clientes.find(cli => cli.id === o.clienteId);
                 return `<li class="p-3 flex justify-between items-center hover:bg-zinc-800 transition gap-2">
                     <div class="flex-1 min-w-0"><p class="font-bold text-gray-200 text-sm truncate">${o.osNumber}</p><p class="text-xs text-gray-400 truncate">${c ? c.nome : 'Removido'}</p></div>
-                    <select onchange="mudarStatusOS(${o.id}, this.value)" class="text-[10px] p-1 bg-zinc-800 border border-zinc-700 rounded text-white w-24 shrink-0 outline-none">
+                    <select onchange="mudarStatusOS(${o.id}, this.value)" class="text-[10px] p-1.5 bg-zinc-800 border border-zinc-700 rounded text-white w-24 shrink-0 outline-none">
                         <option value="Pendente" ${o.status === 'Pendente' ? 'selected' : ''}>🟡 Pendente</option>
                         <option value="Aprovado" ${o.status === 'Aprovado' ? 'selected' : ''}>🟢 Aprovado</option>
                         <option value="Concluído" ${o.status === 'Concluído' ? 'selected' : ''}>🔵 Concluído</option>
@@ -558,30 +586,25 @@
             } else { divAlerta.classList.add('hidden'); }
         }
 
-        function mudarStatusOS(id, st) {
+        async function mudarStatusOS(id, st) {
             orcamentos.find(o => o.id === id).status = st;
-            localStorage.setItem('brvolts_orcamentos', JSON.stringify(orcamentos));
             atualizarDashboard();
+            await supabase.from('servicos').update({status: st}).eq('id', id);
         }
 
         function atualizarTelas() {
-            try { atualizarDashboard(); } catch(e) { console.error("Erro no dash:", e); }
+            try { atualizarDashboard(); } catch(e) {}
             
             const listaClientes = document.getElementById('lista-clientes');
             if(listaClientes) {
-                if(clientes.length === 0) {
-                    listaClientes.innerHTML = '<li class="p-4 text-gray-500 text-center">Nenhum cliente cadastrado.</li>';
-                } else {
-                    listaClientes.innerHTML = clientes.slice(-5).reverse().map(c => `<li class="p-3 flex justify-between items-center hover:bg-zinc-800 transition"><div><p class="font-bold text-gray-200">${c.nome}</p><p class="text-xs text-gray-500">${c.tel || 'Sem telefone'}</p></div></li>`).join('');
-                }
+                if(clientes.length === 0) listaClientes.innerHTML = '<li class="p-4 text-gray-500 text-center">Nenhum cliente cadastrado.</li>';
+                else listaClientes.innerHTML = clientes.slice(-5).reverse().map(c => `<li class="p-3 flex justify-between items-center hover:bg-zinc-800 transition"><div><p class="font-bold text-gray-200">${c.nome}</p><p class="text-xs text-gray-500">${c.tel || 'Sem telefone'}</p></div></li>`).join('');
             }
             
             filtrarClientesDropdown();
             
             const listaCat = document.getElementById('lista-catalogo');
-            if(listaCat) {
-                listaCat.innerHTML = catalogo.length === 0 ? '<li class="p-4 text-gray-500 text-center text-xs">Nenhum item salvo no catálogo.</li>' : catalogo.map(c => `<li class="p-3 flex justify-between items-center hover:bg-zinc-800 transition"><div><p class="font-bold text-gray-200">${c.nome}</p><p class="text-xs text-gray-500">${c.tipo === 'servico' ? 'Mão de Obra' : 'Material'}</p></div><button onclick="removerItemCatalogo(${c.id})" class="text-red-500 font-bold px-2">X</button></li>`).join('');
-            }
+            if(listaCat) listaCat.innerHTML = catalogo.length === 0 ? '<li class="p-4 text-gray-500 text-center text-xs">Nenhum item salvo no catálogo.</li>' : catalogo.map(c => `<li class="p-3 flex justify-between items-center hover:bg-zinc-800 transition"><div><p class="font-bold text-gray-200">${c.nome}</p><p class="text-xs text-gray-500">${c.tipo === 'servico' ? 'Mão de Obra' : 'Material'}</p></div><button onclick="removerItemCatalogo(${c.id})" class="text-red-500 font-bold px-2">X</button></li>`).join('');
 
             const areaChips = document.getElementById('area-catalogo-chips');
             const chipsCat = document.getElementById('chips-catalogo');
@@ -600,11 +623,10 @@
                 }).join('');
                 selectOS.innerHTML = '<option value="" disabled selected>Escolha o serviço salvo...</option>' + optionsOrcamentos;
             }
-            
             try { verificarAssinatura(); } catch(e) {}
         }
 
-        // --- ASSINATURA NA TELA ---
+        // ASSINATURA NA TELA
         const sigCanvas = document.getElementById('sig-canvas');
         const sigCtx = sigCanvas ? sigCanvas.getContext('2d') : null;
         let assinando = false;
@@ -631,13 +653,14 @@
         function fecharModalAssinatura() { document.getElementById('signature-modal').style.display = 'none'; }
         function limparAssinatura() { if(sigCtx) sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height); }
         
-        function salvarAssinatura() {
+        async function salvarAssinatura() {
             const id = document.getElementById('os-orcamento').value;
             const os = orcamentos.find(o => o.id == id);
             if(os) {
-                os.assinaturaCliente = sigCanvas.toDataURL('image/png');
-                localStorage.setItem('brvolts_orcamentos', JSON.stringify(orcamentos));
+                const dataUri = sigCanvas.toDataURL('image/png');
+                os.assinaturaCliente = dataUri;
                 fecharModalAssinatura(); verificarAssinatura(); alert('Assinatura coletada com sucesso!');
+                await supabase.from('servicos').update({assinatura_cliente: dataUri}).eq('id', id);
             }
         }
 
@@ -645,7 +668,7 @@
             const id = document.getElementById('os-orcamento');
             const status = document.getElementById('status-assinatura');
             if(!id || !status) return;
-            if(!id.value) { status.innerText = 'Selecione uma OS...'; return; }
+            if(!id.value) { status.innerText = 'Nenhuma assinatura.'; return; }
             const os = orcamentos.find(o => o.id == id.value);
             if(os && os.assinaturaCliente) { status.innerText = '✅ Assinada pelo cliente.'; status.classList.replace('text-gray-400', 'text-green-500'); }
             else { status.innerText = '❌ Pendente de assinatura.'; status.classList.replace('text-green-500', 'text-gray-400'); }
@@ -655,8 +678,8 @@
             const orcId = document.getElementById('os-orcamento').value;
             if(!orcId) return alert('Selecione um documento na lista primeiro!');
             
-            const orcamento = orcamentos.find(o => o.id === parseInt(orcId));
-            const cliente = clientes.find(c => c.id === orcamento.clienteId);
+            const orcamento = orcamentos.find(o => o.id == parseInt(orcId));
+            const cliente = clientes.find(c => c.id == orcamento.clienteId);
             let tipoTitulo = tipo === 'Orçamento' ? 'Orçamento' : tipo === 'OS' ? 'Ordem de Serviço' : 'Recibo';
 
             document.getElementById('print-info').innerHTML = `<div><p><strong>${tipoTitulo === 'Recibo' ? 'Recibo de Pagamento' : tipoTitulo}:</strong> ${orcamento.osNumber}</p><p><strong>Cliente:</strong> ${cliente.nome}</p>${cliente.end ? `<p><strong>Endereço:</strong> ${cliente.end}</p>` : ''}</div><div style="text-align: right;"><p><strong>Data:</strong> ${orcamento.data}</p><p><strong>Telefone:</strong> ${cliente.tel}</p></div>`;
