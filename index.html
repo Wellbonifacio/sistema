@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>BRvolts - Gestão em Nuvem</title>
     
-    <!-- PWA Configurações -->
     <meta name="theme-color" content="#000000">
     <meta name="apple-mobile-web-app-capable" content="yes">
     
@@ -122,7 +121,6 @@
                 <p class="text-3xl font-black text-blue-500" id="dash-lucro">R$ 0,00</p>
             </div>
 
-            <!-- ALERTA DE MANUTENÇÃO -->
             <div id="alerta-manutencao" class="mb-6 hidden">
                 <h3 class="text-sm font-bold text-yellow-500 mb-2 uppercase flex items-center gap-2">⚠️ Revisão Anual Vencendo</h3>
                 <div class="bg-yellow-900/20 border border-yellow-700/50 rounded-xl overflow-hidden">
@@ -225,12 +223,12 @@
             </div>
             
             <div class="space-y-4">
-                <div><label>Selecione o Serviço Salvo</label><select id="os-orcamento" onchange="verificarAssinatura()"></select></div>
+                <div><label>Selecione o Serviço Salvo (Últimos 10)</label><select id="os-orcamento" onchange="verificarAssinatura()"></select></div>
                 
                 <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 flex items-center justify-between">
                     <div>
                         <p class="font-bold text-sm text-white">Assinatura Digital</p>
-                        <p class="text-xs text-gray-400" id="status-assinatura">Nenhuma assinatura.</p>
+                        <p class="text-xs text-gray-400" id="status-assinatura">Nenhuma assinatura vinculada.</p>
                     </div>
                     <button onclick="abrirModalAssinatura()" class="bg-zinc-700 hover:bg-zinc-600 text-white text-xs font-bold py-2 px-4 rounded-lg">Coletar ✍️</button>
                 </div>
@@ -327,9 +325,12 @@
 
     <!-- SCRIPT DO SISTEMA E SUPABASE -->
     <script>
-        const supabaseUrl = 'https://mflvwscgghdvtxasgmdd.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1mbHZ3c2NnZ2hkdnR4YXNnbWRkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0ODgyNjQsImV4cCI6MjA5ODA2NDI2NH0.tB34mGuyV-Y4xGwnF-1UANJl-p534yEmvsPPcDUA4sk';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        let supabase;
+        try {
+            const supabaseUrl = 'https://mflvwscgghdvtxasgmdd.supabase.co';
+            const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1mbHZ3c2NnZ2hkdnR4YXNnbWRkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0ODgyNjQsImV4cCI6MjA5ODA2NDI2NH0.tB34mGuyV-Y4xGwnF-1UANJl-p534yEmvsPPcDUA4sk';
+            supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        } catch(e) { console.error("Erro ao iniciar Supabase", e); }
 
         let clientes = [];
         let orcamentos = [];
@@ -337,24 +338,26 @@
         let fotosTemporarias = [];
 
         async function initApp() {
-            try {
-                const [resCli, resServ, resCat] = await Promise.all([
-                    supabase.from('clientes').select('*'),
-                    supabase.from('servicos').select('*'),
-                    supabase.from('catalogo').select('*')
-                ]);
-                
-                if(resCli.data) clientes = resCli.data.map(c => ({id: c.id, nome: c.nome, tel: c.telefone, end: c.endereco}));
-                if(resServ.data) {
-                    orcamentos = resServ.data.map(s => ({
-                        id: s.id, osNumber: s.os_number, clienteId: s.cliente_id, desc: s.descricao, obs: s.observacoes,
-                        materiaisStatus: s.materiais_status, materiaisLista: s.materiais_lista, valor: s.valor_servico,
-                        despesas: s.despesas, status: s.status, data: s.data_servico, assinaturaCliente: s.assinatura_cliente,
-                        fotos: [] 
-                    }));
-                }
-                if(resCat.data) catalogo = resCat.data;
-            } catch(e) { console.error("Erro Supabase:", e); }
+            if(supabase) {
+                try {
+                    const [resCli, resServ, resCat] = await Promise.all([
+                        supabase.from('clientes').select('*'),
+                        supabase.from('servicos').select('*'),
+                        supabase.from('catalogo').select('*')
+                    ]);
+                    
+                    if(resCli.data) clientes = resCli.data.map(c => ({id: c.id, nome: c.nome, tel: c.telefone, end: c.endereco}));
+                    if(resServ.data) {
+                        orcamentos = resServ.data.map(s => ({
+                            id: s.id, osNumber: s.os_number, clienteId: s.cliente_id, desc: s.descricao, obs: s.observacoes,
+                            materiaisStatus: s.materiais_status, materiaisLista: s.materiais_lista, valor: s.valor_servico,
+                            despesas: s.despesas, status: s.status, data: s.data_servico, assinaturaCliente: s.assinatura_cliente,
+                            fotos: [] 
+                        }));
+                    }
+                    if(resCat.data) catalogo = resCat.data;
+                } catch(e) { console.error("Erro Supabase:", e); }
+            }
             atualizarTelas();
         }
 
@@ -396,11 +399,13 @@
             clientes.push({ id: tempId, nome, tel, end });
             atualizarTelas();
             
-            const { data } = await supabase.from('clientes').insert([{ nome, telefone: tel, endereco: end }]).select();
-            if(data) {
-                const idx = clientes.findIndex(c => c.id === tempId);
-                if(idx > -1) clientes[idx].id = data[0].id;
-                atualizarTelas();
+            if(supabase) {
+                const { data } = await supabase.from('clientes').insert([{ nome, telefone: tel, endereco: end }]).select();
+                if(data) {
+                    const idx = clientes.findIndex(c => c.id === tempId);
+                    if(idx > -1) clientes[idx].id = data[0].id;
+                    atualizarTelas();
+                }
             }
 
             document.getElementById('cli-nome').value = ''; document.getElementById('cli-tel').value = ''; 
@@ -427,11 +432,13 @@
             catalogo.push({ id: tempId, nome, tipo });
             atualizarTelas();
 
-            const { data } = await supabase.from('catalogo').insert([{ nome, tipo }]).select();
-            if(data) {
-                const idx = catalogo.findIndex(c => c.id === tempId);
-                if(idx > -1) catalogo[idx].id = data[0].id;
-                atualizarTelas();
+            if(supabase) {
+                const { data } = await supabase.from('catalogo').insert([{ nome, tipo }]).select();
+                if(data) {
+                    const idx = catalogo.findIndex(c => c.id === tempId);
+                    if(idx > -1) catalogo[idx].id = data[0].id;
+                    atualizarTelas();
+                }
             }
             document.getElementById('cat-nome').value = '';
         }
@@ -439,7 +446,7 @@
         async function removerItemCatalogo(id) {
             catalogo = catalogo.filter(c => c.id !== id);
             atualizarTelas();
-            await supabase.from('catalogo').delete().eq('id', id);
+            if(supabase) await supabase.from('catalogo').delete().eq('id', id);
         }
 
         function adicionarDoCatalogo(id) {
@@ -521,17 +528,19 @@
             alert('Serviço salvo com sucesso! Indo para a aba de PDF/Zap.');
             mudarAba('os');
 
-            const { data } = await supabase.from('servicos').insert([{
-                cliente_id: clienteId, os_number: numOs, descricao: desc, observacoes: obs,
-                materiais_status: materiaisStatus, materiais_lista: materiaisLista,
-                valor_servico: parseFloat(valor), despesas: parseFloat(despesas),
-                data_servico: dataServ, status: 'Pendente'
-            }]).select();
+            if(supabase) {
+                const { data } = await supabase.from('servicos').insert([{
+                    cliente_id: clienteId, os_number: numOs, descricao: desc, observacoes: obs,
+                    materiais_status: materiaisStatus, materiais_lista: materiaisLista,
+                    valor_servico: parseFloat(valor), despesas: parseFloat(despesas),
+                    data_servico: dataServ, status: 'Pendente'
+                }]).select();
 
-            if(data) {
-                const idx = orcamentos.findIndex(o => o.id === tempId);
-                if(idx > -1) orcamentos[idx].id = data[0].id;
-                atualizarTelas();
+                if(data) {
+                    const idx = orcamentos.findIndex(o => o.id === tempId);
+                    if(idx > -1) orcamentos[idx].id = data[0].id;
+                    atualizarTelas();
+                }
             }
         }
 
@@ -589,7 +598,7 @@
         async function mudarStatusOS(id, st) {
             orcamentos.find(o => o.id === id).status = st;
             atualizarDashboard();
-            await supabase.from('servicos').update({status: st}).eq('id', id);
+            if(supabase) await supabase.from('servicos').update({status: st}).eq('id', id);
         }
 
         function atualizarTelas() {
@@ -626,7 +635,6 @@
             try { verificarAssinatura(); } catch(e) {}
         }
 
-        // ASSINATURA NA TELA
         const sigCanvas = document.getElementById('sig-canvas');
         const sigCtx = sigCanvas ? sigCanvas.getContext('2d') : null;
         let assinando = false;
@@ -660,7 +668,7 @@
                 const dataUri = sigCanvas.toDataURL('image/png');
                 os.assinaturaCliente = dataUri;
                 fecharModalAssinatura(); verificarAssinatura(); alert('Assinatura coletada com sucesso!');
-                await supabase.from('servicos').update({assinatura_cliente: dataUri}).eq('id', id);
+                if(supabase) await supabase.from('servicos').update({assinatura_cliente: dataUri}).eq('id', id);
             }
         }
 
@@ -668,7 +676,7 @@
             const id = document.getElementById('os-orcamento');
             const status = document.getElementById('status-assinatura');
             if(!id || !status) return;
-            if(!id.value) { status.innerText = 'Nenhuma assinatura.'; return; }
+            if(!id.value) { status.innerText = 'Selecione uma OS...'; return; }
             const os = orcamentos.find(o => o.id == id.value);
             if(os && os.assinaturaCliente) { status.innerText = '✅ Assinada pelo cliente.'; status.classList.replace('text-gray-400', 'text-green-500'); }
             else { status.innerText = '❌ Pendente de assinatura.'; status.classList.replace('text-green-500', 'text-gray-400'); }
