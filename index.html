@@ -219,7 +219,7 @@
             </div>
             
             <div class="space-y-4">
-                <div><label>Selecione o Serviço Salvo (Últimos 10)</label><select id="os-orcamento" onchange="verificarAssinatura()"></select></div>
+                <div><label>Selecione o Serviço Salvo</label><select id="os-orcamento" onchange="verificarAssinatura()"></select></div>
                 
                 <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 flex items-center justify-between">
                     <div>
@@ -450,7 +450,6 @@
             } catch(e) { return "9999-001"; }
         }
 
-        // LÓGICA DE SALVAR ORÇAMENTO 100% BLINDADA E COM AVISOS
         async function salvarOrcamento() {
             try {
                 const clienteIdEl = document.getElementById('orc-cliente');
@@ -547,7 +546,7 @@
                 const listaOsEl = document.getElementById('dash-lista-os');
                 if(listaOsEl) {
                     listaOsEl.innerHTML = ultimosOS.length === 0 ? '<li class="p-4 text-gray-500 text-center text-xs">Nenhuma OS gerada.</li>' : ultimosOS.map(o => {
-                        const c = (clientes || []).find(cli => cli.id === o.clienteId);
+                        const c = (clientes || []).find(cli => String(cli.id) === String(o.clienteId));
                         const cNome = c && c.nome ? c.nome : 'Removido';
                         const osNum = o.osNumber || 'S/N';
                         return `<li class="p-3 flex justify-between items-center hover:bg-zinc-800 transition gap-2">
@@ -562,7 +561,7 @@
 
                 const alertas = [];
                 (orcamentos || []).forEach(o => {
-                    if(o.status === 'Concluído' && o.data && o.data.includes('/')) {
+                    if(o.status === 'Concluído' && typeof o.data === 'string' && o.data.includes('/')) {
                         const partes = o.data.split('/');
                         if(partes.length === 3) {
                             const dataOS = new Date(partes[2], partes[1] - 1, partes[0]);
@@ -576,7 +575,7 @@
                     if(alertas.length > 0) {
                         divAlerta.classList.remove('hidden');
                         document.getElementById('lista-alertas').innerHTML = alertas.map(o => {
-                            const c = (clientes || []).find(cli => cli.id === o.clienteId);
+                            const c = (clientes || []).find(cli => String(cli.id) === String(o.clienteId));
                             if(!c) return '';
                             const numRaw = c.tel ? c.tel.replace(/\D/g, '') : '';
                             const txt = encodeURIComponent(`Olá ${c.nome}! Aqui é o Wellington da BRvolts. Nosso sistema avisou que faz cerca de 1 ano desde a nossa última manutenção. Gostaria de agendar uma revisão preventiva?`);
@@ -589,7 +588,7 @@
 
         async function mudarStatusOS(id, st) {
             try {
-                const os = orcamentos.find(o => o.id === id);
+                const os = orcamentos.find(o => String(o.id) === String(id));
                 if(os) os.status = st;
                 atualizarDashboard();
                 if(supabaseClient) await supabaseClient.from('servicos').update({status: st}).eq('id', id);
@@ -627,7 +626,7 @@
                 const selectOS = document.getElementById('os-orcamento');
                 if(selectOS) {
                     const optionsOrcamentos = (orcamentos || []).slice(-10).reverse().map(o => {
-                        const c = (clientes || []).find(cli => cli.id === o.clienteId);
+                        const c = (clientes || []).find(cli => String(cli.id) === String(o.clienteId));
                         const cNome = c && c.nome ? c.nome : 'Removido';
                         const osNum = o.osNumber || 'S/N';
                         return `<option value="${o.id}">OS ${osNum} | ${cNome} - R$ ${(o.valor||0).toLocaleString('pt-BR', {minimumFractionDigits:2})}</option>`;
@@ -670,7 +669,7 @@
         async function salvarAssinatura() {
             try {
                 const id = document.getElementById('os-orcamento').value;
-                const os = orcamentos.find(o => o.id == id);
+                const os = orcamentos.find(o => String(o.id) === String(id));
                 if(os) {
                     const dataUri = sigCanvas.toDataURL('image/png');
                     os.assinaturaCliente = dataUri;
@@ -686,7 +685,7 @@
                 const status = document.getElementById('status-assinatura');
                 if(!id || !status) return;
                 if(!id.value) { status.innerText = 'Selecione uma OS...'; return; }
-                const os = orcamentos.find(o => o.id == id.value);
+                const os = orcamentos.find(o => String(o.id) === String(id.value));
                 if(os && os.assinaturaCliente) { status.innerText = '✅ Assinada pelo cliente.'; status.classList.replace('text-gray-400', 'text-green-500'); }
                 else { status.innerText = '❌ Pendente de assinatura.'; status.classList.replace('text-green-500', 'text-gray-400'); }
             } catch(e) { console.error(e); }
@@ -697,24 +696,31 @@
                 const orcId = document.getElementById('os-orcamento').value;
                 if(!orcId) return alert('Selecione um documento na lista primeiro!');
                 
-                const orcamento = orcamentos.find(o => o.id == parseInt(orcId));
-                const cliente = clientes.find(c => c.id == orcamento.clienteId) || { nome: 'Cliente Removido', end: '', tel: '' };
+                // CORREÇÃO 1: Busca super blindada comparando tudo como texto
+                const orcamento = (orcamentos || []).find(o => String(o.id) === String(orcId));
+                
+                if(!orcamento) {
+                    return alert('Erro: O sistema não conseguiu carregar os detalhes desse orçamento específico da memória. Tente atualizar a página.');
+                }
+
+                const cliente = (clientes || []).find(c => String(c.id) === String(orcamento.clienteId)) || { nome: 'Cliente Removido', end: '', tel: '' };
                 let tipoTitulo = tipo === 'Orçamento' ? 'Orçamento' : tipo === 'OS' ? 'Ordem de Serviço' : 'Recibo';
 
-                document.getElementById('print-info').innerHTML = `<div><p><strong>${tipoTitulo === 'Recibo' ? 'Recibo de Pagamento' : tipoTitulo}:</strong> ${orcamento.osNumber}</p><p><strong>Cliente:</strong> ${cliente.nome}</p>${cliente.end ? `<p><strong>Endereço:</strong> ${cliente.end}</p>` : ''}</div><div style="text-align: right;"><p><strong>Data:</strong> ${orcamento.data}</p><p><strong>Telefone:</strong> ${cliente.tel}</p></div>`;
+                document.getElementById('print-info').innerHTML = `<div><p><strong>${tipoTitulo === 'Recibo' ? 'Recibo de Pagamento' : tipoTitulo}:</strong> ${orcamento.osNumber || '001'}</p><p><strong>Cliente:</strong> ${cliente.nome}</p>${cliente.end ? `<p><strong>Endereço:</strong> ${cliente.end}</p>` : ''}</div><div style="text-align: right;"><p><strong>Data:</strong> ${orcamento.data || ''}</p><p><strong>Telefone:</strong> ${cliente.tel}</p></div>`;
                 document.getElementById('print-servicos').innerText = orcamento.desc || '';
                 document.getElementById('print-obs').innerText = orcamento.obs || "Sem observações adicionais.";
                 
-                let htmlMateriais = `<strong>Fornecimento:</strong> ${orcamento.materiaisStatus}`;
-                if (orcamento.materiaisLista && orcamento.materiaisLista.trim() !== '') htmlMateriais += `<br><br><strong>Lista detalhada:</strong><br>${orcamento.materiaisLista}`;
+                let htmlMateriais = `<strong>Fornecimento:</strong> ${orcamento.materiaisStatus || ''}`;
+                if (orcamento.materiaisLista && String(orcamento.materiaisLista).trim() !== '') htmlMateriais += `<br><br><strong>Lista detalhada:</strong><br>${orcamento.materiaisLista}`;
                 document.getElementById('print-materiais').innerHTML = htmlMateriais;
 
                 const valorTotal = parseFloat(orcamento.valor || 0);
                 document.getElementById('print-valor-total').innerText = valorTotal.toLocaleString('pt-BR', {minimumFractionDigits: 2});
 
-                document.getElementById('print-rodape-data').innerText = `Maricá, ${orcamento.data}`;
+                document.getElementById('print-rodape-data').innerText = `Maricá, ${orcamento.data || ''}`;
+                
                 let validadeStr = '';
-                if(orcamento.data && orcamento.data.includes('/')) {
+                if(typeof orcamento.data === 'string' && orcamento.data.includes('/')) {
                     const partes = orcamento.data.split('/');
                     if(partes.length === 3) {
                         const dataObj = new Date(partes[2], partes[1] - 1, partes[0]);
@@ -725,7 +731,12 @@
                 document.getElementById('print-validade').innerHTML = validadeStr ? `Documento válido até <strong>${validadeStr}</strong>.` : '';
 
                 const sf = document.getElementById('print-section-fotos');
-                if(orcamento.fotos && orcamento.fotos.length > 0) { sf.style.display = 'block'; document.getElementById('print-fotos-container').innerHTML = orcamento.fotos.map(src => `<img src="${src}">`).join(''); } else { sf.style.display = 'none'; }
+                if(orcamento.fotos && Array.isArray(orcamento.fotos) && orcamento.fotos.length > 0) { 
+                    sf.style.display = 'block'; 
+                    document.getElementById('print-fotos-container').innerHTML = orcamento.fotos.map(src => `<img src="${src}">`).join(''); 
+                } else { 
+                    sf.style.display = 'none'; 
+                }
 
                 const imgAss = document.getElementById('print-img-assinatura');
                 if(imgAss) {
@@ -733,26 +744,39 @@
                     else { imgAss.style.display = 'none'; }
                 }
                 const assCliNome = document.getElementById('print-assinatura-cliente');
-                if(assCliNome) assCliNome.innerText = cliente.nome;
+                if(assCliNome) assCliNome.innerText = cliente.nome || '';
 
                 let linkWhatsApp = null;
                 if(cliente.tel) {
-                    let telRaw = cliente.tel.replace(/\D/g, '');
+                    let telRaw = String(cliente.tel).replace(/\D/g, '');
                     if(telRaw.length === 10 || telRaw.length === 11) telRaw = "55" + telRaw;
-                    const txt = `Olá *${cliente.nome}*, tudo bem?\n\nAqui é o Wellington da *BRvolts*.\nReferente ao serviço, geramos o seu documento (OS: ${orcamento.osNumber}).\n\n*Valor Total:* R$ ${valorTotal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}\n\nEstou enviando o PDF logo a seguir!\n\nSe puder nos dar uma força, avalie nosso atendimento no Google clicando no botão ao final do documento.\n\nA BRvolts agradece a preferência!`;
+                    const txt = `Olá *${cliente.nome}*, tudo bem?\n\nAqui é o Wellington da *BRvolts*.\nReferente ao serviço, geramos o seu documento (OS: ${orcamento.osNumber || '001'}).\n\n*Valor Total:* R$ ${valorTotal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}\n\nEstou enviando o PDF logo a seguir!\n\nSe puder nos dar uma força, avalie nosso atendimento no Google clicando no botão ao final do documento.\n\nA BRvolts agradece a preferência!`;
                     linkWhatsApp = `https://api.whatsapp.com/send?phone=${telRaw}&text=${encodeURIComponent(txt)}`;
                 }
 
                 const tituloOriginal = document.title;
-                document.title = `${tipoTitulo}_${orcamento.osNumber || '001'}_${cliente.nome}`;
-                window.print();
+                document.title = `${tipoTitulo}_${orcamento.osNumber || '001'}_${cliente.nome || 'Cliente'}`;
+                
+                // CORREÇÃO 2: Bloqueio contra navegadores mobile restritos
+                try {
+                    window.print();
+                } catch(printErr) {
+                    console.error("Bloqueio na impressão", printErr);
+                    alert("Aviso: Seu navegador bloqueou a tela de gerar PDF, mas o sistema vai tentar abrir o WhatsApp mesmo assim.");
+                }
+                
                 document.title = tituloOriginal;
 
                 setTimeout(() => {
                     if(linkWhatsApp) window.open(linkWhatsApp, '_blank');
-                    else alert('O WhatsApp não abriu porque o cliente não tem um telefone válido.');
+                    else alert('O WhatsApp não abriu porque o cliente não tem um telefone válido cadastrado no sistema.');
                 }, 1000);
-            } catch(e) { console.error("Erro PDF", e); alert("Ocorreu um erro ao gerar o PDF."); }
+
+            } catch(e) { 
+                console.error("Erro PDF", e); 
+                // Agora o erro exibe a linha exata em caso de falha técnica
+                alert("Erro exato ao gerar PDF: " + e.message); 
+            }
         }
     </script>
 </body>
