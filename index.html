@@ -8,9 +8,10 @@
     <meta name="theme-color" content="#000000">
     <meta name="apple-mobile-web-app-capable" content="yes">
     
-    <!-- Supabase e Tailwind -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
@@ -34,68 +35,16 @@
         input[type="file"] { display: none; }
         .file-upload-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: #27272a; border: 1px dashed #6b7280; color: #d1d5db; padding: 12px; border-radius: 8px; width: 100%; cursor: pointer; font-size: 0.9rem; font-weight: 600; margin-top: 4px; }
         
-        /* Modal de Assinatura */
         #signature-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 100; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
         #sig-canvas { background: #fff; border-radius: 8px; touch-action: none; width: 100%; max-width: 500px; height: 300px; border: 2px solid #3b82f6; }
 
-        /* Menu Inferior */
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(10px); border-top: 1px solid #27272a; display: flex; justify-content: space-around; padding: 10px 5px 20px 5px; z-index: 50; }
         .nav-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 20%; background: transparent; color: #6b7280; border: none; font-size: 0.6rem; font-weight: 600; padding: 8px 0; border-radius: 8px; transition: all 0.2s; }
         .nav-btn svg { width: 22px; height: 22px; margin: 0 auto 4px auto; }
         .nav-btn.active { color: #3b82f6; }
 
-        /* Chips do Catálogo */
         .chip { display: inline-block; background: #27272a; color: #e5e7eb; padding: 6px 12px; border-radius: 16px; font-size: 0.75rem; margin: 4px 4px 0 0; cursor: pointer; border: 1px solid #3f3f46; transition: 0.2s; }
         .chip:hover { background: #3b82f6; border-color: #3b82f6; color: white; }
-
-        /* ESTILOS DE IMPRESSÃO (PDF) */
-        #print-area { display: none; }
-        @media print {
-            @page { size: A4; margin: 8mm 10mm; }
-            body * { visibility: hidden; }
-            body { background: white; margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            #print-area, #print-area * { visibility: visible; }
-            #print-area { display: block; position: absolute; left: 0; top: 0; width: 100%; font-family: 'Inter', sans-serif; color: #000; }
-            .doc-header { display: flex; justify-content: space-between; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px; }
-            .doc-logo { width: 60%; }
-            .doc-logo img { max-height: 75px; width: auto; margin-bottom: 8px; }
-            .doc-logo h2 { margin: 0; font-size: 13pt; font-weight: normal; margin-bottom: 2px; }
-            .doc-logo p { margin: 2px 0; font-size: 9pt; color: #444; }
-            .doc-contacts { width: 40%; text-align: right; font-size: 9pt; color: #444; display: flex; flex-direction: column; justify-content: flex-end; }
-            .doc-contacts p { margin: 3px 0; display: flex; align-items: center; justify-content: flex-end; gap: 6px; }
-            .doc-contacts svg { width: 16px; height: 16px; fill: currentColor; }
-            .doc-info { display: flex; justify-content: space-between; background-color: #f1f5f9; padding: 8px 15px; border-radius: 4px; margin-bottom: 15px; font-size: 10pt; border: 1px solid #cbd5e1; }
-            .doc-info div p { margin: 2px 0; }
-            .doc-section { margin-bottom: 15px; }
-            .doc-section h3 { margin: 0 0 5px 0; font-size: 12pt; border-bottom: 1px solid #cbd5e1; padding-bottom: 3px; color: #0f172a; }
-            .doc-section p { margin: 0; font-size: 10pt; line-height: 1.4; text-align: justify; white-space: pre-wrap; }
-            .print-fotos-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
-            .print-fotos-grid img { width: 48%; height: 200px; object-fit: cover; border: 1px solid #cbd5e1; border-radius: 6px; page-break-inside: avoid; }
-            .payment-grid { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px; }
-            .payment-conditions { width: 55%; }
-            .pix-box { width: 40%; background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 10px; font-size: 9pt; }
-            .pix-box h4 { margin: 0 0 5px 0; color: #166534; font-size: 10pt; display: flex; align-items: center; gap: 4px; }
-            .pix-box p { margin: 2px 0; line-height: 1.3; }
-            .doc-total { text-align: right; font-size: 12pt; font-weight: bold; margin-top: 5px; margin-bottom: 20px; background: #f8fafc; padding: 12px; border: 1px solid #cbd5e1; display: inline-block; float: right; border-radius: 6px; min-width: 250px; }
-            .doc-total span { font-size: 16pt; color: #000; }
-            .clearfix { clear: both; }
-            .doc-termos { font-size: 8pt; color: #555; margin-top: 10px; border-top: 1px dashed #cbd5e1; padding-top: 10px; page-break-inside: avoid; }
-            .doc-termos p { margin: 3px 0; text-align: justify; line-height: 1.3; }
-            
-            /* Ajuste da Assinatura para ficar apenas 1 centralizada */
-            .doc-signatures { display: flex; justify-content: center; margin-top: 35px; text-align: center; page-break-inside: avoid; }
-            .signature-box { width: 50%; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; }
-            .signature-img { max-height: 60px; width: auto; margin-bottom: -10px; }
-            .signature-line { border-top: 1px solid #000; padding-top: 5px; font-weight: bold; font-size: 10pt; width: 100%; margin-top: 30px; }
-            .signature-sub { font-size: 8pt; color: #555; }
-            
-            .doc-footer { margin-top: 25px; text-align: center; font-size: 8pt; color: #555; border-top: 1px solid #cbd5e1; padding-top: 15px; page-break-inside: avoid; }
-            .doc-footer p { margin: 4px 0; }
-            .btn-avaliacao { display: inline-flex; align-items: center; justify-content: center; background-color: #ffffff; border: 1px solid #e2e8f0; color: #0f172a; text-decoration: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 10pt; margin-top: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-            .btn-avaliacao svg { width: 18px; height: 18px; margin-right: 8px; }
-            .stars { display: flex; margin-left: 8px; gap: 2px; }
-            .stars svg { width: 14px; height: 14px; fill: #FBBC05; margin: 0; }
-        }
     </style>
 </head>
 <body>
@@ -106,7 +55,6 @@
 
     <div class="p-4 w-full max-w-lg mx-auto" id="app-area">
         
-        <!-- ABA DASHBOARD -->
         <div id="dashboard" class="section active">
             <h2 class="text-xl font-bold text-white mb-4">Visão Geral (Mês Atual)</h2>
             <div class="grid grid-cols-2 gap-3 mb-4">
@@ -137,7 +85,6 @@
             </div>
         </div>
 
-        <!-- ABA CLIENTES -->
         <div id="clientes" class="section">
             <h2 class="text-xl font-bold text-white mb-4">Novo Cliente</h2>
             <div class="space-y-4">
@@ -153,7 +100,6 @@
             <div class="bg-zinc-900 rounded-xl border border-zinc-800 overflow-hidden"><ul id="lista-clientes" class="divide-y divide-zinc-800 text-sm"></ul></div>
         </div>
 
-        <!-- ABA CATÁLOGO DE PREÇOS -->
         <div id="catalogo" class="section">
             <h2 class="text-xl font-bold text-white mb-4">Catálogo Padrão</h2>
             <p class="text-sm text-gray-400 mb-4">Cadastre serviços e materiais para preencher a OS rapidamente.</p>
@@ -172,7 +118,6 @@
             <div class="bg-zinc-900 rounded-xl border border-zinc-800 overflow-hidden"><ul id="lista-catalogo" class="divide-y divide-zinc-800 text-sm"></ul></div>
         </div>
 
-        <!-- ABA ORÇAMENTOS -->
         <div id="orcamentos" class="section">
             <h2 class="text-xl font-bold text-white mb-4">Descrever Serviço</h2>
             <div class="space-y-4">
@@ -220,15 +165,14 @@
             </div>
         </div>
 
-        <!-- ABA IMPRESSÃO (PDF E ZAP) -->
         <div id="os" class="section">
             <div class="text-center mb-6">
                 <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-900/30 text-blue-500 mb-3"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg></div>
-                <h2 class="text-xl font-bold text-white">Emitir e Enviar</h2>
+                <h2 class="text-xl font-bold text-white">Emitir e Compartilhar</h2>
             </div>
             
             <div class="space-y-4">
-                <div><label>Selecione o Serviço Salvo</label><select id="os-orcamento" onchange="verificarAssinatura()"></select></div>
+                <div><label>Selecione o Serviço Salvo (Últimos 10)</label><select id="os-orcamento" onchange="verificarAssinatura()"></select></div>
                 
                 <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 flex items-center justify-between">
                     <div>
@@ -239,17 +183,16 @@
                 </div>
 
                 <div class="grid grid-cols-1 gap-3 pt-2 border-t border-zinc-800 mt-4">
-                    <button onclick="imprimirEEnviar('Orçamento')" class="w-full bg-[#128C7E] hover:bg-[#075E54] text-white font-bold py-4 rounded-lg flex justify-center items-center gap-2">📄 Gerar Orçamento + Zap</button>
-                    <button onclick="imprimirEEnviar('OS')" class="w-full bg-[#128C7E] hover:bg-[#075E54] text-white font-bold py-4 rounded-lg flex justify-center items-center gap-2">📋 Gerar OS + Zap</button>
-                    <button onclick="imprimirEEnviar('Recibo')" class="w-full bg-[#128C7E] hover:bg-[#075E54] text-white font-bold py-4 rounded-lg flex justify-center items-center gap-2">💰 Gerar Recibo + Zap</button>
+                    <button onclick="gerarPDFNativo('Orçamento', this)" class="w-full bg-[#128C7E] hover:bg-[#075E54] text-white font-bold py-4 rounded-lg flex justify-center items-center gap-2 shadow-lg">📄 Enviar Orçamento em PDF</button>
+                    <button onclick="gerarPDFNativo('OS', this)" class="w-full bg-[#128C7E] hover:bg-[#075E54] text-white font-bold py-4 rounded-lg flex justify-center items-center gap-2 shadow-lg">📋 Enviar OS em PDF</button>
+                    <button onclick="gerarPDFNativo('Recibo', this)" class="w-full bg-[#128C7E] hover:bg-[#075E54] text-white font-bold py-4 rounded-lg flex justify-center items-center gap-2 shadow-lg">💰 Enviar Recibo em PDF</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- MODAL DE ASSINATURA -->
     <div id="signature-modal">
-        <h3 class="text-white font-bold mb-4 text-lg">Assinatura do Cliente</h3>
+        <h3 class="text-white font-bold mb-4 text-lg">Assinatura do Cliente (Opcional)</h3>
         <canvas id="sig-canvas"></canvas>
         <div class="flex gap-4 mt-6 w-full max-w-sm">
             <button onclick="fecharModalAssinatura()" class="flex-1 bg-zinc-700 hover:bg-zinc-600 text-white py-3 rounded-lg font-bold">Cancelar</button>
@@ -258,7 +201,6 @@
         </div>
     </div>
 
-    <!-- MENU INFERIOR -->
     <nav class="bottom-nav">
         <button onclick="mudarAba('dashboard')" class="nav-btn active" id="tab-dashboard"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg> Início</button>
         <button onclick="mudarAba('clientes')" class="nav-btn" id="tab-clientes"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg> Clientes</button>
@@ -267,68 +209,6 @@
         <button onclick="mudarAba('os')" class="nav-btn" id="tab-os"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg> PDF/Zap</button>
     </nav>
 
-    <!-- ÁREA DE IMPRESSÃO -->
-    <div id="print-area">
-        <div class="doc-header">
-            <div class="doc-logo"><img src="logo_pdf.png" alt="BRvolts Logo"><h2>Soluções em Eletricidade</h2><p>CPF: 165.*** ***-30</p><p>Rua Nilo Ribeiro N° 44</p><p>Ubatiba - Maricá</p></div>
-            <div class="doc-contacts">
-                <p><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg> brvolts.site</p>
-                <p><svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg> @brvolts</p>
-                <p><svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> 21 97649-3932</p>
-                <p><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg> wellington.bonifacio@proton.me</p>
-            </div>
-        </div>
-
-        <div class="doc-info" id="print-info"></div>
-        <div class="doc-section"><h3>Serviços e Mão de Obra</h3><p id="print-servicos"></p></div>
-        <div class="doc-section" id="print-section-materiais"><h3>Materiais</h3><p id="print-materiais"></p></div>
-        <div class="doc-section" id="print-section-fotos" style="display: none;"><h3>Registro Fotográfico</h3><div class="print-fotos-grid" id="print-fotos-container"></div></div>
-        <div class="doc-section"><h3>Observações</h3><p id="print-obs"></p></div>
-        
-        <div class="doc-section">
-            <div class="payment-grid">
-                <div class="payment-conditions">
-                    <h3>Pagamento</h3>
-                    <p><strong>Condições:</strong><br>• 50% de entrada para agendamento e início do serviço;<br>• 50% na conclusão da instalação.</p>
-                </div>
-                <div class="pix-box">
-                    <h4><img src="Pix_logo.png" alt="Pix" style="height: 18px; width: auto; margin-right: 6px;">Pague com PIX</h4>
-                    <p>Chave (CPF): <strong>16562195730</strong></p>
-                    <p>Banco: Caixa Econômica Federal</p>
-                    <p>Titular: Wellington Nunes Bonifácio Correa</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="doc-total">TOTAL GERAL: R$ <span id="print-valor-total">0,00</span></div>
-        <div class="clearfix"></div>
-
-        <div class="doc-termos">
-            <p><strong>Termo de Responsabilidade:</strong> A BRvolts não se responsabiliza por tubulações obstruídas ou danos estruturais ocultos na alvenaria do imóvel não sinalizados previamente.</p>
-            <p><strong>Garantia de Qualidade:</strong> Garantia de 90 dias para a mão de obra prestada, conforme art. 26 do Código de Defesa do Consumidor (CDC).</p>
-        </div>
-
-        <!-- MUDANÇA AQUI: Apenas 1 bloco de assinatura centralizado -->
-        <div class="doc-signatures">
-            <div class="signature-box" id="print-box-cliente">
-                <img id="print-img-assinatura" class="signature-img" style="display:none;" src="">
-                <div class="signature-line" id="print-assinatura-cliente">Nome do Cliente</div>
-                <div class="signature-sub">Cliente / Responsável</div>
-            </div>
-        </div>
-
-        <div class="doc-footer">
-            <p id="print-rodape-data" style="font-size: 11pt; font-weight: 600; margin-bottom: 12px;"></p>
-            <p id="print-validade" style="margin-bottom: 15px; color: #dc2626;"></p>
-            <a href="https://g.page/r/CbiafVBOu7JAEBM/review" target="_blank" class="btn-avaliacao">
-                <svg viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-                Avalie-nos no Google
-                <div class="stars"><svg viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg><svg viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg><svg viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg><svg viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg><svg viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg></div>
-            </a>
-        </div>
-    </div>
-
-    <!-- SCRIPT DO SISTEMA E SUPABASE -->
     <script>
         let supabaseClient = null;
         try {
@@ -585,7 +465,7 @@
                         atualizarTelas();
                     }
                 }
-            } catch(e) { console.error("Erro crítico", e); }
+            } catch(e) { console.error("Erro crítico ao salvar", e); }
         }
 
         function atualizarDashboard() {
@@ -758,7 +638,8 @@
             } catch(e) { console.error(e); }
         }
 
-        function imprimirEEnviar(tipo) {
+        // --- GERAÇÃO NATIVA DO PDF (VETOR) E COMPARTILHAMENTO ---
+        async function gerarPDFNativo(tipo, btnEl) {
             try {
                 const orcIdEl = document.getElementById('os-orcamento');
                 if(!orcIdEl || !orcIdEl.value) return alert('Selecione um documento na lista primeiro!');
@@ -768,96 +649,218 @@
 
                 const cliente = (clientes || []).find(c => String(c.id) === String(orcamento.clienteId)) || { nome: 'Cliente Removido', end: '', tel: '' };
                 let tipoTitulo = tipo === 'Orçamento' ? 'Orçamento' : tipo === 'OS' ? 'Ordem de Serviço' : 'Recibo';
-
-                const pInfo = document.getElementById('print-info');
-                if(!pInfo) return alert("🚨 ERRO: O layout do PDF não foi encontrado no código!");
-
-                pInfo.innerHTML = `<div><p><strong>${tipoTitulo === 'Recibo' ? 'Recibo de Pagamento' : tipoTitulo}:</strong> ${orcamento.osNumber || '001'}</p><p><strong>Cliente:</strong> ${cliente.nome}</p>${cliente.end ? `<p><strong>Endereço:</strong> ${cliente.end}</p>` : ''}</div><div style="text-align: right;"><p><strong>Data:</strong> ${orcamento.data || ''}</p><p><strong>Telefone:</strong> ${cliente.tel}</p></div>`;
-                
-                const pServ = document.getElementById('print-servicos');
-                if(pServ) pServ.innerText = orcamento.desc || '';
-                
-                const pObs = document.getElementById('print-obs');
-                if(pObs) pObs.innerText = orcamento.obs || "Sem observações adicionais.";
-                
-                let htmlMateriais = `<strong>Fornecimento:</strong> ${orcamento.materiaisStatus || ''}`;
-                if (orcamento.materiaisLista && String(orcamento.materiaisLista).trim() !== '') htmlMateriais += `<br><br><strong>Lista detalhada:</strong><br>${orcamento.materiaisLista}`;
-                
-                const pMat = document.getElementById('print-materiais');
-                if(pMat) pMat.innerHTML = htmlMateriais;
-
                 const valorTotal = parseFloat(orcamento.valor || 0);
-                const pValTot = document.getElementById('print-valor-total');
-                if(pValTot) pValTot.innerText = valorTotal.toLocaleString('pt-BR', {minimumFractionDigits: 2});
 
-                const pRodape = document.getElementById('print-rodape-data');
-                if(pRodape) pRodape.innerText = `Maricá, ${orcamento.data || ''}`;
+                // Feedback visual do botão
+                const btnOriginalText = btnEl.innerHTML;
+                btnEl.innerHTML = '⏳ Gerando Documento...';
+                btnEl.disabled = true;
+
+                // 1. INICIALIZA O JSPDF
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
                 
-                let validadeStr = '';
-                if(typeof orcamento.data === 'string' && orcamento.data.includes('/')) {
-                    const partes = orcamento.data.split('/');
-                    if(partes.length === 3) {
-                        const dataObj = new Date(partes[2], partes[1] - 1, partes[0]);
-                        dataObj.setDate(dataObj.getDate() + 10);
-                        validadeStr = dataObj.toLocaleDateString('pt-BR');
-                    }
+                // 2. DESENHA O CABEÇALHO AZUL
+                doc.setFillColor(37, 99, 235); 
+                doc.rect(0, 0, 210, 15, 'F');
+                
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(16);
+                doc.setFont("helvetica", "bold");
+                doc.text("BRvolts - Soluções em Eletricidade", 14, 10);
+                
+                doc.setTextColor(0, 0, 0);
+                doc.setFontSize(10);
+                doc.setFont("helvetica", "normal");
+                doc.text("CPF: 165.*** ***-30", 14, 25);
+                doc.text("Ubatiba - Maricá/RJ", 14, 30);
+                
+                const emailStr = "wellington.bonifacio@proton.me";
+                const telStr = "21 97649-3932 | brvolts.site";
+                doc.text(emailStr, 196 - doc.getTextWidth(emailStr), 25);
+                doc.text(telStr, 196 - doc.getTextWidth(telStr), 30);
+                
+                doc.setDrawColor(200, 200, 200);
+                doc.line(14, 35, 196, 35);
+                
+                // 3. INFORMAÇÕES DO CLIENTE E DOCUMENTO
+                doc.setFontSize(14);
+                doc.setFont("helvetica", "bold");
+                doc.text(`${tipoTitulo}: ${orcamento.osNumber || '001'}`, 14, 45);
+                
+                doc.setFontSize(10);
+                doc.setFont("helvetica", "normal");
+                doc.text(`Cliente: ${cliente.nome}`, 14, 52);
+                doc.text(`Telefone: ${cliente.tel || 'Não informado'}`, 14, 57);
+                if(cliente.end) doc.text(`Endereço: ${cliente.end}`, 14, 62);
+                
+                const dataStr = `Data: ${orcamento.data || ''}`;
+                doc.text(dataStr, 196 - doc.getTextWidth(dataStr), 45);
+                
+                let yPos = cliente.end ? 70 : 65;
+                
+                // 4. TABELA DE SERVIÇOS
+                doc.autoTable({
+                    startY: yPos,
+                    head: [['Descrição dos Serviços e Mão de Obra']],
+                    body: [[orcamento.desc || '']],
+                    theme: 'grid',
+                    headStyles: { fillColor: [39, 39, 42] },
+                    styles: { cellPadding: 5 }
+                });
+                yPos = doc.lastAutoTable.finalY + 10;
+                
+                // 5. TABELA DE MATERIAIS
+                let matText = `Fornecimento: ${orcamento.materiaisStatus || 'Por conta do cliente'}`;
+                if(orcamento.materiaisLista) matText += `\n\nLista detalhada:\n${orcamento.materiaisLista}`;
+                
+                doc.autoTable({
+                    startY: yPos,
+                    head: [['Materiais']],
+                    body: [[matText]],
+                    theme: 'grid',
+                    headStyles: { fillColor: [39, 39, 42] },
+                    styles: { cellPadding: 5 }
+                });
+                yPos = doc.lastAutoTable.finalY + 10;
+                
+                // 6. OBSERVAÇÕES TÉCNICAS
+                if(orcamento.obs) {
+                    doc.autoTable({
+                        startY: yPos,
+                        head: [['Observações Técnicas']],
+                        body: [[orcamento.obs]],
+                        theme: 'grid',
+                        headStyles: { fillColor: [39, 39, 42] },
+                        styles: { cellPadding: 5 }
+                    });
+                    yPos = doc.lastAutoTable.finalY + 10;
                 }
-                const pValidade = document.getElementById('print-validade');
-                if(pValidade) pValidade.innerHTML = validadeStr ? `Documento válido até <strong>${validadeStr}</strong>.` : '';
+                
+                // 7. TABELA DE PAGAMENTO E TOTAL
+                doc.autoTable({
+                    startY: yPos,
+                    head: [['Condições de Pagamento', 'Total Geral']],
+                    body: [[
+                        "50% de entrada para agendamento.\n50% na conclusão da instalação.\n\nChave PIX (CPF): 16562195730\nTitular: Wellington Nunes Bonifácio Correa",
+                        `R$ ${valorTotal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`
+                    ]],
+                    theme: 'grid',
+                    headStyles: { fillColor: [39, 39, 42] },
+                    styles: { valign: 'middle', cellPadding: 5 },
+                    columnStyles: { 1: { fontStyle: 'bold', fontSize: 16, halign: 'center', textColor: [22, 163, 74] } }
+                });
+                yPos = doc.lastAutoTable.finalY + 15;
+                
+                // 8. TERMOS DE RESPONSABILIDADE
+                doc.setFontSize(8);
+                doc.setTextColor(100);
+                doc.text("Garantia de 90 dias para a mão de obra prestada (Art. 26 do CDC).", 14, yPos);
+                doc.text("A BRvolts não se responsabiliza por tubulações obstruídas ocultas na alvenaria.", 14, yPos + 4);
+                yPos += 25;
+                
+                // 9. ASSINATURA CENTRALIZADA DO CLIENTE
+                if(yPos > 250) { doc.addPage(); yPos = 30; }
 
-                const sf = document.getElementById('print-section-fotos');
-                if(sf) {
-                    if(orcamento.fotos && Array.isArray(orcamento.fotos) && orcamento.fotos.length > 0) { 
-                        sf.style.display = 'block'; 
-                        const pFotos = document.getElementById('print-fotos-container');
-                        if(pFotos) pFotos.innerHTML = orcamento.fotos.map(src => `<img src="${src}">`).join(''); 
-                    } else { 
-                        sf.style.display = 'none'; 
-                    }
+                doc.setDrawColor(0);
+                doc.setLineWidth(0.5);
+                
+                // Posicionamento centralizado (Página tem 210mm de largura. Meio é 105. Linha de 80mm de comprimento -> Vai do 65 ao 145)
+                doc.line(65, yPos + 15, 145, yPos + 15);
+                
+                if(orcamento.assinaturaCliente) {
+                    // Coloca a imagem exatamente acima da linha
+                    doc.addImage(orcamento.assinaturaCliente, 'PNG', 80, yPos - 5, 50, 20);
+                }
+                
+                doc.setTextColor(0);
+                doc.setFontSize(10);
+                doc.setFont("helvetica", "bold");
+                const nomeCliStr = cliente.nome || "Cliente / Responsável";
+                doc.text(nomeCliStr, 105 - (doc.getTextWidth(nomeCliStr) / 2), yPos + 20);
+                
+                // 10. PÁGINA DE FOTOS (Se Existirem)
+                if(orcamento.fotos && Array.isArray(orcamento.fotos) && orcamento.fotos.length > 0) {
+                    doc.addPage();
+                    doc.setFontSize(14);
+                    doc.setTextColor(0);
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Registro Fotográfico do Serviço", 14, 20);
+                    
+                    let imgX = 14;
+                    let imgY = 30;
+                    const w = 85;
+                    const h = 85;
+                    
+                    orcamento.fotos.forEach((foto, i) => {
+                        if(i > 0 && i % 4 === 0) { doc.addPage(); imgX = 14; imgY = 20; }
+                        doc.addImage(foto, 'JPEG', imgX, imgY, w, h);
+                        if(i % 2 === 0) { imgX = 110; } else { imgX = 14; imgY += h + 10; }
+                    });
                 }
 
-                // Lógica Opcional da Assinatura
-                const imgAss = document.getElementById('print-img-assinatura');
-                if(imgAss) {
-                    if(orcamento.assinaturaCliente) { 
-                        imgAss.src = orcamento.assinaturaCliente; 
-                        imgAss.style.display = 'block'; 
-                    } else { 
-                        imgAss.style.display = 'none'; 
-                    }
-                }
-                const assCliNome = document.getElementById('print-assinatura-cliente');
-                if(assCliNome) assCliNome.innerText = cliente.nome || '';
+                // --- GERAÇÃO FINAL E COMPARTILHAMENTO ---
+                const fileName = `${tipoTitulo}_${orcamento.osNumber || '001'}_${cliente.nome || 'Cliente'}.pdf`;
+                const pdfBlob = doc.output('blob');
+                
+                // Restaura o botão
+                btnEl.innerHTML = btnOriginalText;
+                btnEl.disabled = false;
 
+                // Prepara mensagem do Wpp
                 let linkWhatsApp = null;
                 if(cliente.tel) {
                     let telRaw = String(cliente.tel).replace(/\D/g, '');
                     if(telRaw.length === 10 || telRaw.length === 11) telRaw = "55" + telRaw;
-                    const txt = `Olá *${cliente.nome}*, tudo bem?\n\nAqui é o Wellington da *BRvolts*.\nReferente ao serviço, geramos o seu documento (OS: ${orcamento.osNumber || '001'}).\n\n*Valor Total:* R$ ${valorTotal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}\n\nEstou enviando o PDF logo a seguir!\n\nSe puder nos dar uma força, avalie nosso atendimento no Google clicando no botão ao final do documento.\n\nA BRvolts agradece a preferência!`;
-                    linkWhatsApp = `https://api.whatsapp.com/send?phone=${telRaw}&text=${encodeURIComponent(txt)}`;
+                    const txtWpp = `Olá *${cliente.nome}*, tudo bem?\n\nAqui é o Wellington da *BRvolts*.\nReferente ao serviço, geramos o seu documento (OS: ${orcamento.osNumber || '001'}).\n\n*Valor Total:* R$ ${valorTotal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}\n\nO PDF do documento oficial está anexado.\n\nSe puder nos dar uma força, avalie nosso atendimento no Google clicando no link abaixo:\nhttps://g.page/r/CbiafVBOu7JAEBM/review\n\nA BRvolts agradece a preferência!`;
+                    
+                    const file = new File([pdfBlob], fileName, { type: 'application/pdf' });
+                    
+                    // Tenta abrir o menu Nativo do Celular (Share)
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        navigator.share({
+                            files: [file],
+                            title: fileName,
+                            text: txtWpp
+                        }).catch((e) => {
+                            // Se o usuário fechar a tela de share, não faz nada
+                            console.log('Compartilhamento cancelado', e);
+                        });
+                    } else {
+                        // Se estiver no PC ou navegador não suportado, baixa o arquivo e tenta abrir o Zap Web
+                        baixarParaPC(pdfBlob, fileName);
+                        linkWhatsApp = `https://api.whatsapp.com/send?phone=${telRaw}&text=${encodeURIComponent(txtWpp)}`;
+                        setTimeout(() => { window.open(linkWhatsApp, '_blank'); }, 1000);
+                    }
+                } else {
+                    // Se não tem telefone, só baixa o PDF (PC) ou compartilha sem zap (Celular)
+                    const file = new File([pdfBlob], fileName, { type: 'application/pdf' });
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        navigator.share({ files: [file], title: fileName }).catch(() => {});
+                    } else {
+                        baixarParaPC(pdfBlob, fileName);
+                        alert("O cliente não possui um número de telefone salvo. O PDF foi apenas baixado.");
+                    }
                 }
-
-                const tituloOriginal = document.title;
-                document.title = `${tipoTitulo}_${orcamento.osNumber || '001'}_${cliente.nome || 'Cliente'}`;
-                
-                try {
-                    window.print();
-                } catch(printErr) {
-                    console.error("Bloqueio na impressão", printErr);
-                    alert("Aviso: Seu navegador bloqueou a tela de gerar PDF, mas o sistema tentará abrir o WhatsApp mesmo assim.");
-                }
-                
-                document.title = tituloOriginal;
-
-                setTimeout(() => {
-                    if(linkWhatsApp) window.open(linkWhatsApp, '_blank');
-                    else alert('O WhatsApp não abriu porque o cliente não tem um telefone válido cadastrado no sistema.');
-                }, 1000);
 
             } catch(e) { 
-                console.error("Erro PDF", e); 
-                alert("Falha ao gerar o PDF. Verifique se copiou todo o código HTML corretamente."); 
+                console.error("Erro PDF Nativo", e); 
+                btnEl.innerHTML = 'Erro!'; 
+                setTimeout(() => { btnEl.disabled = false; btnEl.innerHTML = 'Tentar Novamente'; }, 2000);
+                alert("Falha ao gerar o PDF. Detalhe técnico: " + e.message); 
             }
+        }
+
+        // Helper para baixar no PC
+        function baixarParaPC(blob, fileName) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
         }
     </script>
 </body>
