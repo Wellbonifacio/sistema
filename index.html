@@ -8,8 +8,10 @@
     <meta name="theme-color" content="#000000">
     <meta name="apple-mobile-web-app-capable" content="yes">
     
+    <!-- Supabase, Tailwind e Gerador de PDF nativo -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
@@ -47,51 +49,48 @@
         .chip { display: inline-block; background: #27272a; color: #e5e7eb; padding: 6px 12px; border-radius: 16px; font-size: 0.75rem; margin: 4px 4px 0 0; cursor: pointer; border: 1px solid #3f3f46; transition: 0.2s; }
         .chip:hover { background: #3b82f6; border-color: #3b82f6; color: white; }
 
-        /* ESTILOS DE IMPRESSÃO (PDF) */
-        #print-area { display: none; }
-        @media print {
-            @page { size: A4; margin: 8mm 10mm; }
-            body * { visibility: hidden; }
-            body { background: white; margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            #print-area, #print-area * { visibility: visible; }
-            #print-area { display: block; position: absolute; left: 0; top: 0; width: 100%; font-family: 'Inter', sans-serif; color: #000; }
-            .doc-header { display: flex; justify-content: space-between; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px; }
-            .doc-logo { width: 60%; }
-            .doc-logo img { max-height: 75px; width: auto; margin-bottom: 8px; }
-            .doc-logo h2 { margin: 0; font-size: 13pt; font-weight: normal; margin-bottom: 2px; }
-            .doc-logo p { margin: 2px 0; font-size: 9pt; color: #444; }
-            .doc-contacts { width: 40%; text-align: right; font-size: 9pt; color: #444; display: flex; flex-direction: column; justify-content: flex-end; }
-            .doc-contacts p { margin: 3px 0; display: flex; align-items: center; justify-content: flex-end; gap: 6px; }
-            .doc-contacts svg { width: 16px; height: 16px; fill: currentColor; }
-            .doc-info { display: flex; justify-content: space-between; background-color: #f1f5f9; padding: 8px 15px; border-radius: 4px; margin-bottom: 15px; font-size: 10pt; border: 1px solid #cbd5e1; }
-            .doc-info div p { margin: 2px 0; }
-            .doc-section { margin-bottom: 15px; }
-            .doc-section h3 { margin: 0 0 5px 0; font-size: 12pt; border-bottom: 1px solid #cbd5e1; padding-bottom: 3px; color: #0f172a; }
-            .doc-section p { margin: 0; font-size: 10pt; line-height: 1.4; text-align: justify; white-space: pre-wrap; }
-            .print-fotos-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
-            .print-fotos-grid img { width: 48%; height: 200px; object-fit: cover; border: 1px solid #cbd5e1; border-radius: 6px; page-break-inside: avoid; }
-            .payment-grid { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px; }
-            .payment-conditions { width: 55%; }
-            .pix-box { width: 40%; background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 10px; font-size: 9pt; }
-            .pix-box h4 { margin: 0 0 5px 0; color: #166534; font-size: 10pt; display: flex; align-items: center; gap: 4px; }
-            .pix-box p { margin: 2px 0; line-height: 1.3; }
-            .doc-total { text-align: right; font-size: 12pt; font-weight: bold; margin-top: 5px; margin-bottom: 20px; background: #f8fafc; padding: 12px; border: 1px solid #cbd5e1; display: inline-block; float: right; border-radius: 6px; min-width: 250px; }
-            .doc-total span { font-size: 16pt; color: #000; }
-            .clearfix { clear: both; }
-            .doc-termos { font-size: 8pt; color: #555; margin-top: 10px; border-top: 1px dashed #cbd5e1; padding-top: 10px; page-break-inside: avoid; }
-            .doc-termos p { margin: 3px 0; text-align: justify; line-height: 1.3; }
-            .doc-signatures { display: flex; justify-content: space-between; margin-top: 35px; text-align: center; page-break-inside: avoid; }
-            .signature-box { width: 45%; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; }
-            .signature-img { max-height: 60px; width: auto; margin-bottom: -10px; }
-            .signature-line { border-top: 1px solid #000; padding-top: 5px; font-weight: bold; font-size: 10pt; width: 100%; margin-top: 30px; }
-            .signature-sub { font-size: 8pt; color: #555; }
-            .doc-footer { margin-top: 25px; text-align: center; font-size: 8pt; color: #555; border-top: 1px solid #cbd5e1; padding-top: 15px; page-break-inside: avoid; }
-            .doc-footer p { margin: 4px 0; }
-            .btn-avaliacao { display: inline-flex; align-items: center; justify-content: center; background-color: #ffffff; border: 1px solid #e2e8f0; color: #0f172a; text-decoration: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 10pt; margin-top: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-            .btn-avaliacao svg { width: 18px; height: 18px; margin-right: 8px; }
-            .stars { display: flex; margin-left: 8px; gap: 2px; }
-            .stars svg { width: 14px; height: 14px; fill: #FBBC05; margin: 0; }
+        /* ESTILOS EXCLUSIVOS PARA A GERAÇÃO DE PDF (SEM O BUG DA IMPRESSORA) */
+        #print-area { 
+            display: none; background: white; color: #000; 
+            font-family: 'Inter', sans-serif; 
+            width: 800px; padding: 40px; box-sizing: border-box;
         }
+        #print-area .doc-header { display: flex; justify-content: space-between; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px; }
+        #print-area .doc-logo { width: 60%; }
+        #print-area .doc-logo img { max-height: 75px; width: auto; margin-bottom: 8px; }
+        #print-area .doc-logo h2 { margin: 0; font-size: 13pt; font-weight: normal; margin-bottom: 2px; }
+        #print-area .doc-logo p { margin: 2px 0; font-size: 9pt; color: #444; }
+        #print-area .doc-contacts { width: 40%; text-align: right; font-size: 9pt; color: #444; display: flex; flex-direction: column; justify-content: flex-end; }
+        #print-area .doc-contacts p { margin: 3px 0; display: flex; align-items: center; justify-content: flex-end; gap: 6px; }
+        #print-area .doc-contacts svg { width: 16px; height: 16px; fill: currentColor; }
+        #print-area .doc-info { display: flex; justify-content: space-between; background-color: #f1f5f9; padding: 8px 15px; border-radius: 4px; margin-bottom: 15px; font-size: 10pt; border: 1px solid #cbd5e1; }
+        #print-area .doc-info div p { margin: 2px 0; }
+        #print-area .doc-section { margin-bottom: 15px; }
+        #print-area .doc-section h3 { margin: 0 0 5px 0; font-size: 12pt; border-bottom: 1px solid #cbd5e1; padding-bottom: 3px; color: #0f172a; }
+        #print-area .doc-section p { margin: 0; font-size: 10pt; line-height: 1.4; text-align: justify; white-space: pre-wrap; }
+        #print-area .print-fotos-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+        #print-area .print-fotos-grid img { width: 48%; height: 200px; object-fit: cover; border: 1px solid #cbd5e1; border-radius: 6px; page-break-inside: avoid; }
+        #print-area .payment-grid { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px; }
+        #print-area .payment-conditions { width: 55%; }
+        #print-area .pix-box { width: 40%; background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 10px; font-size: 9pt; }
+        #print-area .pix-box h4 { margin: 0 0 5px 0; color: #166534; font-size: 10pt; display: flex; align-items: center; gap: 4px; }
+        #print-area .pix-box p { margin: 2px 0; line-height: 1.3; }
+        #print-area .doc-total { text-align: right; font-size: 12pt; font-weight: bold; margin-top: 5px; margin-bottom: 20px; background: #f8fafc; padding: 12px; border: 1px solid #cbd5e1; display: inline-block; float: right; border-radius: 6px; min-width: 250px; }
+        #print-area .doc-total span { font-size: 16pt; color: #000; }
+        #print-area .clearfix { clear: both; }
+        #print-area .doc-termos { font-size: 8pt; color: #555; margin-top: 10px; border-top: 1px dashed #cbd5e1; padding-top: 10px; page-break-inside: avoid; }
+        #print-area .doc-termos p { margin: 3px 0; text-align: justify; line-height: 1.3; }
+        #print-area .doc-signatures { display: flex; justify-content: center; margin-top: 35px; text-align: center; page-break-inside: avoid; }
+        #print-area .signature-box { width: 50%; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; }
+        #print-area .signature-img { max-height: 60px; width: auto; margin-bottom: -10px; }
+        #print-area .signature-line { border-top: 1px solid #000; padding-top: 5px; font-weight: bold; font-size: 10pt; width: 100%; margin-top: 30px; }
+        #print-area .signature-sub { font-size: 8pt; color: #555; }
+        #print-area .doc-footer { margin-top: 25px; text-align: center; font-size: 8pt; color: #555; border-top: 1px solid #cbd5e1; padding-top: 15px; page-break-inside: avoid; }
+        #print-area .doc-footer p { margin: 4px 0; }
+        #print-area .btn-avaliacao { display: inline-flex; align-items: center; justify-content: center; background-color: #ffffff; border: 1px solid #e2e8f0; color: #0f172a; text-decoration: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 10pt; margin-top: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        #print-area .btn-avaliacao svg { width: 18px; height: 18px; margin-right: 8px; }
+        #print-area .stars { display: flex; margin-left: 8px; gap: 2px; }
+        #print-area .stars svg { width: 14px; height: 14px; fill: #FBBC05; margin: 0; }
     </style>
 </head>
 <body>
@@ -102,6 +101,7 @@
 
     <div class="p-4 w-full max-w-lg mx-auto" id="app-area">
         
+        <!-- ABA DASHBOARD -->
         <div id="dashboard" class="section active">
             <h2 class="text-xl font-bold text-white mb-4">Visão Geral (Mês Atual)</h2>
             <div class="grid grid-cols-2 gap-3 mb-4">
@@ -132,6 +132,7 @@
             </div>
         </div>
 
+        <!-- ABA CLIENTES -->
         <div id="clientes" class="section">
             <h2 class="text-xl font-bold text-white mb-4">Novo Cliente</h2>
             <div class="space-y-4">
@@ -147,6 +148,7 @@
             <div class="bg-zinc-900 rounded-xl border border-zinc-800 overflow-hidden"><ul id="lista-clientes" class="divide-y divide-zinc-800 text-sm"></ul></div>
         </div>
 
+        <!-- ABA CATÁLOGO DE PREÇOS -->
         <div id="catalogo" class="section">
             <h2 class="text-xl font-bold text-white mb-4">Catálogo Padrão</h2>
             <p class="text-sm text-gray-400 mb-4">Cadastre serviços e materiais para preencher a OS rapidamente.</p>
@@ -165,6 +167,7 @@
             <div class="bg-zinc-900 rounded-xl border border-zinc-800 overflow-hidden"><ul id="lista-catalogo" class="divide-y divide-zinc-800 text-sm"></ul></div>
         </div>
 
+        <!-- ABA ORÇAMENTOS -->
         <div id="orcamentos" class="section">
             <h2 class="text-xl font-bold text-white mb-4">Descrever Serviço</h2>
             <div class="space-y-4">
@@ -212,10 +215,11 @@
             </div>
         </div>
 
+        <!-- ABA IMPRESSÃO (PDF E ZAP) -->
         <div id="os" class="section">
             <div class="text-center mb-6">
                 <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-900/30 text-blue-500 mb-3"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg></div>
-                <h2 class="text-xl font-bold text-white">Emitir e Enviar</h2>
+                <h2 class="text-xl font-bold text-white">Emitir Arquivo Final</h2>
             </div>
             
             <div class="space-y-4">
@@ -229,17 +233,19 @@
                     <button onclick="abrirModalAssinatura()" class="bg-zinc-700 hover:bg-zinc-600 text-white text-xs font-bold py-2 px-4 rounded-lg">Coletar ✍️</button>
                 </div>
 
+                <!-- Mudança de onclick para passar o próprio botão (this) e criar estado de loading -->
                 <div class="grid grid-cols-1 gap-3 pt-2 border-t border-zinc-800 mt-4">
-                    <button onclick="imprimirEEnviar('Orçamento')" class="w-full bg-[#128C7E] hover:bg-[#075E54] text-white font-bold py-4 rounded-lg flex justify-center items-center gap-2">📄 Gerar Orçamento + Zap</button>
-                    <button onclick="imprimirEEnviar('OS')" class="w-full bg-[#128C7E] hover:bg-[#075E54] text-white font-bold py-4 rounded-lg flex justify-center items-center gap-2">📋 Gerar OS + Zap</button>
-                    <button onclick="imprimirEEnviar('Recibo')" class="w-full bg-[#128C7E] hover:bg-[#075E54] text-white font-bold py-4 rounded-lg flex justify-center items-center gap-2">💰 Gerar Recibo + Zap</button>
+                    <button onclick="imprimirEEnviar('Orçamento', this)" class="w-full bg-[#128C7E] hover:bg-[#075E54] text-white font-bold py-4 rounded-lg flex justify-center items-center gap-2">📄 Gerar Orçamento + Zap</button>
+                    <button onclick="imprimirEEnviar('OS', this)" class="w-full bg-[#128C7E] hover:bg-[#075E54] text-white font-bold py-4 rounded-lg flex justify-center items-center gap-2">📋 Gerar OS + Zap</button>
+                    <button onclick="imprimirEEnviar('Recibo', this)" class="w-full bg-[#128C7E] hover:bg-[#075E54] text-white font-bold py-4 rounded-lg flex justify-center items-center gap-2">💰 Gerar Recibo + Zap</button>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- MODAL DE ASSINATURA -->
     <div id="signature-modal">
-        <h3 class="text-white font-bold mb-4 text-lg">Assinatura do Cliente</h3>
+        <h3 class="text-white font-bold mb-4 text-lg">Assinatura do Cliente (Opcional)</h3>
         <canvas id="sig-canvas"></canvas>
         <div class="flex gap-4 mt-6 w-full max-w-sm">
             <button onclick="fecharModalAssinatura()" class="flex-1 bg-zinc-700 hover:bg-zinc-600 text-white py-3 rounded-lg font-bold">Cancelar</button>
@@ -248,6 +254,7 @@
         </div>
     </div>
 
+    <!-- MENU INFERIOR -->
     <nav class="bottom-nav">
         <button onclick="mudarAba('dashboard')" class="nav-btn active" id="tab-dashboard"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg> Início</button>
         <button onclick="mudarAba('clientes')" class="nav-btn" id="tab-clientes"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg> Clientes</button>
@@ -256,13 +263,13 @@
         <button onclick="mudarAba('os')" class="nav-btn" id="tab-os"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg> PDF/Zap</button>
     </nav>
 
+    <!-- ÁREA DO PDF QUE FICA INVISÍVEL -->
     <div id="print-area">
         <div class="doc-header">
             <div class="doc-logo"><img src="logo_pdf.png" alt="BRvolts Logo"><h2>Soluções em Eletricidade</h2><p>CPF: 165.*** ***-30</p><p>Rua Nilo Ribeiro N° 44</p><p>Ubatiba - Maricá</p></div>
             <div class="doc-contacts">
                 <p><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg> brvolts.site</p>
                 <p><svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg> 21 97649-3932</p>
-                <p><svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> 21 97649-3932</p>
                 <p><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg> wellington.bonifacio@proton.me</p>
             </div>
         </div>
@@ -296,8 +303,8 @@
             <p><strong>Garantia de Qualidade:</strong> Garantia de 90 dias para a mão de obra prestada, conforme art. 26 do Código de Defesa do Consumidor (CDC).</p>
         </div>
 
+        <!-- Bloco de Assinatura Única (Cliente) -->
         <div class="doc-signatures">
-            <div class="signature-box"><div class="signature-line">Wellington Bonifácio</div><div class="signature-sub">BRvolts</div></div>
             <div class="signature-box" id="print-box-cliente">
                 <img id="print-img-assinatura" class="signature-img" style="display:none;" src="">
                 <div class="signature-line" id="print-assinatura-cliente">Nome do Cliente</div>
@@ -316,6 +323,7 @@
         </div>
     </div>
 
+    <!-- SCRIPTS -->
     <script>
         let supabaseClient = null;
         try {
@@ -745,7 +753,8 @@
             } catch(e) { console.error(e); }
         }
 
-        function imprimirEEnviar(tipo) {
+        // --- NOVA LÓGICA DE PDF (SEM TELA DE IMPRESSÃO) ---
+        function imprimirEEnviar(tipo, btnEl) {
             try {
                 const orcIdEl = document.getElementById('os-orcamento');
                 if(!orcIdEl || !orcIdEl.value) return alert('Selecione um documento na lista primeiro!');
@@ -756,29 +765,28 @@
                 const cliente = (clientes || []).find(c => String(c.id) === String(orcamento.clienteId)) || { nome: 'Cliente Removido', end: '', tel: '' };
                 let tipoTitulo = tipo === 'Orçamento' ? 'Orçamento' : tipo === 'OS' ? 'Ordem de Serviço' : 'Recibo';
 
-                const pInfo = document.getElementById('print-info');
-                if(!pInfo) return alert("🚨 ERRO: O layout do PDF (área de impressão) não foi encontrado no código! Isso acontece quando o arquivo HTML não é copiado e colado até a última linha (</html>). Por favor, copie todo o bloco de código e cole novamente no seu repositório.");
+                // Prepara Textos WPP
+                const valorTotal = parseFloat(orcamento.valor || 0);
+                let txtWpp = '';
+                let linkWhatsApp = null;
+                if(cliente.tel) {
+                    let telRaw = String(cliente.tel).replace(/\D/g, '');
+                    if(telRaw.length === 10 || telRaw.length === 11) telRaw = "55" + telRaw;
+                    txtWpp = `Olá *${cliente.nome}*, tudo bem?\n\nAqui é o Wellington da *BRvolts*.\nReferente ao serviço, geramos o seu documento (OS: ${orcamento.osNumber || '001'}).\n\n*Valor Total:* R$ ${valorTotal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}\n\nO PDF do documento oficial está anexado abaixo.\n\nSe puder nos dar uma força, avalie nosso atendimento no Google clicando no botão ao final do documento.\n\nA BRvolts agradece a preferência!`;
+                    linkWhatsApp = `https://api.whatsapp.com/send?phone=${telRaw}&text=${encodeURIComponent(txtWpp)}`;
+                }
 
-                pInfo.innerHTML = `<div><p><strong>${tipoTitulo === 'Recibo' ? 'Recibo de Pagamento' : tipoTitulo}:</strong> ${orcamento.osNumber || '001'}</p><p><strong>Cliente:</strong> ${cliente.nome}</p>${cliente.end ? `<p><strong>Endereço:</strong> ${cliente.end}</p>` : ''}</div><div style="text-align: right;"><p><strong>Data:</strong> ${orcamento.data || ''}</p><p><strong>Telefone:</strong> ${cliente.tel}</p></div>`;
-                
-                const pServ = document.getElementById('print-servicos');
-                if(pServ) pServ.innerText = orcamento.desc || '';
-                
-                const pObs = document.getElementById('print-obs');
-                if(pObs) pObs.innerText = orcamento.obs || "Sem observações adicionais.";
+                // Prepara a Div Inviśivel do PDF
+                const pInfoWrapper = document.getElementById('print-area');
+                document.getElementById('print-info').innerHTML = `<div><p><strong>${tipoTitulo === 'Recibo' ? 'Recibo de Pagamento' : tipoTitulo}:</strong> ${orcamento.osNumber || '001'}</p><p><strong>Cliente:</strong> ${cliente.nome}</p>${cliente.end ? `<p><strong>Endereço:</strong> ${cliente.end}</p>` : ''}</div><div style="text-align: right;"><p><strong>Data:</strong> ${orcamento.data || ''}</p><p><strong>Telefone:</strong> ${cliente.tel}</p></div>`;
+                document.getElementById('print-servicos').innerText = orcamento.desc || '';
+                document.getElementById('print-obs').innerText = orcamento.obs || "Sem observações adicionais.";
                 
                 let htmlMateriais = `<strong>Fornecimento:</strong> ${orcamento.materiaisStatus || ''}`;
                 if (orcamento.materiaisLista && String(orcamento.materiaisLista).trim() !== '') htmlMateriais += `<br><br><strong>Lista detalhada:</strong><br>${orcamento.materiaisLista}`;
-                
-                const pMat = document.getElementById('print-materiais');
-                if(pMat) pMat.innerHTML = htmlMateriais;
-
-                const valorTotal = parseFloat(orcamento.valor || 0);
-                const pValTot = document.getElementById('print-valor-total');
-                if(pValTot) pValTot.innerText = valorTotal.toLocaleString('pt-BR', {minimumFractionDigits: 2});
-
-                const pRodape = document.getElementById('print-rodape-data');
-                if(pRodape) pRodape.innerText = `Maricá, ${orcamento.data || ''}`;
+                document.getElementById('print-materiais').innerHTML = htmlMateriais;
+                document.getElementById('print-valor-total').innerText = valorTotal.toLocaleString('pt-BR', {minimumFractionDigits: 2});
+                document.getElementById('print-rodape-data').innerText = `Maricá, ${orcamento.data || ''}`;
                 
                 let validadeStr = '';
                 if(typeof orcamento.data === 'string' && orcamento.data.includes('/')) {
@@ -789,56 +797,99 @@
                         validadeStr = dataObj.toLocaleDateString('pt-BR');
                     }
                 }
-                const pValidade = document.getElementById('print-validade');
-                if(pValidade) pValidade.innerHTML = validadeStr ? `Documento válido até <strong>${validadeStr}</strong>.` : '';
+                document.getElementById('print-validade').innerHTML = validadeStr ? `Documento válido até <strong>${validadeStr}</strong>.` : '';
 
                 const sf = document.getElementById('print-section-fotos');
-                if(sf) {
-                    if(orcamento.fotos && Array.isArray(orcamento.fotos) && orcamento.fotos.length > 0) { 
-                        sf.style.display = 'block'; 
-                        const pFotos = document.getElementById('print-fotos-container');
-                        if(pFotos) pFotos.innerHTML = orcamento.fotos.map(src => `<img src="${src}">`).join(''); 
-                    } else { 
-                        sf.style.display = 'none'; 
-                    }
-                }
+                if(orcamento.fotos && Array.isArray(orcamento.fotos) && orcamento.fotos.length > 0) { 
+                    sf.style.display = 'block'; 
+                    document.getElementById('print-fotos-container').innerHTML = orcamento.fotos.map(src => `<img src="${src}">`).join(''); 
+                } else { sf.style.display = 'none'; }
 
                 const imgAss = document.getElementById('print-img-assinatura');
-                if(imgAss) {
-                    if(orcamento.assinaturaCliente) { imgAss.src = orcamento.assinaturaCliente; imgAss.style.display = 'block'; } 
-                    else { imgAss.style.display = 'none'; }
+                if(orcamento.assinaturaCliente) { 
+                    imgAss.src = orcamento.assinaturaCliente; 
+                    imgAss.style.display = 'block'; 
+                } else { 
+                    imgAss.style.display = 'none'; 
                 }
-                const assCliNome = document.getElementById('print-assinatura-cliente');
-                if(assCliNome) assCliNome.innerText = cliente.nome || '';
+                document.getElementById('print-assinatura-cliente').innerText = cliente.nome || '';
 
-                let linkWhatsApp = null;
-                if(cliente.tel) {
-                    let telRaw = String(cliente.tel).replace(/\D/g, '');
-                    if(telRaw.length === 10 || telRaw.length === 11) telRaw = "55" + telRaw;
-                    const txt = `Olá *${cliente.nome}*, tudo bem?\n\nAqui é o Wellington da *BRvolts*.\nReferente ao serviço, geramos o seu documento (OS: ${orcamento.osNumber || '001'}).\n\n*Valor Total:* R$ ${valorTotal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}\n\nEstou enviando o PDF logo a seguir!\n\nSe puder nos dar uma força, avalie nosso atendimento no Google clicando no botão ao final do documento.\n\nA BRvolts agradece a preferência!`;
-                    linkWhatsApp = `https://api.whatsapp.com/send?phone=${telRaw}&text=${encodeURIComponent(txt)}`;
-                }
+                // ESTADO DE CARREGAMENTO NO BOTÃO
+                const btnOriginalText = btnEl.innerHTML;
+                btnEl.innerHTML = '⏳ Gerando Arquivo PDF...';
+                btnEl.disabled = true;
 
-                const tituloOriginal = document.title;
-                document.title = `${tipoTitulo}_${orcamento.osNumber || '001'}_${cliente.nome || 'Cliente'}`;
-                
-                try {
-                    window.print();
-                } catch(printErr) {
-                    console.error("Bloqueio na impressão", printErr);
-                    alert("Aviso: Seu navegador bloqueou a tela de gerar PDF, mas o sistema tentará abrir o WhatsApp mesmo assim.");
-                }
-                
-                document.title = tituloOriginal;
+                // Troca as telas para tirar a "foto" com o HTML2PDF
+                const appArea = document.getElementById('app-area');
+                const navBar = document.querySelector('.bottom-nav');
+                appArea.style.display = 'none';
+                navBar.style.display = 'none';
+                pInfoWrapper.style.display = 'block';
 
-                setTimeout(() => {
-                    if(linkWhatsApp) window.open(linkWhatsApp, '_blank');
-                    else alert('O WhatsApp não abriu porque o cliente não tem um telefone válido cadastrado no sistema.');
-                }, 1000);
+                const fileName = `${tipoTitulo}_${orcamento.osNumber || '001'}_${cliente.nome || 'Cliente'}.pdf`;
+
+                const opt = {
+                    margin:       10,
+                    filename:     fileName,
+                    image:        { type: 'jpeg', quality: 0.98 },
+                    html2canvas:  { scale: 2, useCORS: true },
+                    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                };
+
+                // GERA O PDF E ABRE O COMPARTILHAMENTO
+                html2pdf().set(opt).from(pInfoWrapper).outputPdf('blob').then((pdfBlob) => {
+                    
+                    // Devolve o visual do App ao normal
+                    pInfoWrapper.style.display = 'none';
+                    appArea.style.display = 'block';
+                    navBar.style.display = 'flex';
+                    btnEl.innerHTML = btnOriginalText;
+                    btnEl.disabled = false;
+
+                    const file = new File([pdfBlob], fileName, { type: 'application/pdf' });
+                    
+                    // Se estiver no celular, usa o Menu de Compartilhar do sistema
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        navigator.share({
+                            files: [file],
+                            title: fileName,
+                            text: txtWpp
+                        }).catch((e) => {
+                            console.log('Compartilhamento fechado ou falhou', e);
+                            baixarEAbrirWpp(pdfBlob, fileName, linkWhatsApp);
+                        });
+                    } else {
+                        // Se estiver no PC, baixa o arquivo e tenta abrir o Zap Web
+                        baixarEAbrirWpp(pdfBlob, fileName, linkWhatsApp);
+                    }
+                }).catch(err => {
+                    console.error(err);
+                    pInfoWrapper.style.display = 'none';
+                    appArea.style.display = 'block';
+                    navBar.style.display = 'flex';
+                    btnEl.innerHTML = btnOriginalText;
+                    btnEl.disabled = false;
+                    alert("Erro ao criar PDF: " + err.message);
+                });
 
             } catch(e) { 
                 console.error("Erro PDF", e); 
-                alert("Falha ao gerar o PDF. Verifique se copiou todo o código HTML corretamente."); 
+                alert("Falha estrutural ao gerar PDF."); 
+            }
+        }
+
+        function baixarEAbrirWpp(blob, fileName, linkWpp) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            if(linkWpp) {
+                setTimeout(() => { window.open(linkWpp, '_blank'); }, 1000);
             }
         }
     </script>
