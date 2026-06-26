@@ -191,6 +191,8 @@
                 </div>
                 <div><label>Lista de Materiais (Opcional)</label><textarea id="orc-materiais" rows="2" placeholder="Ex: Disjuntores, 10m Cabo 6mm..."></textarea></div>
                 
+                <div><label>Observações Técnicas</label><textarea id="orc-obs" rows="2" placeholder="O serviço exige desmontagem..."></textarea></div>
+                
                 <div>
                     <label>Fotos (Câmera ou Galeria)</label>
                     <label for="orc-fotos" class="file-upload-btn">📸 Anexar Imagens</label>
@@ -269,10 +271,9 @@
         let catalogo = [];
         let fotosTemporarias = [];
 
-        // Garante que a interface destrave imediatamente, independente da internet
         document.addEventListener('DOMContentLoaded', async () => {
-            atualizarTelas(); // Destrava botões na hora
-            await initApp();  // Puxa do banco silenciosamente
+            atualizarTelas(); 
+            await initApp();  
         });
 
         async function initApp() {
@@ -358,7 +359,6 @@
             try {
                 const buscaEl = document.getElementById('busca-cliente');
                 const termo = buscaEl ? buscaEl.value.toLowerCase() : '';
-                // Proteção contra nomes nulos no banco de dados
                 const filtrados = (clientes || []).filter(c => c && c.nome && c.nome.toLowerCase().includes(termo));
                 const options = [...filtrados].sort((a, b) => a.nome.localeCompare(b.nome)).map(c => `<option value="${c.id}">${c.nome}</option>`).join('');
                 const orcCliente = document.getElementById('orc-cliente');
@@ -450,18 +450,31 @@
             } catch(e) { return "9999-001"; }
         }
 
+        // LÓGICA DE SALVAR ORÇAMENTO 100% BLINDADA E COM AVISOS
         async function salvarOrcamento() {
             try {
-                const clienteId = document.getElementById('orc-cliente').value;
-                const desc = document.getElementById('orc-desc').value;
-                const obs = document.getElementById('orc-obs').value;
-                const materiaisStatus = document.getElementById('orc-materiais-status').value;
-                const materiaisLista = document.getElementById('orc-materiais').value;
-                const valor = document.getElementById('orc-valor').value || 0;
+                const clienteIdEl = document.getElementById('orc-cliente');
+                const clienteId = clienteIdEl ? clienteIdEl.value : '';
+                
+                const descEl = document.getElementById('orc-desc');
+                const desc = descEl ? descEl.value : '';
+                
+                const obsEl = document.getElementById('orc-obs');
+                const obs = obsEl ? obsEl.value : '';
+                
+                const matStatusEl = document.getElementById('orc-materiais-status');
+                const materiaisStatus = matStatusEl ? matStatusEl.value : '';
+                
+                const matListaEl = document.getElementById('orc-materiais');
+                const materiaisLista = matListaEl ? matListaEl.value : '';
+                
+                const valorEl = document.getElementById('orc-valor');
+                const valor = valorEl ? valorEl.value : 0;
+                
                 const despesasEl = document.getElementById('orc-despesas');
                 const despesas = despesasEl ? despesasEl.value : 0;
 
-                if(!clienteId || !desc) return alert('Preencha o cliente e a descrição do serviço!');
+                if(!clienteId || !desc) return alert('Por favor, selecione o cliente e preencha a descrição do serviço!');
                 
                 const numOs = gerarNumeroOS();
                 const dataServ = new Date().toLocaleDateString('pt-BR');
@@ -476,29 +489,40 @@
                 orcamentos.push(novaOs);
                 atualizarTelas();
 
-                document.getElementById('orc-desc').value = ''; document.getElementById('orc-obs').value = ''; 
-                document.getElementById('orc-materiais').value = ''; document.getElementById('orc-valor').value = ''; 
-                if(despesasEl) despesasEl.value = ''; document.getElementById('orc-fotos').value = ''; 
-                fotosTemporarias = []; atualizarPreviewFotos();
+                if(descEl) descEl.value = ''; 
+                if(obsEl) obsEl.value = ''; 
+                if(matListaEl) matListaEl.value = ''; 
+                if(valorEl) valorEl.value = ''; 
+                if(despesasEl) despesasEl.value = ''; 
+                const fotosEl = document.getElementById('orc-fotos');
+                if(fotosEl) fotosEl.value = ''; 
                 
-                alert('Serviço salvo com sucesso! Indo para a aba de PDF/Zap.');
+                fotosTemporarias = []; 
+                atualizarPreviewFotos();
+                
+                alert('Serviço salvo com sucesso! Direcionando para a aba de PDF e WhatsApp.');
                 mudarAba('os');
 
                 if(supabaseClient) {
-                    const { data } = await supabaseClient.from('servicos').insert([{
+                    const { data, error } = await supabaseClient.from('servicos').insert([{
                         cliente_id: clienteId, os_number: numOs, descricao: desc, observacoes: obs,
                         materiais_status: materiaisStatus, materiais_lista: materiaisLista,
                         valor_servico: parseFloat(valor), despesas: parseFloat(despesas),
                         data_servico: dataServ, status: 'Pendente'
                     }]).select();
 
-                    if(data && data.length > 0) {
+                    if(error) {
+                        console.error("Erro interno do Supabase:", error);
+                    } else if(data && data.length > 0) {
                         const idx = orcamentos.findIndex(o => o.id === tempId);
                         if(idx > -1) orcamentos[idx].id = data[0].id;
                         atualizarTelas();
                     }
                 }
-            } catch(e) { console.error("Erro salvar orçamento", e); }
+            } catch(e) { 
+                console.error("Erro crítico ao salvar orçamento", e); 
+                alert('Houve um pequeno erro interno, mas o sistema tentará prosseguir.');
+            }
         }
 
         function atualizarDashboard() {
@@ -509,7 +533,6 @@
                 let faturamento = 0, despesas = 0;
                 
                 (orcamentos || []).forEach(o => {
-                    // Proteção garantindo que a data exista antes de cortar
                     if (o.status === 'Concluído' && o.data && o.data.substring(3) === mesAtual) {
                         faturamento += parseFloat(o.valor || 0);
                         despesas += parseFloat(o.despesas || 0);
@@ -539,7 +562,6 @@
 
                 const alertas = [];
                 (orcamentos || []).forEach(o => {
-                    // Proteção garantindo que o.data existe e é válida para split
                     if(o.status === 'Concluído' && o.data && o.data.includes('/')) {
                         const partes = o.data.split('/');
                         if(partes.length === 3) {
