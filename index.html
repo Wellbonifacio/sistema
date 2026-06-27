@@ -5,106 +5,134 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>BRvolts - Gestão em Nuvem</title>
     
-    <meta name="theme-color" content="#000000">
+    <meta name="theme-color" content="#000000" id="theme-color-meta">
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    
+    <link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22BRvolts%20Gest%C3%A3o%22%2C%22short_name%22%3A%22BRvolts%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23000000%22%2C%22theme_color%22%3A%22%23000000%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22https%3A%2F%2Fwww.brvolts.site%2Flogo1.png%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D">
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #000; color: #e5e7eb; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Inter', sans-serif; background-color: #000; color: #e5e7eb; -webkit-tap-highlight-color: transparent; transition: background-color 0.3s, color 0.3s; }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        .section { display: none; animation: fadeIn 0.3s ease-in-out; padding-bottom: 100px; }
+        .section { display: none; animation: fadeIn 0.3s ease-in-out; padding-bottom: 90px; }
         .section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        input, textarea, select { 
-            width: 100%; padding: 12px; background-color: #18181b; border: 1px solid #27272a; 
-            border-radius: 8px; color: #fff; font-family: inherit; margin-top: 4px; outline: none;
-            transition: border-color 0.2s;
+        /* Ajustes de Layout Responsivo (PC vs Mobile) */
+        #main-container { display: flex; flex-direction: column; min-height: 100vh; }
+        #app-area { flex: 1; width: 100%; max-width: 48rem; margin: 0 auto; padding: 1rem; }
+        
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; width: 100%; background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(10px); border-top: 1px solid #27272a; display: flex; justify-content: space-around; padding: 10px 5px 20px 5px; z-index: 50; transition: background-color 0.3s, border-color 0.3s; }
+        .nav-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 20%; background: transparent; color: #6b7280; border: none; font-size: 0.6rem; font-weight: 600; padding: 8px 0; border-radius: 8px; transition: all 0.2s; cursor: pointer; }
+        .nav-btn svg { width: 22px; height: 22px; margin: 0 auto 4px auto; }
+        .nav-btn:hover { color: #9ca3af; background: rgba(255,255,255,0.05); }
+        .nav-btn.active { color: #3b82f6; }
+
+        @media (min-width: 1024px) {
+            #main-container { flex-direction: row; }
+            .bottom-nav { top: 0; bottom: auto; left: 0; width: 260px; height: 100vh; flex-direction: column; justify-content: flex-start; align-items: flex-start; padding: 80px 15px 20px 15px; border-top: none; border-right: 1px solid #27272a; }
+            .nav-btn { width: 100%; flex-direction: row; justify-content: flex-start; padding: 15px 20px; font-size: 0.9rem; margin-bottom: 5px; }
+            .nav-btn svg { margin: 0 15px 0 0; }
+            #app-area { margin-left: 260px; max-width: 1000px; padding: 2rem; }
+            header { z-index: 60; }
+            .section { padding-bottom: 20px; }
         }
+
+        input, textarea, select { width: 100%; padding: 12px; background-color: #18181b; border: 1px solid #27272a; border-radius: 8px; color: #fff; font-family: inherit; margin-top: 4px; outline: none; transition: border-color 0.2s, background-color 0.3s, color 0.3s; }
         input:focus, textarea:focus, select:focus { border-color: #3b82f6; }
-        label { font-size: 0.875rem; font-weight: 600; color: #9ca3af; }
+        label { font-size: 0.875rem; font-weight: 600; color: #9ca3af; transition: color 0.3s; }
 
         input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type="number"] { -moz-appearance: textfield; }
         input[type="file"] { display: none; }
+        
         .file-upload-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: #27272a; border: 1px dashed #6b7280; color: #d1d5db; padding: 12px; border-radius: 8px; width: 100%; cursor: pointer; font-size: 0.9rem; font-weight: 600; margin-top: 4px; transition: background 0.2s; }
         .file-upload-btn:hover { background: #3f3f46; }
         
         #signature-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 100; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
         #sig-canvas { background: #fff; border-radius: 8px; touch-action: none; width: 100%; max-width: 500px; height: 300px; border: 2px solid #3b82f6; }
 
-        /* Ajuste do Menu Inferior para PC e Mobile */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; width: 100%; background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(10px); border-top: 1px solid #27272a; display: flex; justify-content: space-around; padding: 10px 5px 20px 5px; z-index: 50; }
-        .nav-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 20%; background: transparent; color: #6b7280; border: none; font-size: 0.6rem; font-weight: 600; padding: 8px 0; border-radius: 8px; transition: all 0.2s; cursor: pointer; }
-        .nav-btn svg { width: 22px; height: 22px; margin: 0 auto 4px auto; }
-        .nav-btn:hover { color: #9ca3af; background: rgba(255,255,255,0.05); }
-        .nav-btn.active { color: #3b82f6; }
-
-        @media (min-width: 768px) {
-            .bottom-nav { max-width: 48rem; margin: 0 auto; border-radius: 16px 16px 0 0; border-left: 1px solid #27272a; border-right: 1px solid #27272a; }
-            .nav-btn { font-size: 0.7rem; }
-        }
-
         .chip { display: inline-block; background: #27272a; color: #e5e7eb; padding: 6px 12px; border-radius: 16px; font-size: 0.75rem; margin: 4px 4px 0 0; cursor: pointer; border: 1px solid #3f3f46; transition: 0.2s; }
         .chip:hover { background: #3b82f6; border-color: #3b82f6; color: white; }
 
-        /* Toggle Button Customizado para as Fotos */
         .toggle-checkbox:checked { right: 0; border-color: #3b82f6; }
         .toggle-checkbox:checked + .toggle-label { background-color: #3b82f6; }
 
+        /* MODO CLARO (Light Mode) */
+        body.light-mode { background-color: #f3f4f6; color: #1f2937; }
+        body.light-mode header { background-color: #ffffff; border-bottom-color: #e5e7eb; }
+        body.light-mode header img { filter: invert(1); } /* Inverte a logo para preto */
+        body.light-mode .bottom-nav { background-color: #ffffff; border-color: #e5e7eb; }
+        body.light-mode .nav-btn { color: #6b7280; }
+        body.light-mode .nav-btn:hover { background: #f3f4f6; }
+        body.light-mode .nav-btn.active { color: #3b82f6; background: #eff6ff; }
+        body.light-mode .bg-zinc-900 { background-color: #ffffff; border-color: #e5e7eb; }
+        body.light-mode input, body.light-mode textarea, body.light-mode select { background-color: #f9fafb; border-color: #d1d5db; color: #111827; }
+        body.light-mode .text-white { color: #111827 !important; }
+        body.light-mode .text-gray-200 { color: #374151 !important; }
+        body.light-mode .text-gray-400 { color: #6b7280 !important; }
+        body.light-mode .border-zinc-800 { border-color: #e5e7eb; }
+        body.light-mode .bg-zinc-800 { background-color: #f3f4f6; border-color: #d1d5db; color: #111; }
+        body.light-mode .bg-zinc-700 { background-color: #e5e7eb; color: #111; }
+        body.light-mode .bg-zinc-700:hover { background-color: #d1d5db; }
+        body.light-mode .chip { background-color: #e5e7eb; color: #1f2937; border-color: #d1d5db; }
+        body.light-mode .file-upload-btn { background-color: #f9fafb; color: #374151; border-color: #d1d5db; }
+
+        /* Loader & Toasts */
+        #global-loader { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 9999; display: flex; justify-content: center; align-items: center; }
+        .spinner { border: 4px solid rgba(255,255,255,0.1); border-left-color: #3b82f6; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        #toast-container { position: fixed; top: 1rem; right: 1rem; z-index: 10000; display: flex; flex-direction: column; gap: 0.5rem; }
+        .toast { padding: 12px 20px; border-radius: 8px; color: white; font-weight: bold; font-size: 0.9rem; shadow: 0 4px 6px rgba(0,0,0,0.1); transform: translateY(-100%); opacity: 0; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast.success { background-color: #16a34a; }
+        .toast.error { background-color: #dc2626; }
+
+        /* ESTILOS DE IMPRESSÃO - TEXTO VETORIZADO REAL */
         #print-area { display: none; }
         @media print {
             @page { size: A4; margin: 8mm 10mm; }
             body * { visibility: hidden; }
             body { background: white; margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            
             #print-area, #print-area * { visibility: visible; }
             #print-area { display: block; position: absolute; left: 0; top: 0; width: 100%; font-family: 'Inter', sans-serif; color: #000; }
-            
             .doc-header { display: flex; justify-content: space-between; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px; }
             .doc-logo { width: 60%; }
-            .doc-logo img { max-height: 75px; width: auto; margin-bottom: 8px; }
+            .doc-logo img { max-height: 75px; width: auto; margin-bottom: 8px; filter: none !important; }
             .doc-logo h2 { margin: 0; font-size: 13pt; font-weight: normal; margin-bottom: 2px; }
             .doc-logo p { margin: 2px 0; font-size: 9pt; color: #444; }
-            
             .doc-contacts { width: 40%; text-align: right; font-size: 9pt; color: #444; display: flex; flex-direction: column; justify-content: flex-end; }
             .doc-contacts p { margin: 3px 0; display: flex; align-items: center; justify-content: flex-end; gap: 6px; }
             .doc-contacts svg { width: 16px; height: 16px; fill: currentColor; }
-            
             .doc-info { display: flex; justify-content: space-between; background-color: #f1f5f9; padding: 8px 15px; border-radius: 4px; margin-bottom: 15px; font-size: 10pt; border: 1px solid #cbd5e1; }
             .doc-info div p { margin: 2px 0; }
-            
             .doc-section { margin-bottom: 15px; }
             .doc-section h3 { margin: 0 0 5px 0; font-size: 12pt; border-bottom: 1px solid #cbd5e1; padding-bottom: 3px; color: #0f172a; }
             .doc-section p { margin: 0; font-size: 10pt; line-height: 1.4; text-align: justify; white-space: pre-wrap; }
-            
             .print-fotos-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
             .print-fotos-grid img { width: 48%; height: 200px; object-fit: cover; border: 1px solid #cbd5e1; border-radius: 6px; page-break-inside: avoid; }
-
             .payment-grid { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px; }
             .payment-conditions { width: 55%; }
             .pix-box { width: 40%; background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 10px; font-size: 9pt; }
             .pix-box h4 { margin: 0 0 5px 0; color: #166534; font-size: 10pt; display: flex; align-items: center; gap: 4px; }
             .pix-box p { margin: 2px 0; line-height: 1.3; }
-
             .doc-total { text-align: right; font-size: 12pt; font-weight: bold; margin-top: 5px; margin-bottom: 20px; background: #f8fafc; padding: 12px; border: 1px solid #cbd5e1; display: inline-block; float: right; border-radius: 6px; min-width: 250px; }
             .doc-total span { font-size: 16pt; color: #000; }
             .clearfix { clear: both; }
-
             .doc-termos { font-size: 8pt; color: #555; margin-top: 10px; border-top: 1px dashed #cbd5e1; padding-top: 10px; page-break-inside: avoid; }
             .doc-termos p { margin: 3px 0; text-align: justify; line-height: 1.3; }
-
             .doc-signatures { display: flex; justify-content: center; margin-top: 35px; text-align: center; page-break-inside: avoid; }
             .signature-box { width: 50%; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; }
             .signature-img { max-height: 60px; width: auto; margin-bottom: -10px; }
             .signature-line { border-top: 1px solid #000; padding-top: 5px; font-weight: bold; font-size: 10pt; width: 100%; margin-top: 30px; }
             .signature-sub { font-size: 8pt; color: #555; }
-
             .doc-footer { margin-top: 25px; text-align: center; font-size: 8pt; color: #555; border-top: 1px solid #cbd5e1; padding-top: 15px; page-break-inside: avoid; }
             .doc-footer p { margin: 4px 0; }
             .btn-avaliacao { display: inline-flex; align-items: center; justify-content: center; background-color: #ffffff; border: 1px solid #e2e8f0; color: #0f172a; text-decoration: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 10pt; margin-top: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
@@ -114,14 +142,24 @@
         }
 
         #mobile-print-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; }
-        .spinner { border: 4px solid rgba(255,255,255,0.1); border-left-color: #3b82f6; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 20px; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-    <header class="sticky top-0 z-40 bg-black/90 backdrop-blur-md border-b border-zinc-900 px-4 py-3 flex items-center justify-center">
-        <img src="https://www.brvolts.site/logo1.png" alt="BRvolts Logo" class="h-8 object-contain">
+    <div id="toast-container"></div>
+
+    <div id="global-loader">
+        <div class="flex flex-col items-center">
+            <div class="spinner mb-4"></div>
+            <p class="text-white font-bold tracking-widest">Sincronizando Nuvem...</p>
+        </div>
+    </div>
+
+    <header class="fixed top-0 w-full z-40 bg-black/90 backdrop-blur-md border-b border-zinc-900 px-4 py-3 flex items-center justify-between transition-colors duration-300">
+        <div class="w-8"></div> <img src="https://www.brvolts.site/logo1.png" alt="BRvolts Logo" class="h-8 object-contain">
+        <button onclick="toggleTheme()" class="text-gray-400 hover:text-white" title="Modo Claro/Escuro">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+        </button>
     </header>
 
     <div id="mobile-print-overlay">
@@ -130,151 +168,172 @@
         <p class="text-gray-300 text-sm">Na próxima tela, selecione a opção <strong>"Salvar como PDF"</strong>.</p>
     </div>
 
-    <div class="p-4 w-full max-w-3xl mx-auto" id="app-area">
+    <div id="main-container" class="pt-14">
         
-        <div id="dashboard" class="section active">
-            <h2 class="text-xl font-bold text-white mb-4">Visão Geral (Mês Atual)</h2>
-            <div class="grid grid-cols-2 gap-3 mb-4">
-                <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 shadow">
-                    <p class="text-xs text-gray-400 font-semibold mb-1">Faturamento Bruto</p>
-                    <p class="text-lg font-bold text-gray-200" id="dash-faturamento">R$ 0,00</p>
-                </div>
-                <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 shadow">
-                    <p class="text-xs text-gray-400 font-semibold mb-1">Despesas / Custos</p>
-                    <p class="text-lg font-bold text-red-400" id="dash-despesas">R$ 0,00</p>
-                </div>
-            </div>
-            <div class="bg-blue-900/20 p-4 rounded-xl border border-blue-900/50 shadow mb-6">
-                <p class="text-xs text-blue-400 font-semibold mb-1 uppercase tracking-wider">Lucro Líquido no Bolso</p>
-                <p class="text-3xl font-black text-blue-500" id="dash-lucro">R$ 0,00</p>
-            </div>
+        <nav class="bottom-nav" id="main-nav">
+            <button onclick="mudarAba('dashboard')" class="nav-btn active" id="tab-dashboard"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg> Início</button>
+            <button onclick="mudarAba('clientes')" class="nav-btn" id="tab-clientes"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg> Clientes</button>
+            <button onclick="mudarAba('catalogo')" class="nav-btn" id="tab-catalogo"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg> Catálogo</button>
+            <button onclick="mudarAba('orcamentos')" class="nav-btn" id="tab-orcamentos"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg> Serviço</button>
+            <button onclick="mudarAba('os')" class="nav-btn" id="tab-os"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg> PDF/Zap</button>
+        </nav>
 
-            <div id="alerta-manutencao" class="mb-6 hidden">
-                <h3 class="text-sm font-bold text-yellow-500 mb-2 uppercase flex items-center gap-2">⚠️ Revisão Anual Vencendo</h3>
-                <div class="bg-yellow-900/20 border border-yellow-700/50 rounded-xl overflow-hidden">
-                    <ul id="lista-alertas" class="divide-y divide-yellow-900/30 text-sm"></ul>
-                </div>
-            </div>
-
-            <h3 class="text-sm font-bold text-gray-400 mb-3 uppercase tracking-wider">Gestão de Status (Edição e Exclusão)</h3>
-            <div class="bg-zinc-900 rounded-xl border border-zinc-800 overflow-hidden mb-6">
-                <ul id="dash-lista-os" class="divide-y divide-zinc-800 text-sm"></ul>
-            </div>
-        </div>
-
-        <div id="clientes" class="section">
-            <h2 class="text-xl font-bold text-white mb-4">Novo Cliente</h2>
-            <div class="space-y-4">
-                <div><label>Nome do Cliente</label><input type="text" id="cli-nome" placeholder="Ex: Rafael Silva"></div>
-                <div><label>Telefone / WhatsApp</label><input type="tel" id="cli-tel" placeholder="21900000000"></div>
-                <div class="grid grid-cols-3 gap-2">
-                    <div class="col-span-1"><label>CEP</label><input type="tel" id="cli-cep" placeholder="Números" maxlength="8"></div>
-                    <div class="col-span-2"><label>Endereço Completo</label><input type="text" id="cli-end" placeholder="Rua, Número, Bairro"></div>
-                </div>
-                <button onclick="salvarCliente()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow-lg">Cadastrar Cliente</button>
-            </div>
-            <h3 class="text-sm font-bold text-gray-400 mt-8 mb-3 uppercase tracking-wider">Últimos 5 Cadastros</h3>
-            <div class="bg-zinc-900 rounded-xl border border-zinc-800 overflow-hidden"><ul id="lista-clientes" class="divide-y divide-zinc-800 text-sm"></ul></div>
-        </div>
-
-        <div id="catalogo" class="section">
-            <h2 class="text-xl font-bold text-white mb-4">Catálogo Padrão</h2>
-            <p class="text-sm text-gray-400 mb-4">Cadastre serviços e materiais para preencher a OS rapidamente.</p>
-            <div class="space-y-4 mb-6 p-4 bg-zinc-900 rounded-xl border border-zinc-800">
-                <div><label>Nome do Item</label><input type="text" id="cat-nome" placeholder="Ex: Instalação Wallbox 7kW"></div>
-                <div>
-                    <label>Tipo</label>
-                    <select id="cat-tipo">
-                        <option value="servico">Mão de Obra</option>
-                        <option value="material">Material</option>
-                    </select>
-                </div>
-                <button onclick="salvarItemCatalogo()" class="w-full bg-zinc-700 hover:bg-zinc-600 text-white font-bold py-3 rounded-lg">Adicionar ao Catálogo</button>
-            </div>
-            <h3 class="text-sm font-bold text-gray-400 mb-3 uppercase tracking-wider">Itens Salvos</h3>
-            <div class="bg-zinc-900 rounded-xl border border-zinc-800 overflow-hidden"><ul id="lista-catalogo" class="divide-y divide-zinc-800 text-sm"></ul></div>
-        </div>
-
-        <div id="orcamentos" class="section">
-            <h2 class="text-xl font-bold text-white mb-4" id="titulo-aba-servico">Descrever Serviço</h2>
-            <div class="space-y-4">
-                
-                <div>
-                    <label>Selecione o Cliente</label>
-                    <input type="text" id="busca-cliente" placeholder="🔍 Buscar cliente..." oninput="filtrarClientesDropdown()" class="mb-2 bg-zinc-800 text-sm border-zinc-700">
-                    <select id="orc-cliente"></select>
-                </div>
-
-                <div id="area-catalogo-chips" class="hidden pb-2 border-b border-zinc-800">
-                    <label>Auto-completar do Catálogo:</label>
-                    <div id="chips-catalogo"></div>
-                </div>
-                
-                <div><label>Mão de Obra (Serviços)</label><textarea id="orc-desc" rows="3" placeholder="Passagem de circuitos..."></textarea></div>
-                
-                <div>
-                    <label>Fornecimento de Materiais</label>
-                    <select id="orc-materiais-status">
-                        <option value="Por conta do cliente (Não inclusos)">Por conta do cliente (Não inclusos)</option>
-                        <option value="Fornecidos pela BRvolts (Inclusos no valor)">Fornecidos pela BRvolts (Inclusos no valor)</option>
-                    </select>
-                </div>
-                <div><label>Lista de Materiais (Opcional)</label><textarea id="orc-materiais" rows="2" placeholder="Ex: Disjuntores, 10m Cabo 6mm..."></textarea></div>
-                
-                <div><label>Observações Técnicas</label><textarea id="orc-obs" rows="2" placeholder="O serviço exige desmontagem..."></textarea></div>
-                
-                <div>
-                    <label>Fotos (Câmera ou Galeria)</label>
-                    <label for="orc-fotos" class="file-upload-btn">📸 Anexar Imagens</label>
-                    <input type="file" id="orc-fotos" accept="image/*" multiple onchange="processarFotos(event)">
-                    <div id="preview-fotos" class="flex flex-wrap gap-2 mt-2"></div>
-                </div>
-
-                <div><label>Valor Total do Serviço (R$)</label><input type="number" id="orc-valor" placeholder="1100.00" inputmode="decimal"></div>
-                
-                <div>
-                    <label class="text-red-400">Suas Despesas Internas (R$)</label>
-                    <p class="text-xs text-gray-500 mb-1">Combustível, ajudante, etc. (Não aparece no PDF).</p>
-                    <input type="number" id="orc-despesas" placeholder="0.00" class="border-red-900/50 bg-red-900/10" inputmode="decimal">
-                </div>
-
-                <button id="btn-salvar-os" onclick="salvarOrcamento()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow-lg mt-2">Salvar Orçamento</button>
-                <button id="btn-cancelar-edicao" onclick="cancelarEdicaoOS()" class="w-full bg-zinc-700 hover:bg-zinc-600 text-white font-bold py-3 px-4 rounded-lg mt-2 hidden">Cancelar Edição</button>
-            </div>
-        </div>
-
-        <div id="os" class="section">
-            <div class="text-center mb-6">
-                <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-900/30 text-blue-500 mb-3"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg></div>
-                <h2 class="text-xl font-bold text-white">Emitir e Enviar</h2>
-            </div>
+        <div id="app-area">
             
-            <div class="space-y-4">
-                <div><label>Selecione o Serviço Salvo</label><select id="os-orcamento" onchange="verificarAssinatura()"></select></div>
+            <div id="dashboard" class="section active">
+                <h2 class="text-xl font-bold text-white mb-4">Visão Geral (Mês Atual)</h2>
+                <div class="grid grid-cols-2 gap-3 mb-4">
+                    <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 shadow transition-colors">
+                        <p class="text-xs text-gray-400 font-semibold mb-1">Faturamento Bruto</p>
+                        <p class="text-lg font-bold text-green-500" id="dash-faturamento">R$ 0,00</p>
+                    </div>
+                    <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 shadow transition-colors">
+                        <p class="text-xs text-gray-400 font-semibold mb-1">Despesas / Custos</p>
+                        <p class="text-lg font-bold text-red-500" id="dash-despesas">R$ 0,00</p>
+                    </div>
+                </div>
+                <div class="bg-blue-900/30 p-4 rounded-xl border border-blue-900/50 shadow mb-6 transition-colors">
+                    <p class="text-xs text-blue-500 font-semibold mb-1 uppercase tracking-wider">Lucro Líquido no Bolso</p>
+                    <p class="text-3xl font-black text-blue-600" id="dash-lucro">R$ 0,00</p>
+                </div>
+
+                <div id="alerta-manutencao" class="mb-6 hidden">
+                    <h3 class="text-sm font-bold text-yellow-500 mb-2 uppercase flex items-center gap-2">⚠️ Revisão Anual Vencendo</h3>
+                    <div class="bg-yellow-900/20 border border-yellow-700/50 rounded-xl overflow-hidden">
+                        <ul id="lista-alertas" class="divide-y divide-yellow-900/30 text-sm"></ul>
+                    </div>
+                </div>
+
+                <div class="flex flex-col md:flex-row md:items-center justify-between mb-3 gap-2">
+                    <h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider">Gestão de Status</h3>
+                    <input type="text" id="busca-os" placeholder="🔍 Procurar OS ou Cliente..." oninput="atualizarDashboard()" class="text-sm py-2 px-3 md:w-64 bg-zinc-800 border-zinc-700">
+                </div>
                 
-                <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 flex items-center justify-between">
-                    <div>
-                        <p class="font-bold text-sm text-white">Assinatura Digital</p>
-                        <p class="text-xs text-gray-400" id="status-assinatura">Nenhuma assinatura vinculada.</p>
+                <div class="bg-zinc-900 rounded-xl border border-zinc-800 overflow-hidden mb-6 transition-colors">
+                    <div class="hidden md:flex p-3 bg-black/20 border-b border-zinc-800 text-xs font-bold text-gray-400">
+                        <div class="w-1/4">Nº OS</div>
+                        <div class="w-1/4">Cliente</div>
+                        <div class="w-1/4">Valor Total</div>
+                        <div class="w-1/4 text-center">Ações</div>
                     </div>
-                    <button onclick="abrirModalAssinatura()" class="bg-zinc-700 hover:bg-zinc-600 text-white text-xs font-bold py-2 px-4 rounded-lg transition">Coletar ✍️</button>
+                    <ul id="dash-lista-os" class="divide-y divide-zinc-800 text-sm"></ul>
                 </div>
+            </div>
 
-                <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 flex items-center justify-between">
-                    <div>
-                        <p class="font-bold text-sm text-white flex items-center gap-2">📸 Imagens de Registro</p>
-                        <p class="text-xs text-gray-400">Anexar as fotos ao final do PDF.</p>
+            <div id="clientes" class="section">
+                <h2 class="text-xl font-bold text-white mb-4">Novo Cliente</h2>
+                <div class="space-y-4 max-w-xl">
+                    <div><label>Nome do Cliente</label><input type="text" id="cli-nome" placeholder="Ex: Rafael Silva"></div>
+                    <div><label>Telefone / WhatsApp</label><input type="tel" id="cli-tel" placeholder="21900000000"></div>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div class="col-span-1"><label>CEP</label><input type="tel" id="cli-cep" placeholder="Números" maxlength="8"></div>
+                        <div class="col-span-2"><label>Endereço Completo</label><input type="text" id="cli-end" placeholder="Rua, Número, Bairro"></div>
                     </div>
-                    <div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
-                        <input type="checkbox" name="toggle" id="chk-incluir-fotos" checked class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer border-zinc-700 transition-all duration-300"/>
-                        <label for="chk-incluir-fotos" class="toggle-label block overflow-hidden h-6 rounded-full bg-zinc-700 cursor-pointer transition-colors duration-300"></label>
-                    </div>
+                    <button onclick="salvarCliente()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow-lg">Cadastrar Cliente</button>
                 </div>
+                <h3 class="text-sm font-bold text-gray-400 mt-8 mb-3 uppercase tracking-wider">Últimos Cadastros</h3>
+                <div class="bg-zinc-900 rounded-xl border border-zinc-800 overflow-hidden max-w-xl transition-colors"><ul id="lista-clientes" class="divide-y divide-zinc-800 text-sm"></ul></div>
+            </div>
 
-                <div class="grid grid-cols-1 gap-3 pt-2 border-t border-zinc-800 mt-4">
-                    <button onclick="imprimirEEnviar('Orçamento')" class="w-full bg-[#128C7E] hover:bg-[#075E54] text-white font-bold py-4 rounded-lg flex justify-center items-center gap-2 transition">📄 Gerar PDF Textual (Orçamento)</button>
-                    <button onclick="imprimirEEnviar('OS')" class="w-full bg-[#128C7E] hover:bg-[#075E54] text-white font-bold py-4 rounded-lg flex justify-center items-center gap-2 transition">📋 Gerar PDF Textual (OS)</button>
-                    <button onclick="imprimirEEnviar('Recibo')" class="w-full bg-[#128C7E] hover:bg-[#075E54] text-white font-bold py-4 rounded-lg flex justify-center items-center gap-2 transition">💰 Gerar PDF Textual (Recibo)</button>
+            <div id="catalogo" class="section">
+                <h2 class="text-xl font-bold text-white mb-4">Catálogo Padrão</h2>
+                <p class="text-sm text-gray-400 mb-4">Cadastre serviços e materiais para preencher a OS rapidamente.</p>
+                <div class="space-y-4 mb-6 p-4 bg-zinc-900 rounded-xl border border-zinc-800 max-w-xl transition-colors">
+                    <div><label>Nome do Item</label><input type="text" id="cat-nome" placeholder="Ex: Instalação Wallbox 7kW"></div>
+                    <div>
+                        <label>Tipo</label>
+                        <select id="cat-tipo">
+                            <option value="servico">Mão de Obra</option>
+                            <option value="material">Material</option>
+                        </select>
+                    </div>
+                    <button onclick="salvarItemCatalogo()" class="w-full bg-zinc-700 hover:bg-zinc-600 text-white font-bold py-3 rounded-lg transition-colors">Adicionar ao Catálogo</button>
+                </div>
+                <h3 class="text-sm font-bold text-gray-400 mb-3 uppercase tracking-wider">Itens Salvos</h3>
+                <div class="bg-zinc-900 rounded-xl border border-zinc-800 overflow-hidden max-w-xl transition-colors"><ul id="lista-catalogo" class="divide-y divide-zinc-800 text-sm"></ul></div>
+            </div>
+
+            <div id="orcamentos" class="section">
+                <h2 class="text-xl font-bold text-white mb-4" id="titulo-aba-servico">Descrever Serviço</h2>
+                <div class="space-y-4 max-w-2xl">
+                    
+                    <div>
+                        <label>Selecione o Cliente</label>
+                        <input type="text" id="busca-cliente" placeholder="🔍 Buscar cliente..." oninput="filtrarClientesDropdown()" class="mb-2 bg-zinc-800 text-sm border-zinc-700">
+                        <select id="orc-cliente"></select>
+                    </div>
+
+                    <div id="area-catalogo-chips" class="hidden pb-2 border-b border-zinc-800">
+                        <label>Auto-completar do Catálogo:</label>
+                        <div id="chips-catalogo"></div>
+                    </div>
+                    
+                    <div><label>Mão de Obra (Serviços)</label><textarea id="orc-desc" rows="3" placeholder="Passagem de circuitos..."></textarea></div>
+                    
+                    <div>
+                        <label>Fornecimento de Materiais</label>
+                        <select id="orc-materiais-status">
+                            <option value="Por conta do cliente (Não inclusos)">Por conta do cliente (Não inclusos)</option>
+                            <option value="Fornecidos pela BRvolts (Inclusos no valor)">Fornecidos pela BRvolts (Inclusos no valor)</option>
+                        </select>
+                    </div>
+                    <div><label>Lista de Materiais (Opcional)</label><textarea id="orc-materiais" rows="2" placeholder="Ex: Disjuntores, 10m Cabo 6mm..."></textarea></div>
+                    
+                    <div><label>Observações Técnicas</label><textarea id="orc-obs" rows="2" placeholder="O serviço exige desmontagem..."></textarea></div>
+                    
+                    <div>
+                        <label>Fotos do Serviço</label>
+                        <label for="orc-fotos" class="file-upload-btn">📸 Tirar ou Anexar Imagens</label>
+                        <input type="file" id="orc-fotos" accept="image/*" capture="environment" multiple onchange="processarFotos(event)">
+                        <div id="preview-fotos" class="flex flex-wrap gap-2 mt-2"></div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div><label>Valor Total do Serviço (R$)</label><input type="number" id="orc-valor" placeholder="1100.00" inputmode="decimal"></div>
+                        <div>
+                            <label class="text-red-500">Suas Despesas Internas (R$)</label>
+                            <input type="number" id="orc-despesas" placeholder="0.00" class="border-red-900/50 bg-red-900/10 focus:border-red-500 text-red-500 font-bold" inputmode="decimal">
+                        </div>
+                    </div>
+
+                    <button id="btn-salvar-os" onclick="salvarOrcamento()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow-lg mt-4 transition">Salvar Orçamento (Ctrl+S)</button>
+                    <button id="btn-cancelar-edicao" onclick="cancelarEdicaoOS()" class="w-full bg-zinc-700 hover:bg-zinc-600 text-white font-bold py-3 px-4 rounded-lg mt-2 hidden transition">Cancelar Edição</button>
+                </div>
+            </div>
+
+            <div id="os" class="section">
+                <div class="mb-6 flex items-center gap-3">
+                    <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-900/30 text-blue-500"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg></div>
+                    <h2 class="text-xl font-bold text-white">Emitir e Enviar</h2>
+                </div>
+                
+                <div class="space-y-4 max-w-xl">
+                    <div><label>Selecione o Serviço Salvo</label><select id="os-orcamento" onchange="verificarAssinatura()"></select></div>
+                    
+                    <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 flex items-center justify-between transition-colors">
+                        <div>
+                            <p class="font-bold text-sm text-white">Assinatura Digital</p>
+                            <p class="text-xs text-gray-400" id="status-assinatura">Nenhuma assinatura vinculada.</p>
+                        </div>
+                        <button onclick="abrirModalAssinatura()" class="bg-zinc-700 hover:bg-zinc-600 text-white text-xs font-bold py-2 px-4 rounded-lg transition">Coletar ✍️</button>
+                    </div>
+
+                    <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 flex items-center justify-between transition-colors">
+                        <div>
+                            <p class="font-bold text-sm text-white flex items-center gap-2">📸 Imagens de Registro</p>
+                            <p class="text-xs text-gray-400">Anexar as fotos ao final do PDF.</p>
+                        </div>
+                        <div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+                            <input type="checkbox" name="toggle" id="chk-incluir-fotos" checked class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer border-zinc-700 transition-all duration-300"/>
+                            <label for="chk-incluir-fotos" class="toggle-label block overflow-hidden h-6 rounded-full bg-zinc-700 cursor-pointer transition-colors duration-300"></label>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 pt-4 border-t border-zinc-800 mt-4">
+                        <button onclick="imprimirEEnviar('Orçamento')" class="w-full bg-[#128C7E] hover:bg-[#075E54] text-white text-sm font-bold py-4 rounded-lg flex justify-center items-center gap-2 transition shadow">📄 Enviar Orçamento</button>
+                        <button onclick="imprimirEEnviar('OS')" class="w-full bg-[#128C7E] hover:bg-[#075E54] text-white text-sm font-bold py-4 rounded-lg flex justify-center items-center gap-2 transition shadow">📋 Enviar OS</button>
+                        <button onclick="imprimirEEnviar('Recibo')" class="w-full bg-[#128C7E] hover:bg-[#075E54] text-white text-sm font-bold py-4 rounded-lg flex justify-center items-center gap-2 transition shadow">💰 Enviar Recibo</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -282,21 +341,14 @@
 
     <div id="signature-modal">
         <h3 class="text-white font-bold mb-4 text-lg">Assinatura do Cliente (Opcional)</h3>
+        <p class="text-gray-400 text-xs mb-2">Pressione ESC para fechar</p>
         <canvas id="sig-canvas"></canvas>
         <div class="flex gap-4 mt-6 w-full max-w-sm">
-            <button onclick="fecharModalAssinatura()" class="flex-1 bg-zinc-700 hover:bg-zinc-600 text-white py-3 rounded-lg font-bold">Cancelar</button>
-            <button onclick="limparAssinatura()" class="flex-1 bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg font-bold">Limpar</button>
-            <button onclick="salvarAssinatura()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-bold">Salvar</button>
+            <button onclick="fecharModalAssinatura()" class="flex-1 bg-zinc-700 hover:bg-zinc-600 text-white py-3 rounded-lg font-bold transition">Cancelar</button>
+            <button onclick="limparAssinatura()" class="flex-1 bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg font-bold transition">Limpar</button>
+            <button onclick="salvarAssinatura()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-bold transition">Salvar</button>
         </div>
     </div>
-
-    <nav class="bottom-nav">
-        <button onclick="mudarAba('dashboard')" class="nav-btn active" id="tab-dashboard"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg> Início</button>
-        <button onclick="mudarAba('clientes')" class="nav-btn" id="tab-clientes"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg> Clientes</button>
-        <button onclick="mudarAba('catalogo')" class="nav-btn" id="tab-catalogo"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg> Catálogo</button>
-        <button onclick="mudarAba('orcamentos')" class="nav-btn" id="tab-orcamentos"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg> Serviço</button>
-        <button onclick="mudarAba('os')" class="nav-btn" id="tab-os"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg> PDF/Zap</button>
-    </nav>
 
     <div id="print-area">
         <div class="doc-header">
@@ -370,9 +422,64 @@
         let orcamentos = [];
         let catalogo = [];
         let fotosTemporarias = [];
-        let editandoOSId = null; // Variável para controlar a edição
+        let editandoOSId = null;
+
+        // Função Profissional de Toast (Aviso)
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const color = type === 'success' ? 'bg-green-600' : type === 'error' ? 'bg-red-600' : 'bg-blue-600';
+            toast.className = `toast ${color}`;
+            toast.innerText = message;
+            container.appendChild(toast);
+            
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Modo Claro / Escuro
+        function toggleTheme() {
+            const isLight = document.body.classList.toggle('light-mode');
+            const metaTheme = document.getElementById('theme-color-meta');
+            if (isLight) {
+                localStorage.setItem('brvolts-theme', 'light');
+                metaTheme.setAttribute('content', '#ffffff');
+            } else {
+                localStorage.setItem('brvolts-theme', 'dark');
+                metaTheme.setAttribute('content', '#000000');
+            }
+        }
+
+        // Esconde Menu no Mobile quando o Teclado sobe
+        const initialHeight = window.innerHeight;
+        window.addEventListener('resize', () => {
+            if (window.innerWidth < 1024) {
+                const nav = document.getElementById('main-nav');
+                if (window.innerHeight < initialHeight - 100) {
+                    nav.style.display = 'none';
+                } else {
+                    nav.style.display = 'flex';
+                }
+            }
+        });
+
+        // Atalhos de Teclado
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                const activeSection = document.querySelector('.section.active').id;
+                if(activeSection === 'orcamentos') salvarOrcamento();
+                else if(activeSection === 'clientes') salvarCliente();
+                else if(activeSection === 'catalogo') salvarItemCatalogo();
+            }
+            if (e.key === 'Escape') fecharModalAssinatura();
+        });
 
         document.addEventListener('DOMContentLoaded', async () => {
+            if(localStorage.getItem('brvolts-theme') === 'light') toggleTheme();
             atualizarTelas(); 
             await initApp();  
         });
@@ -392,12 +499,13 @@
                             id: s.id, osNumber: s.os_number || '', clienteId: s.cliente_id, desc: s.descricao || '', obs: s.observacoes || '',
                             materiaisStatus: s.materiais_status || '', materiaisLista: s.materiais_lista || '', valor: s.valor_servico || 0,
                             despesas: s.despesas || 0, status: s.status || 'Pendente', data: s.data_servico || '', assinaturaCliente: s.assinatura_cliente || '',
-                            fotos: s.fotos || [] // Garante que puxa o array
+                            fotos: s.fotos || []
                         }));
                     }
                     if(resCat && resCat.data) catalogo = resCat.data;
-                } catch(e) { console.error("Erro Supabase:", e); }
+                } catch(e) { console.error("Erro Supabase:", e); showToast("Erro ao sincronizar nuvem", "error"); }
             }
+            document.getElementById('global-loader').style.display = 'none';
             atualizarTelas();
         }
 
@@ -408,7 +516,7 @@
                 document.getElementById(aba).classList.add('active');
                 document.getElementById('tab-' + aba).classList.add('active');
                 window.scrollTo(0, 0);
-            } catch(e) { console.error("Erro UI:", e); }
+            } catch(e) {}
             atualizarTelas();
         }
 
@@ -434,7 +542,7 @@
                 const nome = document.getElementById('cli-nome').value;
                 const tel = document.getElementById('cli-tel').value;
                 const end = document.getElementById('cli-end').value;
-                if(!nome) return alert('Preencha pelo menos o nome do cliente!');
+                if(!nome) return showToast('Preencha o nome do cliente!', 'error');
                 
                 const tempId = Date.now();
                 clientes.push({ id: tempId, nome, tel, end });
@@ -452,8 +560,8 @@
                 document.getElementById('cli-nome').value = ''; document.getElementById('cli-tel').value = ''; 
                 const cepE = document.getElementById('cli-cep'); if(cepE) cepE.value = ''; 
                 document.getElementById('cli-end').value = '';
-                alert('Cliente cadastrado com sucesso!');
-            } catch(e) { console.error("Erro salvar cliente", e); }
+                showToast('Cliente cadastrado com sucesso!');
+            } catch(e) { showToast("Erro salvar cliente", "error"); }
         }
 
         function filtrarClientesDropdown() {
@@ -464,14 +572,14 @@
                 const options = [...filtrados].sort((a, b) => a.nome.localeCompare(b.nome)).map(c => `<option value="${c.id}">${c.nome}</option>`).join('');
                 const orcCliente = document.getElementById('orc-cliente');
                 if(orcCliente) orcCliente.innerHTML = '<option value="" disabled selected>Selecione o cliente abaixo...</option>' + options;
-            } catch(e) { console.error("Erro filtrar", e); }
+            } catch(e) {}
         }
 
         async function salvarItemCatalogo() {
             try {
                 const nome = document.getElementById('cat-nome').value;
                 const tipo = document.getElementById('cat-tipo').value;
-                if(!nome) return alert("Preencha o nome do item!");
+                if(!nome) return showToast("Preencha o nome do item!", "error");
                 
                 const tempId = Date.now();
                 catalogo.push({ id: tempId, nome, tipo });
@@ -486,7 +594,8 @@
                     }
                 }
                 document.getElementById('cat-nome').value = '';
-            } catch(e) { console.error(e); }
+                showToast("Item adicionado ao catálogo!");
+            } catch(e) { showToast("Erro no catálogo", "error"); }
         }
 
         async function removerItemCatalogo(id) {
@@ -494,7 +603,8 @@
                 catalogo = catalogo.filter(c => c.id !== id);
                 atualizarTelas();
                 if(supabaseClient) await supabaseClient.from('catalogo').delete().eq('id', id);
-            } catch(e) { console.error(e); }
+                showToast("Item removido.");
+            } catch(e) {}
         }
 
         function adicionarDoCatalogo(id) {
@@ -508,7 +618,8 @@
                     const matArea = document.getElementById('orc-materiais');
                     if(matArea) matArea.value += (matArea.value ? '\n+ ' : '') + item.nome;
                 }
-            } catch(e) { console.error(e); }
+                showToast("Adicionado ao texto", "info");
+            } catch(e) {}
         }
 
         function processarFotos(event) {
@@ -532,7 +643,7 @@
                     }
                     reader.readAsDataURL(file);
                 }
-            } catch(e) { console.error(e); }
+            } catch(e) {}
         }
 
         function atualizarPreviewFotos() {
@@ -551,7 +662,6 @@
             } catch(e) { return "9999-001"; }
         }
 
-        // Lógica Unificada para Salvar (Novo) ou Atualizar (Edição)
         async function salvarOrcamento() {
             try {
                 const clienteIdEl = document.getElementById('orc-cliente');
@@ -569,10 +679,9 @@
                 const despesasEl = document.getElementById('orc-despesas');
                 const despesas = despesasEl ? despesasEl.value : 0;
 
-                if(!clienteId || !desc) return alert('Por favor, selecione o cliente e preencha a descrição do serviço!');
+                if(!clienteId || !desc) return showToast('Selecione o cliente e preencha a descrição!', 'error');
                 
                 if(editandoOSId) {
-                    // MODO EDIÇÃO
                     const os = orcamentos.find(o => String(o.id) === String(editandoOSId));
                     if(os) {
                         os.clienteId = parseInt(clienteId);
@@ -586,7 +695,7 @@
                     }
                     
                     atualizarTelas();
-                    alert('Orçamento atualizado com sucesso!');
+                    showToast('Orçamento atualizado!');
                     limparFormularioOS();
                     mudarAba('os');
 
@@ -594,13 +703,11 @@
                         await supabaseClient.from('servicos').update({
                             cliente_id: clienteId, descricao: desc, observacoes: obs,
                             materiais_status: materiaisStatus, materiais_lista: materiaisLista,
-                            valor_servico: parseFloat(valor), despesas: parseFloat(despesas),
-                            // Se tivesse coluna de fotos no supabase, atualizaria aqui
+                            valor_servico: parseFloat(valor), despesas: parseFloat(despesas)
                         }).eq('id', editandoOSId);
                     }
                     
                 } else {
-                    // MODO CRIAÇÃO NOVO
                     const numOs = gerarNumeroOS();
                     const dataServ = new Date().toLocaleDateString('pt-BR');
                     const tempId = Date.now();
@@ -614,7 +721,7 @@
                     orcamentos.push(novaOs);
                     atualizarTelas();
                     limparFormularioOS();
-                    alert('Serviço salvo com sucesso! Direcionando para a aba de PDF e WhatsApp.');
+                    showToast('Serviço salvo! Gerar PDF.');
                     mudarAba('os');
 
                     if(supabaseClient) {
@@ -625,25 +732,21 @@
                             data_servico: dataServ, status: 'Pendente'
                         }]).select();
 
-                        if(error) console.error("Erro interno do Supabase:", error);
-                        else if(data && data.length > 0) {
+                        if(!error && data && data.length > 0) {
                             const idx = orcamentos.findIndex(o => o.id === tempId);
                             if(idx > -1) orcamentos[idx].id = data[0].id;
                             atualizarTelas();
                         }
                     }
                 }
-            } catch(e) { console.error("Erro crítico ao salvar", e); }
+            } catch(e) { showToast("Erro crítico", "error"); }
         }
 
-        // Funções Extras de Edição/Exclusão
         function editarOS(id) {
             const os = orcamentos.find(o => String(o.id) === String(id));
             if(!os) return;
-            
             editandoOSId = os.id;
             
-            // Puxa os dados para a tela
             document.getElementById('orc-cliente').value = os.clienteId;
             document.getElementById('orc-desc').value = os.desc;
             document.getElementById('orc-materiais-status').value = os.materiaisStatus;
@@ -664,13 +767,13 @@
 
         function cancelarEdicaoOS() {
             limparFormularioOS();
-            alert("Edição cancelada.");
+            showToast("Edição cancelada.");
         }
 
         function limparFormularioOS() {
             editandoOSId = null;
             document.getElementById('titulo-aba-servico').innerText = "Descrever Serviço";
-            document.getElementById('btn-salvar-os').innerText = "Salvar Orçamento";
+            document.getElementById('btn-salvar-os').innerText = "Salvar Orçamento (Ctrl+S)";
             document.getElementById('btn-cancelar-edicao').classList.add('hidden');
 
             const ids = ['orc-desc', 'orc-obs', 'orc-materiais', 'orc-valor', 'orc-despesas', 'orc-fotos'];
@@ -680,15 +783,14 @@
         }
 
         async function excluirOS(id) {
-            if(!confirm("Tem certeza que deseja excluir permanentemente este documento? Essa ação não pode ser desfeita.")) return;
+            if(!confirm("Deseja excluir permanentemente este documento? Essa ação não pode ser desfeita.")) return;
             
             orcamentos = orcamentos.filter(o => String(o.id) !== String(id));
             atualizarTelas();
+            showToast("OS Excluída.", "info");
             
             if(supabaseClient) {
-                try {
-                    await supabaseClient.from('servicos').delete().eq('id', id);
-                } catch(e) { console.error("Erro ao excluir do banco", e); }
+                try { await supabaseClient.from('servicos').delete().eq('id', id); } catch(e) {}
             }
         }
 
@@ -712,29 +814,39 @@
                 const pLucro = document.getElementById('dash-lucro');
                 if(pLucro) pLucro.innerText = `R$ ${(faturamento - despesas).toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
 
-                const ultimosOS = (orcamentos || []).slice(-10).reverse();
+                const termoPesquisa = (document.getElementById('busca-os')?.value || '').toLowerCase();
+                
+                let ultimosOS = (orcamentos || []).filter(o => {
+                    const c = (clientes || []).find(cli => String(cli.id) === String(o.clienteId));
+                    const nomeStr = c ? c.nome.toLowerCase() : '';
+                    const osStr = o.osNumber ? o.osNumber.toLowerCase() : '';
+                    return nomeStr.includes(termoPesquisa) || osStr.includes(termoPesquisa);
+                }).slice(-15).reverse();
+
                 const listaOsEl = document.getElementById('dash-lista-os');
                 if(listaOsEl) {
-                    // Atualizei a UI da lista para acomodar os botões de edição e exclusão
-                    listaOsEl.innerHTML = ultimosOS.length === 0 ? '<li class="p-4 text-gray-500 text-center text-xs">Nenhuma OS gerada.</li>' : ultimosOS.map(o => {
+                    listaOsEl.innerHTML = ultimosOS.length === 0 ? '<li class="p-4 text-gray-500 text-center text-xs">Nenhum registo encontrado.</li>' : ultimosOS.map(o => {
                         const c = (clientes || []).find(cli => String(cli.id) === String(o.clienteId));
                         const cNome = c && c.nome ? c.nome : 'Removido';
                         const osNum = o.osNumber || 'S/N';
-                        return `<li class="p-3 flex flex-col hover:bg-zinc-800 transition gap-2 border-zinc-800">
-                            <div class="flex justify-between items-start">
-                                <div class="flex-1 min-w-0">
-                                    <p class="font-bold text-gray-200 text-sm truncate">${osNum}</p>
-                                    <p class="text-xs text-gray-400 truncate">${cNome}</p>
-                                </div>
+                        return `<li class="p-3 flex flex-col md:flex-row md:items-center hover:bg-zinc-800 transition gap-2 border-zinc-800 md:border-b">
+                            <div class="flex-1 min-w-0 md:w-1/4">
+                                <p class="font-bold text-gray-200 text-sm truncate">${osNum}</p>
+                                <p class="text-xs text-gray-400 truncate md:hidden">${cNome}</p>
+                            </div>
+                            <div class="hidden md:block flex-1 min-w-0 md:w-1/4"><p class="text-sm text-gray-300 truncate">${cNome}</p></div>
+                            <div class="hidden md:block flex-1 min-w-0 md:w-1/4"><p class="text-sm font-bold text-green-500">R$ ${(o.valor||0).toLocaleString('pt-BR', {minimumFractionDigits:2})}</p></div>
+                            
+                            <div class="flex justify-between items-center md:w-1/4 gap-3 border-t border-zinc-800/50 md:border-0 pt-2 md:pt-0">
                                 <select onchange="mudarStatusOS(${o.id}, this.value)" class="text-[10px] p-1.5 bg-zinc-800 border border-zinc-700 rounded text-white w-24 shrink-0 outline-none">
                                     <option value="Pendente" ${o.status === 'Pendente' ? 'selected' : ''}>🟡 Pendente</option>
                                     <option value="Aprovado" ${o.status === 'Aprovado' ? 'selected' : ''}>🟢 Aprovado</option>
                                     <option value="Concluído" ${o.status === 'Concluído' ? 'selected' : ''}>🔵 Concluído</option>
                                 </select>
-                            </div>
-                            <div class="flex justify-end gap-3 mt-1 border-t border-zinc-800/50 pt-2">
-                                <button onclick="editarOS(${o.id})" class="text-xs text-blue-400 hover:text-blue-300 font-semibold">Editar ✏️</button>
-                                <button onclick="excluirOS(${o.id})" class="text-xs text-red-500 hover:text-red-400 font-semibold">Excluir 🗑️</button>
+                                <div class="flex gap-4">
+                                    <button onclick="editarOS(${o.id})" class="text-sm text-blue-400 hover:text-blue-300 font-semibold" title="Editar">✏️</button>
+                                    <button onclick="excluirOS(${o.id})" class="text-sm text-red-500 hover:text-red-400 font-semibold" title="Excluir">🗑️</button>
+                                </div>
                             </div>
                         </li>`;
                     }).join('');
@@ -773,26 +885,27 @@
                 const os = orcamentos.find(o => String(o.id) === String(id));
                 if(os) os.status = st;
                 atualizarDashboard();
+                showToast("Status atualizado", "info");
                 if(supabaseClient) await supabaseClient.from('servicos').update({status: st}).eq('id', id);
-            } catch(e) { console.error(e); }
+            } catch(e) {}
         }
 
         function atualizarTelas() {
-            try { atualizarDashboard(); } catch(e) { console.error(e); }
+            try { atualizarDashboard(); } catch(e) {}
             
             try {
                 const listaClientes = document.getElementById('lista-clientes');
                 if(listaClientes) {
                     if((clientes || []).length === 0) listaClientes.innerHTML = '<li class="p-4 text-gray-500 text-center">Nenhum cliente cadastrado.</li>';
-                    else listaClientes.innerHTML = clientes.slice(-5).reverse().map(c => `<li class="p-3 flex justify-between items-center hover:bg-zinc-800 transition"><div class="min-w-0"><p class="font-bold text-gray-200 truncate">${c.nome}</p><p class="text-xs text-gray-500">${c.tel || 'Sem telefone'}</p></div></li>`).join('');
+                    else listaClientes.innerHTML = clientes.slice(-5).reverse().map(c => `<li class="p-3 flex justify-between items-center hover:bg-zinc-800 transition border-zinc-800 border-b last:border-0"><div class="min-w-0"><p class="font-bold text-gray-200 truncate">${c.nome}</p><p class="text-xs text-gray-500">${c.tel || 'Sem telefone'}</p></div></li>`).join('');
                 }
-            } catch(e) { console.error(e); }
+            } catch(e) {}
             
             filtrarClientesDropdown();
             
             try {
                 const listaCat = document.getElementById('lista-catalogo');
-                if(listaCat) listaCat.innerHTML = (catalogo || []).length === 0 ? '<li class="p-4 text-gray-500 text-center text-xs">Nenhum item salvo no catálogo.</li>' : catalogo.map(c => `<li class="p-3 flex justify-between items-center hover:bg-zinc-800 transition"><div class="min-w-0"><p class="font-bold text-gray-200 truncate">${c.nome}</p><p class="text-xs text-gray-500">${c.tipo === 'servico' ? 'Mão de Obra' : 'Material'}</p></div><button onclick="removerItemCatalogo(${c.id})" class="text-red-500 font-bold px-3 shrink-0">X</button></li>`).join('');
+                if(listaCat) listaCat.innerHTML = (catalogo || []).length === 0 ? '<li class="p-4 text-gray-500 text-center text-xs">Nenhum item salvo.</li>' : catalogo.map(c => `<li class="p-3 flex justify-between items-center hover:bg-zinc-800 transition border-zinc-800 border-b last:border-0"><div class="min-w-0"><p class="font-bold text-gray-200 truncate">${c.nome}</p><p class="text-xs text-gray-500">${c.tipo === 'servico' ? 'Mão de Obra' : 'Material'}</p></div><button onclick="removerItemCatalogo(${c.id})" class="text-red-500 font-bold px-3 shrink-0">X</button></li>`).join('');
 
                 const areaChips = document.getElementById('area-catalogo-chips');
                 const chipsCat = document.getElementById('chips-catalogo');
@@ -802,12 +915,12 @@
                         chipsCat.innerHTML = catalogo.map(c => `<span class="chip" onclick="adicionarDoCatalogo(${c.id})">+ ${c.nome}</span>`).join('');
                     } else { areaChips.classList.add('hidden'); }
                 }
-            } catch(e) { console.error(e); }
+            } catch(e) {}
 
             try {
                 const selectOS = document.getElementById('os-orcamento');
                 if(selectOS) {
-                    const optionsOrcamentos = (orcamentos || []).slice(-10).reverse().map(o => {
+                    const optionsOrcamentos = (orcamentos || []).slice(-15).reverse().map(o => {
                         const c = (clientes || []).find(cli => String(cli.id) === String(o.clienteId));
                         const cNome = c && c.nome ? c.nome : 'Removido';
                         const osNum = o.osNumber || 'S/N';
@@ -816,7 +929,7 @@
                     selectOS.innerHTML = '<option value="" disabled selected>Escolha o serviço salvo...</option>' + optionsOrcamentos;
                 }
                 verificarAssinatura();
-            } catch(e) { console.error(e); }
+            } catch(e) {}
         }
 
         const sigCanvas = document.getElementById('sig-canvas');
@@ -838,11 +951,11 @@
         function abrirModalAssinatura() {
             try {
                 const id = document.getElementById('os-orcamento').value;
-                if(!id) return alert('Selecione uma OS na lista primeiro!');
+                if(!id) return showToast('Selecione uma OS na lista!', 'error');
                 document.getElementById('signature-modal').style.display = 'flex';
                 resizeCanvas(); sigCtx.lineWidth = 2; sigCtx.lineCap = 'round'; sigCtx.strokeStyle = '#000';
                 limparAssinatura();
-            } catch(e) { console.error(e); }
+            } catch(e) {}
         }
         function fecharModalAssinatura() { const mod = document.getElementById('signature-modal'); if(mod) mod.style.display = 'none'; }
         function limparAssinatura() { if(sigCtx) sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height); }
@@ -855,10 +968,10 @@
                 if(os && sigCanvas) {
                     const dataUri = sigCanvas.toDataURL('image/png');
                     os.assinaturaCliente = dataUri;
-                    fecharModalAssinatura(); verificarAssinatura(); alert('Assinatura coletada com sucesso!');
+                    fecharModalAssinatura(); verificarAssinatura(); showToast('Assinatura salva!');
                     if(supabaseClient) await supabaseClient.from('servicos').update({assinatura_cliente: dataUri}).eq('id', idEl.value);
                 }
-            } catch(e) { console.error(e); }
+            } catch(e) {}
         }
 
         function verificarAssinatura() {
@@ -870,43 +983,33 @@
                 const os = orcamentos.find(o => String(o.id) === String(idEl.value));
                 if(os && os.assinaturaCliente) { status.innerText = '✅ Assinada pelo cliente.'; status.classList.replace('text-gray-400', 'text-green-500'); }
                 else { status.innerText = '❌ Pendente de assinatura.'; status.classList.replace('text-green-500', 'text-gray-400'); }
-            } catch(e) { console.error(e); }
+            } catch(e) {}
         }
 
         function imprimirEEnviar(tipo) {
             try {
                 const orcIdEl = document.getElementById('os-orcamento');
-                if(!orcIdEl || !orcIdEl.value) return alert('Selecione um documento na lista primeiro!');
+                if(!orcIdEl || !orcIdEl.value) return showToast('Selecione um documento primeiro!', 'error');
                 
                 const orcamento = (orcamentos || []).find(o => String(o.id) === String(orcIdEl.value));
-                if(!orcamento) return alert('Erro: O sistema não encontrou esta OS na memória.');
+                if(!orcamento) return showToast('Erro: OS não encontrada na memória.', 'error');
 
                 const cliente = (clientes || []).find(c => String(c.id) === String(orcamento.clienteId)) || { nome: 'Cliente Removido', end: '', tel: '' };
                 let tipoTitulo = tipo === 'Orçamento' ? 'Orçamento' : tipo === 'OS' ? 'Ordem de Serviço' : 'Recibo';
 
                 const pInfo = document.getElementById('print-info');
-                if(!pInfo) return alert("🚨 ERRO: O layout do PDF não foi encontrado no código!");
-
                 pInfo.innerHTML = `<div><p><strong>${tipoTitulo === 'Recibo' ? 'Recibo de Pagamento' : tipoTitulo}:</strong> ${orcamento.osNumber || '001'}</p><p><strong>Cliente:</strong> ${cliente.nome}</p>${cliente.end ? `<p><strong>Endereço:</strong> ${cliente.end}</p>` : ''}</div><div style="text-align: right;"><p><strong>Data:</strong> ${orcamento.data || ''}</p><p><strong>Telefone:</strong> ${cliente.tel}</p></div>`;
                 
-                const pServ = document.getElementById('print-servicos');
-                if(pServ) pServ.innerText = orcamento.desc || '';
-                
-                const pObs = document.getElementById('print-obs');
-                if(pObs) pObs.innerText = orcamento.obs || "Sem observações adicionais.";
+                document.getElementById('print-servicos').innerText = orcamento.desc || '';
+                document.getElementById('print-obs').innerText = orcamento.obs || "Sem observações adicionais.";
                 
                 let htmlMateriais = `<strong>Fornecimento:</strong> ${orcamento.materiaisStatus || ''}`;
                 if (orcamento.materiaisLista && String(orcamento.materiaisLista).trim() !== '') htmlMateriais += `<br><br><strong>Lista detalhada:</strong><br>${orcamento.materiaisLista}`;
-                
-                const pMat = document.getElementById('print-materiais');
-                if(pMat) pMat.innerHTML = htmlMateriais;
+                document.getElementById('print-materiais').innerHTML = htmlMateriais;
 
                 const valorTotal = parseFloat(orcamento.valor || 0);
-                const pValTot = document.getElementById('print-valor-total');
-                if(pValTot) pValTot.innerText = valorTotal.toLocaleString('pt-BR', {minimumFractionDigits: 2});
-
-                const pRodape = document.getElementById('print-rodape-data');
-                if(pRodape) pRodape.innerText = `Maricá, ${orcamento.data || ''}`;
+                document.getElementById('print-valor-total').innerText = valorTotal.toLocaleString('pt-BR', {minimumFractionDigits: 2});
+                document.getElementById('print-rodape-data').innerText = `Maricá, ${orcamento.data || ''}`;
                 
                 let validadeStr = '';
                 if(tipo === 'Orçamento' && typeof orcamento.data === 'string' && orcamento.data.includes('/')) {
@@ -917,10 +1020,8 @@
                         validadeStr = dataObj.toLocaleDateString('pt-BR');
                     }
                 }
-                const pValidade = document.getElementById('print-validade');
-                if(pValidade) pValidade.innerHTML = validadeStr ? `Documento válido até <strong>${validadeStr}</strong>.` : '';
+                document.getElementById('print-validade').innerHTML = validadeStr ? `Documento válido até <strong>${validadeStr}</strong>.` : '';
 
-                // CONTROLE DO USUÁRIO SOBRE AS FOTOS
                 const incluirFotos = document.getElementById('chk-incluir-fotos').checked;
                 const sf = document.getElementById('print-section-fotos');
                 if(sf) {
@@ -928,9 +1029,7 @@
                         sf.style.display = 'block'; 
                         const pFotos = document.getElementById('print-fotos-container');
                         if(pFotos) pFotos.innerHTML = orcamento.fotos.map(src => `<img src="${src}">`).join(''); 
-                    } else { 
-                        sf.style.display = 'none'; 
-                    }
+                    } else { sf.style.display = 'none'; }
                 }
 
                 const imgAss = document.getElementById('print-img-assinatura');
@@ -938,12 +1037,9 @@
                     if(orcamento.assinaturaCliente) { 
                         imgAss.src = orcamento.assinaturaCliente; 
                         imgAss.style.display = 'block'; 
-                    } else { 
-                        imgAss.style.display = 'none'; 
-                    }
+                    } else { imgAss.style.display = 'none'; }
                 }
-                const assCliNome = document.getElementById('print-assinatura-cliente');
-                if(assCliNome) assCliNome.innerText = cliente.nome || '';
+                document.getElementById('print-assinatura-cliente').innerText = cliente.nome || '';
 
                 let linkWhatsApp = null;
                 if(cliente.tel) {
@@ -961,7 +1057,6 @@
                 if (isMobile) {
                     const overlay = document.getElementById('mobile-print-overlay');
                     if(overlay) overlay.style.display = 'flex';
-                    
                     setTimeout(() => {
                         try { window.print(); } catch(e) {}
                         if(overlay) overlay.style.display = 'none';
@@ -974,16 +1069,13 @@
                     abrirZapAposPrint(linkWhatsApp);
                 }
 
-            } catch(e) { 
-                console.error("Erro PDF", e); 
-                alert("Falha ao gerar o documento."); 
-            }
+            } catch(e) { showToast("Falha ao gerar o documento.", "error"); }
         }
 
         function abrirZapAposPrint(linkWhatsApp) {
             if(linkWhatsApp) {
                 setTimeout(() => {
-                    if(confirm("O PDF foi salvo com sucesso?\n\nClique em 'OK' para abrir o WhatsApp e enviar a mensagem para o cliente.")) {
+                    if(confirm("O PDF foi salvo/impresso com sucesso?\n\nClique em 'OK' para abrir o WhatsApp e enviar a mensagem para o cliente.")) {
                         window.open(linkWhatsApp, '_blank');
                     }
                 }, 1000);
