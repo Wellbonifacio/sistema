@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BRvolts - Gestão em Nuvem</title>
+    <title>BRvolts - Gestão Empresarial</title>
     
     <meta name="theme-color" content="#000000" id="theme-color-meta">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -13,6 +13,7 @@
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
@@ -54,8 +55,10 @@
         .file-upload-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: #27272a; border: 1px dashed #6b7280; color: #d1d5db; padding: 12px; border-radius: 8px; width: 100%; cursor: pointer; font-size: 0.9rem; font-weight: 600; margin-top: 4px; transition: background 0.2s; }
         .file-upload-btn:hover { background: #3f3f46; }
         
-        #signature-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 100; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+        /* Modais */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 100; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
         #sig-canvas { background: #fff; border-radius: 8px; touch-action: none; width: 100%; max-width: 500px; height: 300px; border: 2px solid #3b82f6; }
+        .modal-content { background: #18181b; border: 1px solid #27272a; border-radius: 12px; padding: 20px; w-full; max-width: 500px; max-height: 80vh; overflow-y: auto; }
 
         .chip { display: inline-block; background: #27272a; color: #e5e7eb; padding: 6px 12px; border-radius: 16px; font-size: 0.75rem; margin: 4px 4px 0 0; cursor: pointer; border: 1px solid #3f3f46; transition: 0.2s; }
         .chip:hover { background: #3b82f6; border-color: #3b82f6; color: white; }
@@ -63,14 +66,14 @@
         .toggle-checkbox:checked { right: 0; border-color: #3b82f6; }
         .toggle-checkbox:checked + .toggle-label { background-color: #3b82f6; }
 
-        /* MODO CLARO (Light Mode) - Cores do fundo alteradas sem inverter a logo */
+        /* MODO CLARO */
         body.light-mode { background-color: #f3f4f6; color: #1f2937; }
         body.light-mode header { background-color: #ffffff; border-bottom-color: #e5e7eb; }
         body.light-mode .bottom-nav { background-color: #ffffff; border-color: #e5e7eb; }
         body.light-mode .nav-btn { color: #6b7280; }
         body.light-mode .nav-btn:hover { background: #f3f4f6; }
         body.light-mode .nav-btn.active { color: #3b82f6; background: #eff6ff; }
-        body.light-mode .bg-zinc-900 { background-color: #ffffff; border-color: #e5e7eb; }
+        body.light-mode .bg-zinc-900, body.light-mode .modal-content { background-color: #ffffff; border-color: #e5e7eb; }
         body.light-mode input, body.light-mode textarea, body.light-mode select { background-color: #f9fafb; border-color: #d1d5db; color: #111827; }
         body.light-mode .text-white { color: #111827 !important; }
         body.light-mode .text-gray-200 { color: #374151 !important; }
@@ -83,7 +86,7 @@
         body.light-mode .file-upload-btn { background-color: #f9fafb; color: #374151; border-color: #d1d5db; }
 
         /* Loader & Toasts */
-        #global-loader { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 9999; display: flex; justify-content: center; align-items: center; }
+        #global-loader { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; justify-content: center; align-items: center; }
         .spinner { border: 4px solid rgba(255,255,255,0.1); border-left-color: #3b82f6; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
@@ -92,6 +95,11 @@
         .toast.show { transform: translateY(0); opacity: 1; }
         .toast.success { background-color: #16a34a; }
         .toast.error { background-color: #dc2626; }
+        .toast.info { background-color: #2563eb; }
+
+        /* TELA DE LOGIN (PIN) */
+        #login-screen { position: fixed; inset: 0; background: #000; z-index: 99999; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; transition: opacity 0.5s; }
+        .pin-input { font-size: 2rem; text-align: center; letter-spacing: 0.5em; font-weight: bold; }
 
         /* ESTILOS DE IMPRESSÃO */
         #print-area { display: none; }
@@ -144,11 +152,18 @@
 </head>
 <body>
 
-    <!-- Container de Toasts para Alertas Profissionais -->
+    <div id="login-screen">
+        <img src="https://www.brvolts.site/logo1.png" alt="BRvolts Logo" class="h-16 object-contain mb-8">
+        <h2 class="text-white text-xl font-bold mb-2" id="login-title">Acesso Restrito</h2>
+        <p class="text-gray-400 text-sm mb-6 text-center" id="login-desc">Insira o seu PIN de segurança.</p>
+        
+        <input type="password" id="pin-input" class="pin-input w-48 mb-4 bg-zinc-900 border-zinc-700 text-white" maxlength="4" placeholder="****" inputmode="numeric">
+        <button onclick="verificarLogin()" class="w-48 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow-lg">Entrar</button>
+    </div>
+
     <div id="toast-container"></div>
 
-    <!-- Tela de Loading Inicial -->
-    <div id="global-loader">
+    <div id="global-loader" style="display:none;">
         <div class="flex flex-col items-center">
             <div class="spinner mb-4"></div>
             <p class="text-white font-bold tracking-widest">Sincronizando Nuvem...</p>
@@ -156,8 +171,7 @@
     </div>
 
     <header class="fixed top-0 w-full z-40 bg-black/90 backdrop-blur-md border-b border-zinc-900 px-4 py-3 flex items-center justify-between transition-colors duration-300">
-        <div class="w-8"></div> <!-- Espaçador para centralizar logo -->
-        <img src="https://www.brvolts.site/logo1.png" alt="BRvolts Logo" class="h-8 object-contain">
+        <div class="w-8"></div> <img src="https://www.brvolts.site/logo1.png" alt="BRvolts Logo" class="h-8 object-contain">
         <button onclick="toggleTheme()" class="text-gray-400 hover:text-white" title="Modo Claro/Escuro">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
         </button>
@@ -169,22 +183,24 @@
         <p class="text-gray-300 text-sm">Na próxima tela, selecione a opção <strong>"Salvar como PDF"</strong>.</p>
     </div>
 
-    <div id="main-container" class="pt-14">
+    <div id="main-container" class="pt-14 hidden">
         
-        <!-- MENU INFERIOR / BARRA LATERAL (PC) -->
         <nav class="bottom-nav" id="main-nav">
             <button onclick="mudarAba('dashboard')" class="nav-btn active" id="tab-dashboard"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg> Início</button>
             <button onclick="mudarAba('clientes')" class="nav-btn" id="tab-clientes"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg> Clientes</button>
-            <button onclick="mudarAba('catalogo')" class="nav-btn" id="tab-catalogo"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg> Catálogo</button>
+            <button onclick="mudarAba('catalogo')" class="nav-btn" id="tab-catalogo"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg> Catálogo</button>
             <button onclick="mudarAba('orcamentos')" class="nav-btn" id="tab-orcamentos"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg> Serviço</button>
             <button onclick="mudarAba('os')" class="nav-btn" id="tab-os"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg> PDF/Zap</button>
         </nav>
 
         <div id="app-area">
             
-            <!-- ABA DASHBOARD -->
             <div id="dashboard" class="section active">
-                <h2 class="text-xl font-bold text-white mb-4">Visão Geral (Mês Atual)</h2>
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold text-white">Visão Geral (Mês Atual)</h2>
+                    <button onclick="exportarCSV()" class="text-xs bg-green-700 hover:bg-green-600 text-white font-bold py-1.5 px-3 rounded shadow transition">📥 Exportar Excel</button>
+                </div>
+                
                 <div class="grid grid-cols-2 gap-3 mb-4">
                     <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 shadow transition-colors">
                         <p class="text-xs text-gray-400 font-semibold mb-1">Faturamento Bruto</p>
@@ -195,9 +211,17 @@
                         <p class="text-lg font-bold text-red-500" id="dash-despesas">R$ 0,00</p>
                     </div>
                 </div>
+                
                 <div class="bg-blue-900/30 p-4 rounded-xl border border-blue-900/50 shadow mb-6 transition-colors">
                     <p class="text-xs text-blue-500 font-semibold mb-1 uppercase tracking-wider">Lucro Líquido no Bolso</p>
                     <p class="text-3xl font-black text-blue-600" id="dash-lucro">R$ 0,00</p>
+                </div>
+
+                <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 shadow mb-6 transition-colors">
+                    <p class="text-xs text-gray-400 font-semibold mb-3 uppercase tracking-wider">Desempenho (Últimos 6 meses)</p>
+                    <div class="relative w-full h-[250px]">
+                        <canvas id="faturamentoChart"></canvas>
+                    </div>
                 </div>
 
                 <div id="alerta-manutencao" class="mb-6 hidden">
@@ -209,12 +233,10 @@
 
                 <div class="flex flex-col md:flex-row md:items-center justify-between mb-3 gap-2">
                     <h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider">Gestão de Status</h3>
-                    <!-- PESQUISA DINÂMICA (Mobile e PC) -->
                     <input type="text" id="busca-os" placeholder="🔍 Procurar OS ou Cliente..." oninput="atualizarDashboard()" class="text-sm py-2 px-3 md:w-64 bg-zinc-800 border-zinc-700">
                 </div>
                 
                 <div class="bg-zinc-900 rounded-xl border border-zinc-800 overflow-hidden mb-6 transition-colors">
-                    <!-- Cabeçalho Tabela PC -->
                     <div class="hidden md:flex p-3 bg-black/20 border-b border-zinc-800 text-xs font-bold text-gray-400">
                         <div class="w-1/4">Nº OS</div>
                         <div class="w-1/4">Cliente</div>
@@ -225,7 +247,6 @@
                 </div>
             </div>
 
-            <!-- ABA CLIENTES -->
             <div id="clientes" class="section">
                 <h2 class="text-xl font-bold text-white mb-4">Novo Cliente</h2>
                 <div class="space-y-4 max-w-xl">
@@ -241,18 +262,20 @@
                 <div class="bg-zinc-900 rounded-xl border border-zinc-800 overflow-hidden max-w-xl transition-colors"><ul id="lista-clientes" class="divide-y divide-zinc-800 text-sm"></ul></div>
             </div>
 
-            <!-- ABA CATÁLOGO DE PREÇOS -->
             <div id="catalogo" class="section">
-                <h2 class="text-xl font-bold text-white mb-4">Catálogo Padrão</h2>
-                <p class="text-sm text-gray-400 mb-4">Cadastre serviços e materiais para preencher a OS rapidamente.</p>
+                <h2 class="text-xl font-bold text-white mb-4">Catálogo Padrão Inteligente</h2>
+                <p class="text-sm text-gray-400 mb-4">Cadastre serviços com preço para preencher e somar na OS automaticamente.</p>
                 <div class="space-y-4 mb-6 p-4 bg-zinc-900 rounded-xl border border-zinc-800 max-w-xl transition-colors">
                     <div><label>Nome do Item</label><input type="text" id="cat-nome" placeholder="Ex: Instalação Wallbox 7kW"></div>
-                    <div>
-                        <label>Tipo</label>
-                        <select id="cat-tipo">
-                            <option value="servico">Mão de Obra</option>
-                            <option value="material">Material</option>
-                        </select>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label>Tipo</label>
+                            <select id="cat-tipo">
+                                <option value="servico">Mão de Obra</option>
+                                <option value="material">Material</option>
+                            </select>
+                        </div>
+                        <div><label>Preço Padrão (R$)</label><input type="number" id="cat-preco" placeholder="0.00" inputmode="decimal"></div>
                     </div>
                     <button onclick="salvarItemCatalogo()" class="w-full bg-zinc-700 hover:bg-zinc-600 text-white font-bold py-3 rounded-lg transition-colors">Adicionar ao Catálogo</button>
                 </div>
@@ -260,7 +283,6 @@
                 <div class="bg-zinc-900 rounded-xl border border-zinc-800 overflow-hidden max-w-xl transition-colors"><ul id="lista-catalogo" class="divide-y divide-zinc-800 text-sm"></ul></div>
             </div>
 
-            <!-- ABA ORÇAMENTOS -->
             <div id="orcamentos" class="section">
                 <h2 class="text-xl font-bold text-white mb-4" id="titulo-aba-servico">Descrever Serviço</h2>
                 <div class="space-y-4 max-w-2xl">
@@ -272,7 +294,7 @@
                     </div>
 
                     <div id="area-catalogo-chips" class="hidden pb-2 border-b border-zinc-800">
-                        <label>Auto-completar do Catálogo:</label>
+                        <label>Auto-completar do Catálogo (Soma o valor automaticamente):</label>
                         <div id="chips-catalogo"></div>
                     </div>
                     
@@ -290,7 +312,7 @@
                     <div><label>Observações Técnicas</label><textarea id="orc-obs" rows="2" placeholder="O serviço exige desmontagem..."></textarea></div>
                     
                     <div>
-                        <label>Fotos do Serviço</label>
+                        <label>Fotos de Registro</label>
                         <label for="orc-fotos" class="file-upload-btn">📸 Anexar Imagens</label>
                         <input type="file" id="orc-fotos" accept="image/*" multiple onchange="processarFotos(event)">
                         <div id="preview-fotos" class="flex flex-wrap gap-2 mt-2"></div>
@@ -309,7 +331,6 @@
                 </div>
             </div>
 
-            <!-- ABA IMPRESSÃO (PDF E ZAP) -->
             <div id="os" class="section">
                 <div class="mb-6 flex items-center gap-3">
                     <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-900/30 text-blue-500"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg></div>
@@ -327,7 +348,6 @@
                         <button onclick="abrirModalAssinatura()" class="bg-zinc-700 hover:bg-zinc-600 text-white text-xs font-bold py-2 px-4 rounded-lg transition">Coletar ✍️</button>
                     </div>
 
-                    <!-- OPÇÃO DE EXIBIR FOTOS NO PDF -->
                     <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 flex items-center justify-between transition-colors">
                         <div>
                             <p class="font-bold text-sm text-white flex items-center gap-2">📸 Imagens de Registro</p>
@@ -349,8 +369,7 @@
         </div>
     </div>
 
-    <!-- MODAL DE ASSINATURA -->
-    <div id="signature-modal">
+    <div id="signature-modal" class="modal-overlay">
         <h3 class="text-white font-bold mb-4 text-lg">Assinatura do Cliente (Opcional)</h3>
         <p class="text-gray-400 text-xs mb-2">Pressione ESC para fechar</p>
         <canvas id="sig-canvas"></canvas>
@@ -361,7 +380,20 @@
         </div>
     </div>
 
-    <!-- ÁREA DE IMPRESSÃO INVISÍVEL -->
+    <div id="historico-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4 border-b border-zinc-700 pb-2">
+                <h3 class="text-white font-bold text-lg" id="hist-nome">Histórico do Cliente</h3>
+                <button onclick="fecharHistorico()" class="text-gray-400 hover:text-white font-bold">X</button>
+            </div>
+            <div class="mb-4">
+                <p class="text-sm text-gray-400">Total Investido: <span id="hist-total" class="font-bold text-green-500">R$ 0,00</span></p>
+            </div>
+            <ul id="hist-lista" class="divide-y divide-zinc-800 text-sm"></ul>
+            <button onclick="fecharHistorico()" class="w-full bg-zinc-700 hover:bg-zinc-600 text-white font-bold py-3 rounded-lg mt-4 transition">Fechar</button>
+        </div>
+    </div>
+
     <div id="print-area">
         <div class="doc-header">
             <div class="doc-logo"><img src="logo_pdf.png" alt="BRvolts Logo"><h2>Soluções em Eletricidade</h2><p>CPF: 165.*** ***-30</p><p>Rua Nilo Ribeiro N° 44</p><p>Ubatiba - Maricá</p></div>
@@ -421,6 +453,56 @@
     </div>
 
     <script>
+        // --- SISTEMA DE LOGIN LOCAL ---
+        function checkLogin() {
+            const savedPin = localStorage.getItem('brvolts_pin');
+            const loginScreen = document.getElementById('login-screen');
+            const mainApp = document.getElementById('main-container');
+            const title = document.getElementById('login-title');
+            const desc = document.getElementById('login-desc');
+
+            if (!savedPin) {
+                title.innerText = "Bem-vindo(a) à BRvolts";
+                desc.innerText = "Crie um PIN numérico de 4 dígitos para proteger o seu sistema.";
+            }
+            loginScreen.style.display = 'flex';
+            mainApp.classList.add('hidden');
+        }
+
+        function verificarLogin() {
+            const input = document.getElementById('pin-input').value;
+            const savedPin = localStorage.getItem('brvolts_pin');
+
+            if (input.length < 4) return showToast("O PIN deve ter 4 dígitos.", "error");
+
+            if (!savedPin) {
+                localStorage.setItem('brvolts_pin', input);
+                desbloquearApp();
+                showToast("PIN criado com sucesso!", "success");
+            } else {
+                if (input === savedPin) {
+                    desbloquearApp();
+                } else {
+                    showToast("PIN Incorreto", "error");
+                    document.getElementById('pin-input').value = '';
+                }
+            }
+        }
+
+        function desbloquearApp() {
+            document.getElementById('login-screen').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('main-container').classList.remove('hidden');
+                document.getElementById('global-loader').style.display = 'flex';
+                initApp();
+            }, 500);
+        }
+
+        checkLogin();
+
+
+        // --- SISTEMA PRINCIPAL ---
         let supabaseClient = null;
         try {
             if (window.supabase) {
@@ -435,8 +517,8 @@
         let catalogo = [];
         let fotosTemporarias = [];
         let editandoOSId = null;
+        let chartInstance = null;
 
-        // Função Profissional de Toast (Aviso)
         function showToast(message, type = 'success') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
@@ -446,13 +528,9 @@
             container.appendChild(toast);
             
             setTimeout(() => toast.classList.add('show'), 10);
-            setTimeout(() => {
-                toast.classList.remove('show');
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
+            setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 300); }, 3000);
         }
 
-        // Modo Claro / Escuro
         function toggleTheme() {
             const isLight = document.body.classList.toggle('light-mode');
             const metaTheme = document.getElementById('theme-color-meta');
@@ -463,22 +541,18 @@
                 localStorage.setItem('brvolts-theme', 'dark');
                 metaTheme.setAttribute('content', '#000000');
             }
+            if(chartInstance) atualizarGrafico();
         }
 
-        // Esconde Menu no Mobile quando o Teclado sobe
         const initialHeight = window.innerHeight;
         window.addEventListener('resize', () => {
             if (window.innerWidth < 1024) {
                 const nav = document.getElementById('main-nav');
-                if (window.innerHeight < initialHeight - 100) {
-                    nav.style.display = 'none';
-                } else {
-                    nav.style.display = 'flex';
-                }
+                if (window.innerHeight < initialHeight - 100) nav.style.display = 'none';
+                else nav.style.display = 'flex';
             }
         });
 
-        // Atalhos de Teclado
         document.addEventListener('keydown', (e) => {
             if ((e.ctrlKey || e.metaKey) && e.key === 's') {
                 e.preventDefault();
@@ -487,13 +561,15 @@
                 else if(activeSection === 'clientes') salvarCliente();
                 else if(activeSection === 'catalogo') salvarItemCatalogo();
             }
-            if (e.key === 'Escape') fecharModalAssinatura();
+            if (e.key === 'Escape') {
+                fecharModalAssinatura();
+                fecharHistorico();
+            }
         });
 
         document.addEventListener('DOMContentLoaded', async () => {
             if(localStorage.getItem('brvolts-theme') === 'light') toggleTheme();
             atualizarTelas(); 
-            await initApp();  
         });
 
         async function initApp() {
@@ -514,7 +590,7 @@
                             fotos: s.fotos || []
                         }));
                     }
-                    if(resCat && resCat.data) catalogo = resCat.data;
+                    if(resCat && resCat.data) catalogo = resCat.data.map(c => ({id: c.id, nome: c.nome || '', tipo: c.tipo || '', preco: c.preco || 0}));
                 } catch(e) { console.error("Erro Supabase:", e); showToast("Erro ao sincronizar nuvem", "error"); }
             }
             document.getElementById('global-loader').style.display = 'none';
@@ -544,7 +620,7 @@
                             document.getElementById('cli-end').value = `${data.logradouro}, Número - ${data.bairro}, ${data.localidade}/${data.uf}`;
                             document.getElementById('cli-end').focus();
                         }
-                    } catch(err) { console.log('Erro ao buscar CEP'); }
+                    } catch(err) {}
                 }
             });
         }
@@ -587,18 +663,41 @@
             } catch(e) {}
         }
 
+        function verHistoricoCliente(id) {
+            const cliente = clientes.find(c => String(c.id) === String(id));
+            if(!cliente) return;
+
+            const osCliente = orcamentos.filter(o => String(o.clienteId) === String(id));
+            let totalGasto = 0;
+            
+            const historicoHtml = osCliente.length === 0 ? '<li class="p-3 text-gray-500 text-xs">Nenhum serviço realizado ainda.</li>' : osCliente.map(o => {
+                if(o.status === 'Concluído') totalGasto += parseFloat(o.valor || 0);
+                return `<li class="py-3 flex justify-between items-center"><div class="min-w-0"><p class="text-sm font-bold text-gray-200">OS ${o.osNumber}</p><p class="text-xs text-gray-500">${o.data} | Status: ${o.status}</p></div><p class="text-sm font-bold text-green-500">R$ ${(o.valor||0).toLocaleString('pt-BR', {minimumFractionDigits:2})}</p></li>`;
+            }).reverse().join('');
+
+            document.getElementById('hist-nome').innerText = `Histórico: ${cliente.nome}`;
+            document.getElementById('hist-total').innerText = `R$ ${totalGasto.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
+            document.getElementById('hist-lista').innerHTML = historicoHtml;
+            document.getElementById('historico-modal').style.display = 'flex';
+        }
+
+        function fecharHistorico() { document.getElementById('historico-modal').style.display = 'none'; }
+
         async function salvarItemCatalogo() {
             try {
                 const nome = document.getElementById('cat-nome').value;
                 const tipo = document.getElementById('cat-tipo').value;
+                const precoRaw = document.getElementById('cat-preco').value;
+                const preco = precoRaw ? parseFloat(precoRaw) : 0;
+
                 if(!nome) return showToast("Preencha o nome do item!", "error");
                 
                 const tempId = Date.now();
-                catalogo.push({ id: tempId, nome, tipo });
+                catalogo.push({ id: tempId, nome, tipo, preco });
                 atualizarTelas();
 
                 if(supabaseClient) {
-                    const { data } = await supabaseClient.from('catalogo').insert([{ nome, tipo }]).select();
+                    const { data } = await supabaseClient.from('catalogo').insert([{ nome, tipo, preco }]).select();
                     if(data && data.length > 0) {
                         const idx = catalogo.findIndex(c => c.id === tempId);
                         if(idx > -1) catalogo[idx].id = data[0].id;
@@ -606,6 +705,7 @@
                     }
                 }
                 document.getElementById('cat-nome').value = '';
+                document.getElementById('cat-preco').value = '';
                 showToast("Item adicionado ao catálogo!");
             } catch(e) { showToast("Erro no catálogo", "error"); }
         }
@@ -630,7 +730,14 @@
                     const matArea = document.getElementById('orc-materiais');
                     if(matArea) matArea.value += (matArea.value ? '\n+ ' : '') + item.nome;
                 }
-                showToast("Adicionado ao texto", "info");
+
+                if(item.preco > 0) {
+                    const valorEl = document.getElementById('orc-valor');
+                    const atual = parseFloat(valorEl.value || 0);
+                    valorEl.value = atual + item.preco;
+                }
+
+                showToast("Item e preço adicionados!", "info");
             } catch(e) {}
         }
 
@@ -638,6 +745,7 @@
             try {
                 const files = event.target.files;
                 if(!files.length) return;
+                showToast("Processando imagens...", "info");
                 for(let file of files) {
                     const reader = new FileReader();
                     reader.onload = function(e) {
@@ -733,7 +841,7 @@
                     orcamentos.push(novaOs);
                     atualizarTelas();
                     limparFormularioOS();
-                    showToast('Serviço salvo! Gerar PDF.');
+                    showToast('Serviço salvo! Pode Gerar PDF.');
                     mudarAba('os');
 
                     if(supabaseClient) {
@@ -752,6 +860,26 @@
                     }
                 }
             } catch(e) { showToast("Erro crítico", "error"); }
+        }
+
+        function clonarOS(id) {
+            const os = orcamentos.find(o => String(o.id) === String(id));
+            if(!os) return;
+            
+            limparFormularioOS();
+            document.getElementById('orc-cliente').value = os.clienteId;
+            document.getElementById('orc-desc').value = os.desc;
+            document.getElementById('orc-materiais-status').value = os.materiaisStatus;
+            document.getElementById('orc-materiais').value = os.materiaisLista;
+            document.getElementById('orc-obs').value = os.obs;
+            document.getElementById('orc-valor').value = os.valor;
+            document.getElementById('orc-despesas').value = os.despesas;
+            
+            fotosTemporarias = [...(os.fotos || [])];
+            atualizarPreviewFotos();
+
+            showToast("OS Clonada! Salve para criar uma nova.", "info");
+            mudarAba('orcamentos');
         }
 
         function editarOS(id) {
@@ -806,6 +934,87 @@
             }
         }
 
+        function exportarCSV() {
+            if(orcamentos.length === 0) return showToast("Nenhum orçamento para exportar.", "error");
+            
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "OS Numero,Cliente,Data,Status,Valor Total,Despesas,Lucro Bruto\r\n";
+
+            orcamentos.forEach(o => {
+                const c = clientes.find(cli => String(cli.id) === String(o.clienteId));
+                const nomeCli = c ? c.nome : "Desconhecido";
+                const lucro = (parseFloat(o.valor || 0) - parseFloat(o.despesas || 0)).toFixed(2);
+                
+                const row = `${o.osNumber},"${nomeCli}",${o.data},${o.status},${o.valor || 0},${o.despesas || 0},${lucro}`;
+                csvContent += row + "\r\n";
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "brvolts_export_os.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast("Arquivo CSV baixado!");
+        }
+
+        function atualizarGrafico() {
+            const ctx = document.getElementById('faturamentoChart');
+            if(!ctx) return;
+
+            const meses = {};
+            const labels = [];
+            const dados = [];
+
+            for(let i = 5; i >= 0; i--) {
+                const d = new Date();
+                d.setMonth(d.getMonth() - i);
+                const mesAno = d.toLocaleDateString('pt-BR', {month: '2-digit', year: 'numeric'});
+                meses[mesAno] = 0;
+                labels.push(mesAno);
+            }
+
+            orcamentos.forEach(o => {
+                if (o.status === 'Concluído' && o.data) {
+                    const mesAno = o.data.substring(3);
+                    if(meses[mesAno] !== undefined) {
+                        meses[mesAno] += parseFloat(o.valor || 0);
+                    }
+                }
+            });
+
+            labels.forEach(l => dados.push(meses[l]));
+
+            const isLight = document.body.classList.contains('light-mode');
+            const gridColor = isLight ? '#e5e7eb' : '#27272a';
+            const textColor = isLight ? '#6b7280' : '#9ca3af';
+
+            if(chartInstance) chartInstance.destroy();
+
+            chartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Faturamento (Concluído)',
+                        data: dados,
+                        backgroundColor: '#3b82f6',
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: gridColor }, ticks: { color: textColor } },
+                        x: { grid: { display: false }, ticks: { color: textColor } }
+                    }
+                }
+            });
+        }
+
         function atualizarDashboard() {
             try {
                 const dashFat = document.getElementById('dash-faturamento');
@@ -826,6 +1035,8 @@
                 const pLucro = document.getElementById('dash-lucro');
                 if(pLucro) pLucro.innerText = `R$ ${(faturamento - despesas).toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
 
+                atualizarGrafico();
+
                 const termoPesquisa = (document.getElementById('busca-os')?.value || '').toLowerCase();
                 
                 let ultimosOS = (orcamentos || []).filter(o => {
@@ -842,13 +1053,13 @@
                         const cNome = c && c.nome ? c.nome : 'Removido';
                         const osNum = o.osNumber || 'S/N';
                         
-                        // Badge de Assinatura se existir
                         const iconeAssinatura = o.assinaturaCliente ? '<span class="inline-flex items-center gap-1 ml-2 px-2 py-0.5 rounded-full bg-blue-900/50 text-blue-400 text-[10px] font-bold" title="Assinatura Coletada">✍️ Assinado</span>' : '';
 
                         return `<li class="p-3 flex flex-col md:flex-row md:items-center hover:bg-zinc-800 transition gap-2 border-zinc-800 md:border-b">
-                            <div class="flex-1 min-w-0 md:w-1/4">
-                                <p class="font-bold text-gray-200 text-sm truncate flex items-center">${osNum} ${iconeAssinatura}</p>
-                                <p class="text-xs text-gray-400 truncate md:hidden">${cNome}</p>
+                            <div class="flex-1 min-w-0 md:w-1/4 flex items-center">
+                                <p class="font-bold text-gray-200 text-sm truncate">${osNum}</p>
+                                ${iconeAssinatura}
+                                <p class="text-xs text-gray-400 truncate md:hidden w-full mt-1">${cNome}</p>
                             </div>
                             <div class="hidden md:block flex-1 min-w-0 md:w-1/4"><p class="text-sm text-gray-300 truncate">${cNome}</p></div>
                             <div class="hidden md:block flex-1 min-w-0 md:w-1/4"><p class="text-sm font-bold text-green-500">R$ ${(o.valor||0).toLocaleString('pt-BR', {minimumFractionDigits:2})}</p></div>
@@ -860,6 +1071,7 @@
                                     <option value="Concluído" ${o.status === 'Concluído' ? 'selected' : ''}>🔵 Concluído</option>
                                 </select>
                                 <div class="flex gap-4">
+                                    <button onclick="clonarOS(${o.id})" class="text-sm text-yellow-500 hover:text-yellow-400 font-semibold" title="Clonar">👯</button>
                                     <button onclick="editarOS(${o.id})" class="text-sm text-blue-400 hover:text-blue-300 font-semibold" title="Editar">✏️</button>
                                     <button onclick="excluirOS(${o.id})" class="text-sm text-red-500 hover:text-red-400 font-semibold" title="Excluir">🗑️</button>
                                 </div>
@@ -913,7 +1125,7 @@
                 const listaClientes = document.getElementById('lista-clientes');
                 if(listaClientes) {
                     if((clientes || []).length === 0) listaClientes.innerHTML = '<li class="p-4 text-gray-500 text-center">Nenhum cliente cadastrado.</li>';
-                    else listaClientes.innerHTML = clientes.slice(-5).reverse().map(c => `<li class="p-3 flex justify-between items-center hover:bg-zinc-800 transition border-zinc-800 border-b last:border-0"><div class="min-w-0"><p class="font-bold text-gray-200 truncate">${c.nome}</p><p class="text-xs text-gray-500">${c.tel || 'Sem telefone'}</p></div></li>`).join('');
+                    else listaClientes.innerHTML = clientes.slice(-5).reverse().map(c => `<li class="p-3 flex justify-between items-center hover:bg-zinc-800 transition border-zinc-800 border-b last:border-0"><div class="min-w-0"><p class="font-bold text-gray-200 truncate">${c.nome}</p><p class="text-xs text-gray-500">${c.tel || 'Sem telefone'}</p></div> <button onclick="verHistoricoCliente(${c.id})" class="text-xs bg-zinc-700 hover:bg-zinc-600 px-3 py-1 rounded text-white transition">Histórico</button></li>`).join('');
                 }
             } catch(e) {}
             
@@ -921,7 +1133,9 @@
             
             try {
                 const listaCat = document.getElementById('lista-catalogo');
-                if(listaCat) listaCat.innerHTML = (catalogo || []).length === 0 ? '<li class="p-4 text-gray-500 text-center text-xs">Nenhum item salvo.</li>' : catalogo.map(c => `<li class="p-3 flex justify-between items-center hover:bg-zinc-800 transition border-zinc-800 border-b last:border-0"><div class="min-w-0"><p class="font-bold text-gray-200 truncate">${c.nome}</p><p class="text-xs text-gray-500">${c.tipo === 'servico' ? 'Mão de Obra' : 'Material'}</p></div><button onclick="removerItemCatalogo(${c.id})" class="text-red-500 font-bold px-3 shrink-0">X</button></li>`).join('');
+                if(listaCat) {
+                    listaCat.innerHTML = (catalogo || []).length === 0 ? '<li class="p-4 text-gray-500 text-center text-xs">Nenhum item salvo.</li>' : catalogo.map(c => `<li class="p-3 flex justify-between items-center hover:bg-zinc-800 transition border-zinc-800 border-b last:border-0"><div class="min-w-0"><p class="font-bold text-gray-200 truncate">${c.nome} <span class="text-green-500 font-normal">R$ ${c.preco ? c.preco.toFixed(2) : '0.00'}</span></p><p class="text-xs text-gray-500">${c.tipo === 'servico' ? 'Mão de Obra' : 'Material'}</p></div><button onclick="removerItemCatalogo(${c.id})" class="text-red-500 font-bold px-3 shrink-0">X</button></li>`).join('');
+                }
 
                 const areaChips = document.getElementById('area-catalogo-chips');
                 const chipsCat = document.getElementById('chips-catalogo');
@@ -940,7 +1154,8 @@
                         const c = (clientes || []).find(cli => String(cli.id) === String(o.clienteId));
                         const cNome = c && c.nome ? c.nome : 'Removido';
                         const osNum = o.osNumber || 'S/N';
-                        return `<option value="${o.id}">OS ${osNum} | ${cNome} - R$ ${(o.valor||0).toLocaleString('pt-BR', {minimumFractionDigits:2})}</option>`;
+                        const reqAss = o.assinaturaCliente ? '✍️ ' : '';
+                        return `<option value="${o.id}">${reqAss}OS ${osNum} | ${cNome} - R$ ${(o.valor||0).toLocaleString('pt-BR', {minimumFractionDigits:2})}</option>`;
                     }).join('');
                     selectOS.innerHTML = '<option value="" disabled selected>Escolha o serviço salvo...</option>' + optionsOrcamentos;
                 }
@@ -973,7 +1188,7 @@
                 limparAssinatura();
             } catch(e) {}
         }
-        function fecharModalAssinatura() { const mod = document.getElementById('signature-modal'); if(mod) mod.style.display = 'none'; }
+        function fecharModalAssinatura() { document.getElementById('signature-modal').style.display = 'none'; }
         function limparAssinatura() { if(sigCtx) sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height); }
         
         async function salvarAssinatura() {
@@ -985,7 +1200,7 @@
                     const dataUri = sigCanvas.toDataURL('image/png');
                     os.assinaturaCliente = dataUri;
                     fecharModalAssinatura(); verificarAssinatura(); showToast('Assinatura salva!');
-                    atualizarDashboard(); // Atualiza a tela inicial para mostrar a badge "Assinado"
+                    atualizarDashboard(); 
                     if(supabaseClient) await supabaseClient.from('servicos').update({assinatura_cliente: dataUri}).eq('id', idEl.value);
                 }
             } catch(e) {}
