@@ -13,7 +13,6 @@
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
@@ -55,10 +54,9 @@
         .file-upload-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: #27272a; border: 1px dashed #6b7280; color: #d1d5db; padding: 12px; border-radius: 8px; width: 100%; cursor: pointer; font-size: 0.9rem; font-weight: 600; margin-top: 4px; transition: background 0.2s; }
         .file-upload-btn:hover { background: #3f3f46; }
         
-        /* Modais */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 100; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
         #sig-canvas { background: #fff; border-radius: 8px; touch-action: none; width: 100%; max-width: 500px; height: 300px; border: 2px solid #3b82f6; }
-        .modal-content { background: #18181b; border: 1px solid #27272a; border-radius: 12px; padding: 20px; w-full; max-width: 500px; max-height: 80vh; overflow-y: auto; }
+        .modal-content { background: #18181b; border: 1px solid #27272a; border-radius: 12px; padding: 20px; width: 100%; max-width: 500px; max-height: 80vh; overflow-y: auto; }
 
         .chip { display: inline-block; background: #27272a; color: #e5e7eb; padding: 6px 12px; border-radius: 16px; font-size: 0.75rem; margin: 4px 4px 0 0; cursor: pointer; border: 1px solid #3f3f46; transition: 0.2s; }
         .chip:hover { background: #3b82f6; border-color: #3b82f6; color: white; }
@@ -91,13 +89,13 @@
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
         #toast-container { position: fixed; top: 1rem; right: 1rem; z-index: 10000; display: flex; flex-direction: column; gap: 0.5rem; }
-        .toast { padding: 12px 20px; border-radius: 8px; color: white; font-weight: bold; font-size: 0.9rem; shadow: 0 4px 6px rgba(0,0,0,0.1); transform: translateY(-100%); opacity: 0; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .toast { padding: 12px 20px; border-radius: 8px; color: white; font-weight: bold; font-size: 0.9rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transform: translateY(-100%); opacity: 0; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .toast.show { transform: translateY(0); opacity: 1; }
         .toast.success { background-color: #16a34a; }
         .toast.error { background-color: #dc2626; }
         .toast.info { background-color: #2563eb; }
 
-        /* TELA DE LOGIN (PIN) */
+        /* TELA DE LOGIN */
         #login-screen { position: fixed; inset: 0; background: #000; z-index: 99999; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; transition: opacity 0.5s; }
         .pin-input { font-size: 2rem; text-align: center; letter-spacing: 0.5em; font-weight: bold; }
 
@@ -171,7 +169,8 @@
     </div>
 
     <header class="fixed top-0 w-full z-40 bg-black/90 backdrop-blur-md border-b border-zinc-900 px-4 py-3 flex items-center justify-between transition-colors duration-300">
-        <div class="w-8"></div> <img src="https://www.brvolts.site/logo1.png" alt="BRvolts Logo" class="h-8 object-contain">
+        <div class="w-8"></div>
+        <img src="https://www.brvolts.site/logo1.png" alt="BRvolts Logo" class="h-8 object-contain">
         <button onclick="toggleTheme()" class="text-gray-400 hover:text-white" title="Modo Claro/Escuro">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
         </button>
@@ -196,9 +195,24 @@
         <div id="app-area">
             
             <div id="dashboard" class="section active">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-bold text-white">Visão Geral (Mês Atual)</h2>
-                    <button onclick="exportarCSV()" class="text-xs bg-green-700 hover:bg-green-600 text-white font-bold py-1.5 px-3 rounded shadow transition">📥 Exportar Excel</button>
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-2">
+                    <h2 class="text-xl font-bold text-white">Visão Geral</h2>
+                    
+                    <div class="flex gap-2 w-full md:w-auto">
+                        <select id="filtro-mes" class="text-sm py-2 px-3 bg-zinc-800 border-zinc-700 w-full md:w-auto" onchange="atualizarDashboard()">
+                            <option value="ALL">Todos os meses</option>
+                            <option value="01">Janeiro</option><option value="02">Fevereiro</option><option value="03">Março</option>
+                            <option value="04">Abril</option><option value="05">Maio</option><option value="06">Junho</option>
+                            <option value="07">Julho</option><option value="08">Agosto</option><option value="09">Setembro</option>
+                            <option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option>
+                        </select>
+                        <select id="filtro-ano" class="text-sm py-2 px-3 bg-zinc-800 border-zinc-700 w-full md:w-auto" onchange="atualizarDashboard()">
+                            <option value="ALL">Todos os anos</option>
+                            <option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option>
+                            <option value="2027">2027</option><option value="2028">2028</option><option value="2029">2029</option>
+                        </select>
+                        <button onclick="exportarCSV()" title="Exportar Excel" class="bg-green-700 hover:bg-green-600 text-white font-bold py-2 px-3 rounded shadow transition">📥</button>
+                    </div>
                 </div>
                 
                 <div class="grid grid-cols-2 gap-3 mb-4">
@@ -217,11 +231,11 @@
                     <p class="text-3xl font-black text-blue-600" id="dash-lucro">R$ 0,00</p>
                 </div>
 
-                <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 shadow mb-6 transition-colors">
-                    <p class="text-xs text-gray-400 font-semibold mb-3 uppercase tracking-wider">Desempenho (Últimos 6 meses)</p>
-                    <div class="relative w-full h-[250px]">
-                        <canvas id="faturamentoChart"></canvas>
+                <div class="bg-zinc-900 rounded-xl border border-zinc-800 overflow-hidden mb-6 transition-colors">
+                    <div class="p-3 bg-black/20 border-b border-zinc-800 text-xs font-bold text-gray-400 uppercase tracking-wider">
+                        🏆 Top 5 Clientes (Período Selecionado)
                     </div>
+                    <ul id="dash-top-clientes" class="divide-y divide-zinc-800 text-sm"></ul>
                 </div>
 
                 <div id="alerta-manutencao" class="mb-6 hidden">
@@ -447,12 +461,32 @@
             <a href="https://g.page/r/CbiafVBOu7JAEBM/review" target="_blank" class="btn-avaliacao">
                 <svg viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
                 Avalie-nos no Google
-                <div class="stars"><svg viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg><svg viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg><svg viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg><svg viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg><svg viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg></div>
+                <div class="stars"><svg viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg><svg viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg><svg viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg><svg viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg></div>
             </a>
         </div>
     </div>
 
     <script>
+        // Função universal para garantir que as datas são lidas independentemente de virem do Supabase (YYYY-MM-DD) ou de introdução manual (DD/MM/YYYY)
+        function extrairData(dataString) {
+            if (!dataString) return null;
+            let dia, mes, ano;
+            if (dataString.includes('/')) {
+                const p = dataString.split('/');
+                if (p.length >= 3) { dia = p[0]; mes = p[1]; ano = p[2]; }
+            } else if (dataString.includes('-')) {
+                const p = dataString.split('-');
+                if (p.length >= 3) {
+                    if (p[0].length === 4) { ano = p[0]; mes = p[1]; dia = p[2]; } 
+                    else { dia = p[0]; mes = p[1]; ano = p[2]; } 
+                }
+            }
+            if (dia && mes && ano) {
+                return { dia: dia.padStart(2, '0'), mes: mes.padStart(2, '0'), ano: ano };
+            }
+            return null;
+        }
+
         // --- SISTEMA DE LOGIN LOCAL ---
         function checkLogin() {
             const savedPin = localStorage.getItem('brvolts_pin');
@@ -495,12 +529,16 @@
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('main-container').classList.remove('hidden');
                 document.getElementById('global-loader').style.display = 'flex';
+                
+                const now = new Date();
+                document.getElementById('filtro-mes').value = String(now.getMonth() + 1).padStart(2, '0');
+                document.getElementById('filtro-ano').value = String(now.getFullYear());
+                
                 initApp();
             }, 500);
         }
 
         checkLogin();
-
 
         // --- SISTEMA PRINCIPAL ---
         let supabaseClient = null;
@@ -517,7 +555,6 @@
         let catalogo = [];
         let fotosTemporarias = [];
         let editandoOSId = null;
-        let chartInstance = null;
 
         function showToast(message, type = 'success') {
             const container = document.getElementById('toast-container');
@@ -541,7 +578,6 @@
                 localStorage.setItem('brvolts-theme', 'dark');
                 metaTheme.setAttribute('content', '#000000');
             }
-            if(chartInstance) atualizarGrafico();
         }
 
         const initialHeight = window.innerHeight;
@@ -569,7 +605,6 @@
 
         document.addEventListener('DOMContentLoaded', async () => {
             if(localStorage.getItem('brvolts-theme') === 'light') toggleTheme();
-            atualizarTelas(); 
         });
 
         async function initApp() {
@@ -959,84 +994,77 @@
             showToast("Arquivo CSV baixado!");
         }
 
-        function atualizarGrafico() {
-            const ctx = document.getElementById('faturamentoChart');
-            if(!ctx) return;
-
-            const meses = {};
-            const labels = [];
-            const dados = [];
-
-            for(let i = 5; i >= 0; i--) {
-                const d = new Date();
-                d.setMonth(d.getMonth() - i);
-                const mesAno = d.toLocaleDateString('pt-BR', {month: '2-digit', year: 'numeric'});
-                meses[mesAno] = 0;
-                labels.push(mesAno);
-            }
-
-            orcamentos.forEach(o => {
-                if (o.status === 'Concluído' && o.data) {
-                    const mesAno = o.data.substring(3);
-                    if(meses[mesAno] !== undefined) {
-                        meses[mesAno] += parseFloat(o.valor || 0);
-                    }
-                }
-            });
-
-            labels.forEach(l => dados.push(meses[l]));
-
-            const isLight = document.body.classList.contains('light-mode');
-            const gridColor = isLight ? '#e5e7eb' : '#27272a';
-            const textColor = isLight ? '#6b7280' : '#9ca3af';
-
-            if(chartInstance) chartInstance.destroy();
-
-            chartInstance = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Faturamento (Concluído)',
-                        data: dados,
-                        backgroundColor: '#3b82f6',
-                        borderRadius: 4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: { beginAtZero: true, grid: { color: gridColor }, ticks: { color: textColor } },
-                        x: { grid: { display: false }, ticks: { color: textColor } }
-                    }
-                }
-            });
-        }
-
         function atualizarDashboard() {
             try {
                 const dashFat = document.getElementById('dash-faturamento');
-                if(!dashFat) return;
-                const mesAtual = new Date().toLocaleDateString('pt-BR').substring(3);
+                const pDesp = document.getElementById('dash-despesas');
+                const pLucro = document.getElementById('dash-lucro');
+                const filtroMes = document.getElementById('filtro-mes')?.value;
+                const filtroAno = document.getElementById('filtro-ano')?.value;
+                
+                if(!dashFat || !filtroMes || !filtroAno) return;
+                
                 let faturamento = 0, despesas = 0;
+                let clientesStats = {}; 
                 
                 (orcamentos || []).forEach(o => {
-                    if (o.status === 'Concluído' && o.data && o.data.substring(3) === mesAtual) {
-                        faturamento += parseFloat(o.valor || 0);
-                        despesas += parseFloat(o.despesas || 0);
+                    const statusStr = o.status ? o.status.trim().toLowerCase() : '';
+                    if (statusStr === 'concluído' || statusStr === 'concluido') {
+                        const d = extrairData(o.data);
+                        if (d) {
+                            const matchMes = (filtroMes === 'ALL' || d.mes === filtroMes);
+                            const matchAno = (filtroAno === 'ALL' || d.ano === filtroAno);
+                            
+                            if(matchMes && matchAno) {
+                                const val = parseFloat(o.valor || 0);
+                                const desp = parseFloat(o.despesas || 0);
+                                faturamento += val;
+                                despesas += desp;
+
+                                if(!clientesStats[o.clienteId]) {
+                                    clientesStats[o.clienteId] = { total: 0, count: 0 };
+                                }
+                                clientesStats[o.clienteId].total += val;
+                                clientesStats[o.clienteId].count += 1;
+                            }
+                        }
                     }
                 });
 
                 dashFat.innerText = `R$ ${faturamento.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
-                const pDesp = document.getElementById('dash-despesas');
-                if(pDesp) pDesp.innerText = `R$ ${despesas.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
-                const pLucro = document.getElementById('dash-lucro');
-                if(pLucro) pLucro.innerText = `R$ ${(faturamento - despesas).toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+                pDesp.innerText = `R$ ${despesas.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+                pLucro.innerText = `R$ ${(faturamento - despesas).toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
 
-                atualizarGrafico();
+                // RENDERIZAR TOP 5 CLIENTES
+                const topClients = Object.keys(clientesStats)
+                    .map(cid => ({ id: cid, ...clientesStats[cid] }))
+                    .sort((a, b) => b.total - a.total)
+                    .slice(0, 5);
 
+                const listaTopEl = document.getElementById('dash-top-clientes');
+                if(listaTopEl) {
+                    if(topClients.length === 0) {
+                        listaTopEl.innerHTML = '<li class="p-4 text-gray-500 text-center text-xs">Nenhum cliente com serviços concluídos neste período.</li>';
+                    } else {
+                        const medalhas = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣'];
+                        listaTopEl.innerHTML = topClients.map((tc, index) => {
+                            const c = (clientes || []).find(cli => String(cli.id) === String(tc.id));
+                            const cNome = c ? c.nome : 'Cliente Removido';
+                            return `<li class="p-3 flex justify-between items-center hover:bg-zinc-800 transition border-zinc-800 border-b last:border-0">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-xl">${medalhas[index]}</span>
+                                    <div class="min-w-0">
+                                        <p class="font-bold text-gray-200 truncate">${cNome}</p>
+                                        <p class="text-xs text-gray-500">${tc.count} serviço(s) finalizado(s)</p>
+                                    </div>
+                                </div>
+                                <p class="text-sm font-bold text-green-500">R$ ${tc.total.toLocaleString('pt-BR', {minimumFractionDigits:2})}</p>
+                            </li>`;
+                        }).join('');
+                    }
+                }
+
+                // Lista Dinâmica de OS
                 const termoPesquisa = (document.getElementById('busca-os')?.value || '').toLowerCase();
                 
                 let ultimosOS = (orcamentos || []).filter(o => {
@@ -1082,15 +1110,17 @@
 
                 const alertas = [];
                 (orcamentos || []).forEach(o => {
-                    if(o.status === 'Concluído' && typeof o.data === 'string' && o.data.includes('/')) {
-                        const partes = o.data.split('/');
-                        if(partes.length === 3) {
-                            const dataOS = new Date(partes[2], partes[1] - 1, partes[0]);
+                    const statusStr = o.status ? o.status.trim().toLowerCase() : '';
+                    if (statusStr === 'concluído' || statusStr === 'concluido') {
+                        const d = extrairData(o.data);
+                        if (d) {
+                            const dataOS = new Date(d.ano, parseInt(d.mes) - 1, d.dia);
                             const diffDays = Math.ceil(Math.abs(new Date() - dataOS) / (1000 * 60 * 60 * 24));
                             if(diffDays >= 330 && diffDays <= 390) alertas.push(o);
                         }
                     }
                 });
+                
                 const divAlerta = document.getElementById('alerta-manutencao');
                 if(divAlerta) {
                     if(alertas.length > 0) {
@@ -1241,16 +1271,21 @@
 
                 const valorTotal = parseFloat(orcamento.valor || 0);
                 document.getElementById('print-valor-total').innerText = valorTotal.toLocaleString('pt-BR', {minimumFractionDigits: 2});
-                document.getElementById('print-rodape-data').innerText = `Maricá, ${orcamento.data || ''}`;
                 
+                // DATA DO RODAPÉ CORRIGIDA
+                let dataRodape = orcamento.data || '';
+                const d = extrairData(orcamento.data);
+                if(d) {
+                    dataRodape = `${d.dia}/${d.mes}/${d.ano}`;
+                }
+                document.getElementById('print-rodape-data').innerText = `Maricá, ${dataRodape}`;
+                
+                // VALIDADE DO ORÇAMENTO CORRIGIDA
                 let validadeStr = '';
-                if(tipo === 'Orçamento' && typeof orcamento.data === 'string' && orcamento.data.includes('/')) {
-                    const partes = orcamento.data.split('/');
-                    if(partes.length === 3) {
-                        const dataObj = new Date(partes[2], partes[1] - 1, partes[0]);
-                        dataObj.setDate(dataObj.getDate() + 10);
-                        validadeStr = dataObj.toLocaleDateString('pt-BR');
-                    }
+                if(tipo === 'Orçamento' && d) {
+                    const dataObj = new Date(d.ano, parseInt(d.mes) - 1, d.dia);
+                    dataObj.setDate(dataObj.getDate() + 10);
+                    validadeStr = dataObj.toLocaleDateString('pt-BR');
                 }
                 document.getElementById('print-validade').innerHTML = validadeStr ? `Documento válido até <strong>${validadeStr}</strong>.` : '';
 
