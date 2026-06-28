@@ -95,7 +95,6 @@
         .toast.error { background-color: #dc2626; }
         .toast.info { background-color: #2563eb; }
 
-        /* TELA DE LOGIN */
         #login-screen { position: fixed; inset: 0; background: #000; z-index: 99999; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; transition: opacity 0.5s; }
         .pin-input { font-size: 2rem; text-align: center; letter-spacing: 0.5em; font-weight: bold; }
 
@@ -211,6 +210,7 @@
                             <option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option>
                             <option value="2027">2027</option><option value="2028">2028</option><option value="2029">2029</option>
                         </select>
+                        <button onclick="forcarSincronizacao()" title="Sincronizar Dados" class="bg-blue-700 hover:bg-blue-600 text-white font-bold py-2 px-3 rounded shadow transition">🔄</button>
                         <button onclick="exportarCSV()" title="Exportar Excel" class="bg-green-700 hover:bg-green-600 text-white font-bold py-2 px-3 rounded shadow transition">📥</button>
                     </div>
                 </div>
@@ -264,11 +264,11 @@
             <div id="clientes" class="section">
                 <h2 class="text-xl font-bold text-white mb-4">Novo Cliente</h2>
                 <div class="space-y-4 max-w-xl">
-                    <div><label>Nome do Cliente</label><input type="text" id="cli-nome" placeholder="Ex: Rafael Silva"></div>
+                    <div><label>Nome do Cliente</label><input type="text" id="cli-nome" spellcheck="false" placeholder="Ex: Rafael Silva"></div>
                     <div><label>Telefone / WhatsApp</label><input type="tel" id="cli-tel" placeholder="21900000000"></div>
                     <div class="grid grid-cols-3 gap-2">
                         <div class="col-span-1"><label>CEP</label><input type="tel" id="cli-cep" placeholder="Números" maxlength="8"></div>
-                        <div class="col-span-2"><label>Endereço Completo</label><input type="text" id="cli-end" placeholder="Rua, Número, Bairro"></div>
+                        <div class="col-span-2"><label>Endereço Completo</label><input type="text" id="cli-end" spellcheck="true" lang="pt-BR" placeholder="Rua, Número, Bairro"></div>
                     </div>
                     <button onclick="salvarCliente()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow-lg">Cadastrar Cliente</button>
                 </div>
@@ -280,7 +280,7 @@
                 <h2 class="text-xl font-bold text-white mb-4">Catálogo Padrão Inteligente</h2>
                 <p class="text-sm text-gray-400 mb-4">Cadastre serviços com preço para preencher e somar na OS automaticamente.</p>
                 <div class="space-y-4 mb-6 p-4 bg-zinc-900 rounded-xl border border-zinc-800 max-w-xl transition-colors">
-                    <div><label>Nome do Item</label><input type="text" id="cat-nome" placeholder="Ex: Instalação Wallbox 7kW"></div>
+                    <div><label>Nome do Item</label><input type="text" id="cat-nome" spellcheck="true" lang="pt-BR" placeholder="Ex: Instalação Wallbox 7kW"></div>
                     <div class="grid grid-cols-2 gap-2">
                         <div>
                             <label>Tipo</label>
@@ -289,7 +289,7 @@
                                 <option value="material">Material</option>
                             </select>
                         </div>
-                        <div><label>Preço Padrão (R$)</label><input type="number" id="cat-preco" placeholder="0.00" inputmode="decimal"></div>
+                        <div><label>Preço Padrão (R$)</label><input type="text" id="cat-preco" placeholder="0,00" inputmode="decimal"></div>
                     </div>
                     <button onclick="salvarItemCatalogo()" class="w-full bg-zinc-700 hover:bg-zinc-600 text-white font-bold py-3 rounded-lg transition-colors">Adicionar ao Catálogo</button>
                 </div>
@@ -312,7 +312,7 @@
                         <div id="chips-catalogo"></div>
                     </div>
                     
-                    <div><label>Mão de Obra (Serviços)</label><textarea id="orc-desc" rows="3" placeholder="Passagem de circuitos..."></textarea></div>
+                    <div><label>Mão de Obra (Serviços)</label><textarea id="orc-desc" rows="3" spellcheck="true" lang="pt-BR" placeholder="Passagem de circuitos..."></textarea></div>
                     
                     <div>
                         <label>Fornecimento de Materiais</label>
@@ -321,22 +321,22 @@
                             <option value="Fornecidos pela BRvolts (Inclusos no valor)">Fornecidos pela BRvolts (Inclusos no valor)</option>
                         </select>
                     </div>
-                    <div><label>Lista de Materiais (Opcional)</label><textarea id="orc-materiais" rows="2" placeholder="Ex: Disjuntores, 10m Cabo 6mm..."></textarea></div>
+                    <div><label>Lista de Materiais (Opcional)</label><textarea id="orc-materiais" rows="2" spellcheck="true" lang="pt-BR" placeholder="Ex: Disjuntores, 10m Cabo 6mm..."></textarea></div>
                     
-                    <div><label>Observações Técnicas</label><textarea id="orc-obs" rows="2" placeholder="O serviço exige desmontagem..."></textarea></div>
+                    <div><label>Observações Técnicas</label><textarea id="orc-obs" rows="2" spellcheck="true" lang="pt-BR" placeholder="O serviço exige desmontagem..."></textarea></div>
                     
                     <div>
-                        <label>Fotos de Registro</label>
-                        <label for="orc-fotos" class="file-upload-btn">📸 Anexar Imagens</label>
+                        <label>Fotos de Registro (Duração 24h na Nuvem)</label>
+                        <label for="orc-fotos" class="file-upload-btn">📸 Selecionar Imagens</label>
                         <input type="file" id="orc-fotos" accept="image/*" multiple onchange="processarFotos(event)">
                         <div id="preview-fotos" class="flex flex-wrap gap-2 mt-2"></div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div><label>Valor Total do Serviço (R$)</label><input type="number" id="orc-valor" placeholder="1100.00" inputmode="decimal"></div>
+                        <div><label>Valor Total do Serviço (R$)</label><input type="text" id="orc-valor" placeholder="1100,00" inputmode="decimal"></div>
                         <div>
                             <label class="text-red-500">Suas Despesas Internas (R$)</label>
-                            <input type="number" id="orc-despesas" placeholder="0.00" class="border-red-900/50 bg-red-900/10 focus:border-red-500 text-red-500 font-bold" inputmode="decimal">
+                            <input type="text" id="orc-despesas" placeholder="0,00" class="border-red-900/50 bg-red-900/10 focus:border-red-500 text-red-500 font-bold" inputmode="decimal">
                         </div>
                     </div>
 
@@ -447,9 +447,9 @@
             <p><strong>Garantia de Qualidade:</strong> Garantia de 90 dias para a mão de obra prestada, conforme art. 26 do Código de Defesa do Consumidor (CDC).</p>
         </div>
 
-        <div class="doc-signatures">
+        <div class="doc-signatures" id="print-area-assinatura" style="display:none;">
             <div class="signature-box" id="print-box-cliente">
-                <img id="print-img-assinatura" class="signature-img" style="display:none;" src="">
+                <img id="print-img-assinatura" class="signature-img" src="">
                 <div class="signature-line" id="print-assinatura-cliente">Nome do Cliente</div>
                 <div class="signature-sub">Cliente / Responsável</div>
             </div>
@@ -461,13 +461,23 @@
             <a href="https://g.page/r/CbiafVBOu7JAEBM/review" target="_blank" class="btn-avaliacao">
                 <svg viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
                 Avalie-nos no Google
-                <div class="stars"><svg viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg><svg viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg><svg viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg><svg viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg></div>
+                <div class="stars"><svg viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg><svg viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg><svg viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg><svg viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg><svg viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg></div>
             </a>
         </div>
     </div>
 
     <script>
-        // Função universal para garantir que as datas são lidas independentemente de virem do Supabase (YYYY-MM-DD) ou de introdução manual (DD/MM/YYYY)
+        function parseDinheiro(val) {
+            if (!val) return 0;
+            const str = String(val).replace(/[R$\s]/g, '').replace(/\./g, '').replace(',', '.');
+            return parseFloat(str) || 0;
+        }
+
+        function formatarDinheiroInput(val) {
+            if (!val) return '';
+            return parseFloat(val).toFixed(2).replace('.', ',');
+        }
+
         function extrairData(dataString) {
             if (!dataString) return null;
             let dia, mes, ano;
@@ -487,7 +497,12 @@
             return null;
         }
 
-        // --- SISTEMA DE LOGIN LOCAL ---
+        async function forcarSincronizacao() {
+            document.getElementById('global-loader').style.display = 'flex';
+            await initApp();
+            showToast("Nuvem sincronizada com sucesso!", "success");
+        }
+
         function checkLogin() {
             const savedPin = localStorage.getItem('brvolts_pin');
             const loginScreen = document.getElementById('login-screen');
@@ -540,7 +555,6 @@
 
         checkLogin();
 
-        // --- SISTEMA PRINCIPAL ---
         let supabaseClient = null;
         try {
             if (window.supabase) {
@@ -722,8 +736,7 @@
             try {
                 const nome = document.getElementById('cat-nome').value;
                 const tipo = document.getElementById('cat-tipo').value;
-                const precoRaw = document.getElementById('cat-preco').value;
-                const preco = precoRaw ? parseFloat(precoRaw) : 0;
+                const preco = parseDinheiro(document.getElementById('cat-preco').value);
 
                 if(!nome) return showToast("Preencha o nome do item!", "error");
                 
@@ -768,37 +781,63 @@
 
                 if(item.preco > 0) {
                     const valorEl = document.getElementById('orc-valor');
-                    const atual = parseFloat(valorEl.value || 0);
-                    valorEl.value = atual + item.preco;
+                    const atual = parseDinheiro(valorEl.value);
+                    valorEl.value = formatarDinheiroInput(atual + item.preco);
                 }
 
                 showToast("Item e preço adicionados!", "info");
             } catch(e) {}
         }
 
-        function processarFotos(event) {
+        // ==========================================
+        // SISTEMA DE FOTOS INTELIGENTE (IMGBB)
+        // ==========================================
+        const IMGBB_API_KEY = '34c16686fb4cdc4ae33bc426bebfda47'; // <-- INSIRA A SUA CHAVE DO IMGBB AQUI DENTRO DAS ASPAS
+
+        async function processarFotos(event) {
             try {
                 const files = event.target.files;
                 if(!files.length) return;
-                showToast("Processando imagens...", "info");
+                
+                showToast("Enviando imagens para a nuvem (24h)...", "info");
+                document.getElementById('global-loader').style.display = 'flex';
+
                 for(let file of files) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const img = new Image();
-                        img.onload = function() {
-                            const canvas = document.createElement('canvas');
-                            let w = img.width; let h = img.height;
-                            if (w > h) { if (w > 800) { h *= 800 / w; w = 800; } } else { if (h > 800) { w *= 800 / h; h = 800; } }
-                            canvas.width = w; canvas.height = h;
-                            canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-                            fotosTemporarias.push(canvas.toDataURL('image/jpeg', 0.6));
-                            atualizarPreviewFotos();
+                    const base64 = await new Promise((resolve) => {
+                        const reader = new FileReader();
+                        reader.onload = (e) => resolve(e.target.result);
+                        reader.readAsDataURL(file);
+                    });
+
+                    if(!IMGBB_API_KEY || IMGBB_API_KEY === '') {
+                        fotosTemporarias.push(base64);
+                    } else {
+                        try {
+                            const formData = new FormData();
+                            formData.append('image', base64.split(',')[1]);
+                            formData.append('expiration', 86400); // 24 horas em segundos
+
+                            const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                                method: 'POST', body: formData
+                            });
+                            const data = await res.json();
+                            
+                            if(data && data.data && data.data.url) {
+                                fotosTemporarias.push(data.data.url);
+                            } else {
+                                fotosTemporarias.push(base64);
+                            }
+                        } catch(err) {
+                            fotosTemporarias.push(base64);
                         }
-                        img.src = e.target.result;
                     }
-                    reader.readAsDataURL(file);
+                    atualizarPreviewFotos();
                 }
-            } catch(e) {}
+                document.getElementById('global-loader').style.display = 'none';
+                showToast("Imagens prontas!", "success");
+            } catch(e) {
+                document.getElementById('global-loader').style.display = 'none';
+            }
         }
 
         function atualizarPreviewFotos() {
@@ -817,6 +856,9 @@
             } catch(e) { return "9999-001"; }
         }
 
+        // ==========================================
+        // CORREÇÃO DO BUG DE APAGAR O VALOR NA EDIÇÃO
+        // ==========================================
         async function salvarOrcamento() {
             try {
                 const clienteIdEl = document.getElementById('orc-cliente');
@@ -829,38 +871,40 @@
                 const materiaisStatus = matStatusEl ? matStatusEl.value : '';
                 const matListaEl = document.getElementById('orc-materiais');
                 const materiaisLista = matListaEl ? matListaEl.value : '';
-                const valorEl = document.getElementById('orc-valor');
-                const valor = valorEl ? valorEl.value : 0;
-                const despesasEl = document.getElementById('orc-despesas');
-                const despesas = despesasEl ? despesasEl.value : 0;
+                
+                const valor = parseDinheiro(document.getElementById('orc-valor').value);
+                const despesas = parseDinheiro(document.getElementById('orc-despesas').value);
 
                 if(!clienteId || !desc) return showToast('Selecione o cliente e preencha a descrição!', 'error');
                 
                 if(editandoOSId) {
-                    const os = orcamentos.find(o => String(o.id) === String(editandoOSId));
+                    const idProtegido = editandoOSId; // Salva o ID antes de apagar a tela!
+                    
+                    const os = orcamentos.find(o => String(o.id) === String(idProtegido));
                     if(os) {
                         os.clienteId = parseInt(clienteId);
                         os.desc = desc;
                         os.obs = obs;
                         os.materiaisStatus = materiaisStatus;
                         os.materiaisLista = materiaisLista;
-                        os.valor = parseFloat(valor);
-                        os.despesas = parseFloat(despesas);
+                        os.valor = valor;
+                        os.despesas = despesas;
                         os.fotos = [...fotosTemporarias];
+                    }
+                    
+                    if(supabaseClient) {
+                        await supabaseClient.from('servicos').update({
+                            cliente_id: clienteId, descricao: desc, observacoes: obs,
+                            materiais_status: materiaisStatus, materiais_lista: materiaisLista,
+                            valor_servico: valor, despesas: despesas,
+                            fotos: [...fotosTemporarias] // Guarda fotos no banco
+                        }).eq('id', idProtegido);
                     }
                     
                     atualizarTelas();
                     showToast('Orçamento atualizado!');
                     limparFormularioOS();
                     mudarAba('os');
-
-                    if(supabaseClient) {
-                        await supabaseClient.from('servicos').update({
-                            cliente_id: clienteId, descricao: desc, observacoes: obs,
-                            materiais_status: materiaisStatus, materiais_lista: materiaisLista,
-                            valor_servico: parseFloat(valor), despesas: parseFloat(despesas)
-                        }).eq('id', editandoOSId);
-                    }
                     
                 } else {
                     const numOs = gerarNumeroOS();
@@ -869,7 +913,7 @@
 
                     const novaOs = { 
                         id: tempId, osNumber: numOs, clienteId: parseInt(clienteId), 
-                        desc, obs, materiaisStatus, materiaisLista, valor: parseFloat(valor), despesas: parseFloat(despesas),
+                        desc, obs, materiaisStatus, materiaisLista, valor: valor, despesas: despesas,
                         data: dataServ, status: 'Pendente', fotos: [...fotosTemporarias]
                     };
                     
@@ -883,8 +927,9 @@
                         const { data, error } = await supabaseClient.from('servicos').insert([{
                             cliente_id: clienteId, os_number: numOs, descricao: desc, observacoes: obs,
                             materiais_status: materiaisStatus, materiais_lista: materiaisLista,
-                            valor_servico: parseFloat(valor), despesas: parseFloat(despesas),
-                            data_servico: dataServ, status: 'Pendente'
+                            valor_servico: valor, despesas: despesas,
+                            data_servico: dataServ, status: 'Pendente',
+                            fotos: [...fotosTemporarias] // Guarda fotos no banco
                         }]).select();
 
                         if(!error && data && data.length > 0) {
@@ -894,7 +939,7 @@
                         }
                     }
                 }
-            } catch(e) { showToast("Erro crítico", "error"); }
+            } catch(e) { showToast("Erro crítico ao salvar", "error"); }
         }
 
         function clonarOS(id) {
@@ -907,8 +952,8 @@
             document.getElementById('orc-materiais-status').value = os.materiaisStatus;
             document.getElementById('orc-materiais').value = os.materiaisLista;
             document.getElementById('orc-obs').value = os.obs;
-            document.getElementById('orc-valor').value = os.valor;
-            document.getElementById('orc-despesas').value = os.despesas;
+            document.getElementById('orc-valor').value = formatarDinheiroInput(os.valor);
+            document.getElementById('orc-despesas').value = formatarDinheiroInput(os.despesas);
             
             fotosTemporarias = [...(os.fotos || [])];
             atualizarPreviewFotos();
@@ -927,8 +972,8 @@
             document.getElementById('orc-materiais-status').value = os.materiaisStatus;
             document.getElementById('orc-materiais').value = os.materiaisLista;
             document.getElementById('orc-obs').value = os.obs;
-            document.getElementById('orc-valor').value = os.valor;
-            document.getElementById('orc-despesas').value = os.despesas;
+            document.getElementById('orc-valor').value = formatarDinheiroInput(os.valor);
+            document.getElementById('orc-despesas').value = formatarDinheiroInput(os.despesas);
             
             fotosTemporarias = [...(os.fotos || [])];
             atualizarPreviewFotos();
@@ -1035,7 +1080,6 @@
                 pDesp.innerText = `R$ ${despesas.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
                 pLucro.innerText = `R$ ${(faturamento - despesas).toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
 
-                // RENDERIZAR TOP 5 CLIENTES
                 const topClients = Object.keys(clientesStats)
                     .map(cid => ({ id: cid, ...clientesStats[cid] }))
                     .sort((a, b) => b.total - a.total)
@@ -1064,7 +1108,6 @@
                     }
                 }
 
-                // Lista Dinâmica de OS
                 const termoPesquisa = (document.getElementById('busca-os')?.value || '').toLowerCase();
                 
                 let ultimosOS = (orcamentos || []).filter(o => {
@@ -1090,7 +1133,7 @@
                                 <p class="text-xs text-gray-400 truncate md:hidden w-full mt-1">${cNome}</p>
                             </div>
                             <div class="hidden md:block flex-1 min-w-0 md:w-1/4"><p class="text-sm text-gray-300 truncate">${cNome}</p></div>
-                            <div class="hidden md:block flex-1 min-w-0 md:w-1/4"><p class="text-sm font-bold text-green-500">R$ ${(o.valor||0).toLocaleString('pt-BR', {minimumFractionDigits:2})}</p></div>
+                            <div class="hidden md:block flex-1 min-w-0 md:w-1/4"><p class="text-sm font-bold text-green-500">R$ ${(parseFloat(o.valor)||0).toLocaleString('pt-BR', {minimumFractionDigits:2})}</p></div>
                             
                             <div class="flex justify-between items-center md:w-1/4 gap-3 border-t border-zinc-800/50 md:border-0 pt-2 md:pt-0">
                                 <select onchange="mudarStatusOS(${o.id}, this.value)" class="text-[10px] p-1.5 bg-zinc-800 border border-zinc-700 rounded text-white w-24 shrink-0 outline-none">
@@ -1185,7 +1228,7 @@
                         const cNome = c && c.nome ? c.nome : 'Removido';
                         const osNum = o.osNumber || 'S/N';
                         const reqAss = o.assinaturaCliente ? '✍️ ' : '';
-                        return `<option value="${o.id}">${reqAss}OS ${osNum} | ${cNome} - R$ ${(o.valor||0).toLocaleString('pt-BR', {minimumFractionDigits:2})}</option>`;
+                        return `<option value="${o.id}">${reqAss}OS ${osNum} | ${cNome} - R$ ${(parseFloat(o.valor)||0).toLocaleString('pt-BR', {minimumFractionDigits:2})}</option>`;
                     }).join('');
                     selectOS.innerHTML = '<option value="" disabled selected>Escolha o serviço salvo...</option>' + optionsOrcamentos;
                 }
@@ -1272,7 +1315,6 @@
                 const valorTotal = parseFloat(orcamento.valor || 0);
                 document.getElementById('print-valor-total').innerText = valorTotal.toLocaleString('pt-BR', {minimumFractionDigits: 2});
                 
-                // DATA DO RODAPÉ CORRIGIDA
                 let dataRodape = orcamento.data || '';
                 const d = extrairData(orcamento.data);
                 if(d) {
@@ -1280,7 +1322,6 @@
                 }
                 document.getElementById('print-rodape-data').innerText = `Maricá, ${dataRodape}`;
                 
-                // VALIDADE DO ORÇAMENTO CORRIGIDA
                 let validadeStr = '';
                 if(tipo === 'Orçamento' && d) {
                     const dataObj = new Date(d.ano, parseInt(d.mes) - 1, d.dia);
@@ -1299,13 +1340,21 @@
                     } else { sf.style.display = 'none'; }
                 }
 
+                // CONTROLE DO BLOCO DE ASSINATURA
+                const sigContainer = document.getElementById('print-area-assinatura');
                 const imgAss = document.getElementById('print-img-assinatura');
-                if(imgAss) {
-                    if(orcamento.assinaturaCliente) { 
+                
+                if(orcamento.assinaturaCliente) { 
+                    if(imgAss) {
                         imgAss.src = orcamento.assinaturaCliente; 
                         imgAss.style.display = 'block'; 
-                    } else { imgAss.style.display = 'none'; }
+                    }
+                    if(sigContainer) sigContainer.style.display = 'flex';
+                } else { 
+                    if(imgAss) imgAss.style.display = 'none'; 
+                    if(sigContainer) sigContainer.style.display = 'none'; 
                 }
+
                 document.getElementById('print-assinatura-cliente').innerText = cliente.nome || '';
 
                 let linkWhatsApp = null;
