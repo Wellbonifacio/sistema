@@ -363,6 +363,7 @@
                             <input type="text" id="orc-despesas" placeholder="0,00" class="border-red-900/50 bg-red-900/10 focus:border-red-500 text-red-500 font-bold" inputmode="decimal">
                         </div>
                         
+                        <!-- TOGGLE DE PAGAMENTO -->
                         <div class="col-span-1 md:col-span-2 flex items-center justify-between bg-zinc-900 p-4 rounded-xl border border-zinc-800 mt-2">
                             <div>
                                 <p class="font-bold text-sm text-white">Status de Pagamento</p>
@@ -373,7 +374,7 @@
                                 <label for="orc-pago" class="toggle-label block overflow-hidden h-6 rounded-full bg-zinc-700 cursor-pointer transition-colors duration-300"></label>
                             </div>
                         </div>
-                        </div>
+                    </div>
 
                     <button id="btn-salvar-os" onclick="salvarOrcamento()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow-lg mt-4 transition">Salvar Orçamento (Ctrl+S)</button>
                     <button id="btn-cancelar-edicao" onclick="cancelarEdicaoOS()" class="w-full bg-zinc-700 hover:bg-zinc-600 text-white font-bold py-3 px-4 rounded-lg mt-2 hidden transition">Cancelar Edição</button>
@@ -444,7 +445,9 @@
     </div>
 
     <div id="print-area">
+        <!-- CARIMBO PAGO -->
         <div id="carimbo-pago-print" class="carimbo-pago-css">PAGO</div>
+        
         <div class="doc-header">
             <div class="doc-logo"><img src="logo_pdf.png" alt="BRvolts Logo"><h2>Soluções em Eletricidade</h2><p>CPF: 165.*** ***-30</p><p>Rua Nilo Ribeiro N° 44</p><p>Ubatiba - Maricá</p></div>
             <div class="doc-contacts">
@@ -463,7 +466,8 @@
         <div class="doc-section">
             <div class="payment-grid">
                 <div class="payment-conditions">
-                    </div>
+                    <!-- Dinâmico via JS -->
+                </div>
                 <div class="pix-box">
                     <h4><img src="Pix_logo.png" alt="Pix" style="height: 18px; width: auto; margin-right: 6px;">Pague com PIX</h4>
                     <p>Chave (CPF): <strong>16562195730</strong></p>
@@ -1403,7 +1407,6 @@
                 const carimboPago = document.getElementById('carimbo-pago-print');
                 const condicoesContainer = document.querySelector('.payment-conditions');
 
-                // Lógica de exibir o carimbo e esconder o PIX para OS pagas. Recibo automaticamente assume que pagou.
                 if (estaPago && (tipo === 'OS' || tipo === 'Recibo')) {
                     if (pixBox) pixBox.style.display = 'none';
                     if (carimboPago) carimboPago.classList.add('ativo');
@@ -1412,33 +1415,29 @@
                     if (carimboPago) carimboPago.classList.remove('ativo');
                 }
 
-                // Textos dinâmicos de pagamento
+                const textoFormas = `
+                    <p><strong>Formas aceitas:</strong></p>
+                    <p>• PIX, Dinheiro em espécie</p>
+                    <p>• Cartões (Aproximação)</p>
+                    <p>• Crédito à vista</p>
+                    <p>• Crédito parcelado (juros por parte do cliente)</p>
+                    <p>• Débito</p>
+                `;
+
+                const textoPago = `
+                    <p><strong>Situação:</strong> <span style="color: #16a34a; font-weight: bold;">SERVIÇO PAGO</span></p>
+                    <p>Obrigado pela preferência e confiança na BRvolts!</p>
+                `;
+
                 if (tipo === 'Orçamento') {
-                    condicoesContainer.innerHTML = `
-                        <h3>Pagamento</h3>
-                        <p><strong>Condições Gerais:</strong></p>
-                        <p>• 50% de entrada para agendamento e início do serviço.</p>
-                        <p>• 50% na conclusão da instalação.</p>
-                        <br>
-                        <p><strong>Formas aceitas:</strong></p>
-                        <p>• PIX, Dinheiro em espécie</p>
-                        <p>• Cartões (Aproximação)</p>
-                        <p>• Crédito à vista ou Crédito parcelado (juros por parte do cliente)</p>
-                        <p>• Débito</p>
-                    `;
-                } else {
-                    // Para OS e Recibos
-                    if(estaPago) {
-                        condicoesContainer.innerHTML = `
-                            <h3>Pagamento</h3>
-                            <p><strong>Situação:</strong> <span style="color: #16a34a; font-weight: bold;">SERVIÇO PAGO</span></p>
-                            <p>Obrigado pela preferência e confiança na BRvolts!</p>
-                        `;
+                    condicoesContainer.innerHTML = `<h3>Pagamento</h3>` + textoFormas;
+                } else if (tipo === 'Recibo') {
+                    condicoesContainer.innerHTML = `<h3>Pagamento</h3>` + (estaPago ? textoPago + '<br>' : '') + textoFormas;
+                } else if (tipo === 'OS') {
+                    if (estaPago) {
+                        condicoesContainer.innerHTML = `<h3>Pagamento</h3>` + textoPago;
                     } else {
-                        condicoesContainer.innerHTML = `
-                            <h3>Pagamento</h3>
-                            <p><strong>Condições:</strong><br>• 50% de entrada para agendamento e início do serviço;<br>• 50% na conclusão da instalação.</p>
-                        `;
+                        condicoesContainer.innerHTML = `<h3>Pagamento</h3>` + textoFormas;
                     }
                 }
 
