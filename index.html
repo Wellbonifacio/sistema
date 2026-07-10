@@ -99,7 +99,7 @@
         .pin-input { font-size: 2rem; text-align: center; letter-spacing: 0.5em; font-weight: bold; }
 
         /* ESTILOS DE IMPRESSÃO */
-        #print-area { display: none; }
+        #print-area { display: none; position: relative; }
         @media print {
             @page { size: A4; margin: 8mm 10mm; }
             body * { visibility: hidden; }
@@ -122,7 +122,8 @@
             .print-fotos-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
             .print-fotos-grid img { width: 48%; height: 200px; object-fit: cover; border: 1px solid #cbd5e1; border-radius: 6px; page-break-inside: avoid; }
             .payment-grid { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px; }
-            .payment-conditions { width: 55%; }
+            .payment-conditions { width: 55%; font-size: 9pt; }
+            .payment-conditions p { margin: 3px 0; }
             .pix-box { width: 40%; background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 10px; font-size: 9pt; }
             .pix-box h4 { margin: 0 0 5px 0; color: #166534; font-size: 10pt; display: flex; align-items: center; gap: 4px; }
             .pix-box p { margin: 2px 0; line-height: 1.3; }
@@ -142,6 +143,29 @@
             .btn-avaliacao svg { width: 18px; height: 18px; margin-right: 8px; }
             .stars { display: flex; margin-left: 8px; gap: 2px; }
             .stars svg { width: 14px; height: 14px; fill: #FBBC05; margin: 0; }
+            
+            /* CARIMBO PAGO */
+            .carimbo-pago-css {
+                display: none;
+                position: absolute;
+                top: 55%;
+                left: 50%;
+                transform: translate(-50%, -50%) rotate(-25deg);
+                font-size: 65pt;
+                font-weight: 900;
+                color: #16a34a;
+                border: 8px solid #16a34a;
+                border-radius: 15px;
+                padding: 10px 40px;
+                text-transform: uppercase;
+                letter-spacing: 10px;
+                opacity: 0.3;
+                pointer-events: none;
+                z-index: 9999;
+            }
+            .carimbo-pago-css.ativo {
+                display: block !important;
+            }
         }
 
         #mobile-print-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; }
@@ -338,7 +362,18 @@
                             <label class="text-red-500">Suas Despesas Internas (R$)</label>
                             <input type="text" id="orc-despesas" placeholder="0,00" class="border-red-900/50 bg-red-900/10 focus:border-red-500 text-red-500 font-bold" inputmode="decimal">
                         </div>
-                    </div>
+                        
+                        <div class="col-span-1 md:col-span-2 flex items-center justify-between bg-zinc-900 p-4 rounded-xl border border-zinc-800 mt-2">
+                            <div>
+                                <p class="font-bold text-sm text-white">Status de Pagamento</p>
+                                <p class="text-xs text-gray-400">Marque se o serviço já foi pago pelo cliente.</p>
+                            </div>
+                            <div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+                                <input type="checkbox" id="orc-pago" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer border-zinc-700 transition-all duration-300"/>
+                                <label for="orc-pago" class="toggle-label block overflow-hidden h-6 rounded-full bg-zinc-700 cursor-pointer transition-colors duration-300"></label>
+                            </div>
+                        </div>
+                        </div>
 
                     <button id="btn-salvar-os" onclick="salvarOrcamento()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow-lg mt-4 transition">Salvar Orçamento (Ctrl+S)</button>
                     <button id="btn-cancelar-edicao" onclick="cancelarEdicaoOS()" class="w-full bg-zinc-700 hover:bg-zinc-600 text-white font-bold py-3 px-4 rounded-lg mt-2 hidden transition">Cancelar Edição</button>
@@ -409,6 +444,7 @@
     </div>
 
     <div id="print-area">
+        <div id="carimbo-pago-print" class="carimbo-pago-css">PAGO</div>
         <div class="doc-header">
             <div class="doc-logo"><img src="logo_pdf.png" alt="BRvolts Logo"><h2>Soluções em Eletricidade</h2><p>CPF: 165.*** ***-30</p><p>Rua Nilo Ribeiro N° 44</p><p>Ubatiba - Maricá</p></div>
             <div class="doc-contacts">
@@ -427,9 +463,7 @@
         <div class="doc-section">
             <div class="payment-grid">
                 <div class="payment-conditions">
-                    <h3>Pagamento</h3>
-                    <p><strong>Condições:</strong><br>• 50% de entrada para agendamento e início do serviço;<br>• 50% na conclusão da instalação.</p>
-                </div>
+                    </div>
                 <div class="pix-box">
                     <h4><img src="Pix_logo.png" alt="Pix" style="height: 18px; width: auto; margin-right: 6px;">Pague com PIX</h4>
                     <p>Chave (CPF): <strong>16562195730</strong></p>
@@ -636,7 +670,7 @@
                             id: s.id, osNumber: s.os_number || '', clienteId: s.cliente_id, desc: s.descricao || '', obs: s.observacoes || '',
                             materiaisStatus: s.materiais_status || '', materiaisLista: s.materiais_lista || '', valor: s.valor_servico || 0,
                             despesas: s.despesas || 0, status: s.status || 'Pendente', data: s.data_servico || '', assinaturaCliente: s.assinatura_cliente || '',
-                            fotos: s.fotos || []
+                            fotos: s.fotos || [], pago: s.pago || false
                         }));
                     }
                     if(resCat && resCat.data) catalogo = resCat.data.map(c => ({id: c.id, nome: c.nome || '', tipo: c.tipo || '', preco: c.preco || 0}));
@@ -789,10 +823,7 @@
             } catch(e) {}
         }
 
-        // ==========================================
-        // SISTEMA DE FOTOS INTELIGENTE (IMGBB)
-        // ==========================================
-        const IMGBB_API_KEY = '34c16686fb4cdc4ae33bc426bebfda47'; // <-- INSIRA A SUA CHAVE DO IMGBB AQUI DENTRO DAS ASPAS
+        const IMGBB_API_KEY = '34c16686fb4cdc4ae33bc426bebfda47'; 
 
         async function processarFotos(event) {
             try {
@@ -815,7 +846,7 @@
                         try {
                             const formData = new FormData();
                             formData.append('image', base64.split(',')[1]);
-                            formData.append('expiration', 86400); // 24 horas em segundos
+                            formData.append('expiration', 86400); 
 
                             const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
                                 method: 'POST', body: formData
@@ -856,9 +887,6 @@
             } catch(e) { return "9999-001"; }
         }
 
-        // ==========================================
-        // CORREÇÃO DO BUG DE APAGAR O VALOR NA EDIÇÃO
-        // ==========================================
         async function salvarOrcamento() {
             try {
                 const clienteIdEl = document.getElementById('orc-cliente');
@@ -874,11 +902,12 @@
                 
                 const valor = parseDinheiro(document.getElementById('orc-valor').value);
                 const despesas = parseDinheiro(document.getElementById('orc-despesas').value);
+                const pago = document.getElementById('orc-pago').checked;
 
                 if(!clienteId || !desc) return showToast('Selecione o cliente e preencha a descrição!', 'error');
                 
                 if(editandoOSId) {
-                    const idProtegido = editandoOSId; // Salva o ID antes de apagar a tela!
+                    const idProtegido = editandoOSId; 
                     
                     const os = orcamentos.find(o => String(o.id) === String(idProtegido));
                     if(os) {
@@ -890,6 +919,7 @@
                         os.valor = valor;
                         os.despesas = despesas;
                         os.fotos = [...fotosTemporarias];
+                        os.pago = pago;
                     }
                     
                     if(supabaseClient) {
@@ -897,7 +927,8 @@
                             cliente_id: clienteId, descricao: desc, observacoes: obs,
                             materiais_status: materiaisStatus, materiais_lista: materiaisLista,
                             valor_servico: valor, despesas: despesas,
-                            fotos: [...fotosTemporarias] // Guarda fotos no banco
+                            fotos: [...fotosTemporarias],
+                            pago: pago
                         }).eq('id', idProtegido);
                     }
                     
@@ -914,7 +945,7 @@
                     const novaOs = { 
                         id: tempId, osNumber: numOs, clienteId: parseInt(clienteId), 
                         desc, obs, materiaisStatus, materiaisLista, valor: valor, despesas: despesas,
-                        data: dataServ, status: 'Pendente', fotos: [...fotosTemporarias]
+                        data: dataServ, status: 'Pendente', fotos: [...fotosTemporarias], pago: pago
                     };
                     
                     orcamentos.push(novaOs);
@@ -929,7 +960,8 @@
                             materiais_status: materiaisStatus, materiais_lista: materiaisLista,
                             valor_servico: valor, despesas: despesas,
                             data_servico: dataServ, status: 'Pendente',
-                            fotos: [...fotosTemporarias] // Guarda fotos no banco
+                            fotos: [...fotosTemporarias],
+                            pago: pago
                         }]).select();
 
                         if(!error && data && data.length > 0) {
@@ -954,6 +986,7 @@
             document.getElementById('orc-obs').value = os.obs;
             document.getElementById('orc-valor').value = formatarDinheiroInput(os.valor);
             document.getElementById('orc-despesas').value = formatarDinheiroInput(os.despesas);
+            document.getElementById('orc-pago').checked = os.pago || false;
             
             fotosTemporarias = [...(os.fotos || [])];
             atualizarPreviewFotos();
@@ -974,6 +1007,7 @@
             document.getElementById('orc-obs').value = os.obs;
             document.getElementById('orc-valor').value = formatarDinheiroInput(os.valor);
             document.getElementById('orc-despesas').value = formatarDinheiroInput(os.despesas);
+            document.getElementById('orc-pago').checked = os.pago || false;
             
             fotosTemporarias = [...(os.fotos || [])];
             atualizarPreviewFotos();
@@ -998,6 +1032,8 @@
 
             const ids = ['orc-desc', 'orc-obs', 'orc-materiais', 'orc-valor', 'orc-despesas', 'orc-fotos'];
             ids.forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+            document.getElementById('orc-pago').checked = false;
+
             fotosTemporarias = []; 
             atualizarPreviewFotos();
         }
@@ -1018,14 +1054,15 @@
             if(orcamentos.length === 0) return showToast("Nenhum orçamento para exportar.", "error");
             
             let csvContent = "data:text/csv;charset=utf-8,";
-            csvContent += "OS Numero,Cliente,Data,Status,Valor Total,Despesas,Lucro Bruto\r\n";
+            csvContent += "OS Numero,Cliente,Data,Status,Pago,Valor Total,Despesas,Lucro Bruto\r\n";
 
             orcamentos.forEach(o => {
                 const c = clientes.find(cli => String(cli.id) === String(o.clienteId));
                 const nomeCli = c ? c.nome : "Desconhecido";
                 const lucro = (parseFloat(o.valor || 0) - parseFloat(o.despesas || 0)).toFixed(2);
+                const sitPago = o.pago ? 'Sim' : 'Não';
                 
-                const row = `${o.osNumber},"${nomeCli}",${o.data},${o.status},${o.valor || 0},${o.despesas || 0},${lucro}`;
+                const row = `${o.osNumber},"${nomeCli}",${o.data},${o.status},${sitPago},${o.valor || 0},${o.despesas || 0},${lucro}`;
                 csvContent += row + "\r\n";
             });
 
@@ -1125,11 +1162,12 @@
                         const osNum = o.osNumber || 'S/N';
                         
                         const iconeAssinatura = o.assinaturaCliente ? '<span class="inline-flex items-center gap-1 ml-2 px-2 py-0.5 rounded-full bg-blue-900/50 text-blue-400 text-[10px] font-bold" title="Assinatura Coletada">✍️ Assinado</span>' : '';
+                        const iconePago = o.pago ? '<span class="inline-flex items-center gap-1 ml-2 px-2 py-0.5 rounded-full bg-green-900/50 text-green-400 text-[10px] font-bold">💰 Pago</span>' : '';
 
                         return `<li class="p-3 flex flex-col md:flex-row md:items-center hover:bg-zinc-800 transition gap-2 border-zinc-800 md:border-b">
-                            <div class="flex-1 min-w-0 md:w-1/4 flex items-center">
-                                <p class="font-bold text-gray-200 text-sm truncate">${osNum}</p>
-                                ${iconeAssinatura}
+                            <div class="flex-1 min-w-0 md:w-1/4 flex flex-wrap items-center">
+                                <p class="font-bold text-gray-200 text-sm truncate w-full md:w-auto">${osNum}</p>
+                                <div class="flex mt-1 md:mt-0">${iconeAssinatura}${iconePago}</div>
                                 <p class="text-xs text-gray-400 truncate md:hidden w-full mt-1">${cNome}</p>
                             </div>
                             <div class="hidden md:block flex-1 min-w-0 md:w-1/4"><p class="text-sm text-gray-300 truncate">${cNome}</p></div>
@@ -1228,7 +1266,8 @@
                         const cNome = c && c.nome ? c.nome : 'Removido';
                         const osNum = o.osNumber || 'S/N';
                         const reqAss = o.assinaturaCliente ? '✍️ ' : '';
-                        return `<option value="${o.id}">${reqAss}OS ${osNum} | ${cNome} - R$ ${(parseFloat(o.valor)||0).toLocaleString('pt-BR', {minimumFractionDigits:2})}</option>`;
+                        const checkPago = o.pago ? '💰 ' : '';
+                        return `<option value="${o.id}">${reqAss}${checkPago}OS ${osNum} | ${cNome} - R$ ${(parseFloat(o.valor)||0).toLocaleString('pt-BR', {minimumFractionDigits:2})}</option>`;
                     }).join('');
                     selectOS.innerHTML = '<option value="" disabled selected>Escolha o serviço salvo...</option>' + optionsOrcamentos;
                 }
@@ -1241,7 +1280,7 @@
         let assinando = false;
 
         function resizeCanvas() { if(sigCanvas) { sigCanvas.width = sigCanvas.offsetWidth; sigCanvas.height = sigCanvas.offsetHeight; } }
-        function getCoords(e) { const rect = sigCanvas.getBoundingClientRect(); const cx = e.touches ? e.touches[0].clientX : e.clientX; const cy = e.touches ? e.touches[0].clientY : e.clientY; return { x: cx - rect.left, y: cy - rect.top }; }
+        function getCoords(e) { const rect = sigCanvas.getBoundingClientRect(); const cx = e.touches ? e.touches[0].clientX : e.touches ? e.touches[0].clientX : e.clientX; const cy = e.touches ? e.touches[0].clientY : e.clientY; return { x: cx - rect.left, y: cy - rect.top }; }
 
         if(sigCanvas) {
             sigCanvas.addEventListener('mousedown', (e) => { assinando = true; const pos = getCoords(e); sigCtx.beginPath(); sigCtx.moveTo(pos.x, pos.y); });
@@ -1301,6 +1340,7 @@
 
                 const cliente = (clientes || []).find(c => String(c.id) === String(orcamento.clienteId)) || { nome: 'Cliente Removido', end: '', tel: '' };
                 let tipoTitulo = tipo === 'Orçamento' ? 'Orçamento' : tipo === 'OS' ? 'Ordem de Serviço' : 'Recibo';
+                const estaPago = orcamento.pago || false;
 
                 const pInfo = document.getElementById('print-info');
                 pInfo.innerHTML = `<div><p><strong>${tipoTitulo === 'Recibo' ? 'Recibo de Pagamento' : tipoTitulo}:</strong> ${orcamento.osNumber || '001'}</p><p><strong>Cliente:</strong> ${cliente.nome}</p>${cliente.end ? `<p><strong>Endereço:</strong> ${cliente.end}</p>` : ''}</div><div style="text-align: right;"><p><strong>Data:</strong> ${orcamento.data || ''}</p><p><strong>Telefone:</strong> ${cliente.tel}</p></div>`;
@@ -1330,6 +1370,7 @@
                 }
                 document.getElementById('print-validade').innerHTML = validadeStr ? `Documento válido até <strong>${validadeStr}</strong>.` : '';
 
+                // CONTROLE DE FOTOS
                 const incluirFotos = document.getElementById('chk-incluir-fotos').checked;
                 const sf = document.getElementById('print-section-fotos');
                 if(sf) {
@@ -1340,7 +1381,7 @@
                     } else { sf.style.display = 'none'; }
                 }
 
-                // CONTROLE DO BLOCO DE ASSINATURA
+                // CONTROLE DE ASSINATURA
                 const sigContainer = document.getElementById('print-area-assinatura');
                 const imgAss = document.getElementById('print-img-assinatura');
                 
@@ -1357,6 +1398,51 @@
 
                 document.getElementById('print-assinatura-cliente').innerText = cliente.nome || '';
 
+                // CONTROLE DE CONDIÇÕES DE PAGAMENTO, PIX E CARIMBO
+                const pixBox = document.querySelector('.pix-box');
+                const carimboPago = document.getElementById('carimbo-pago-print');
+                const condicoesContainer = document.querySelector('.payment-conditions');
+
+                // Lógica de exibir o carimbo e esconder o PIX para OS pagas. Recibo automaticamente assume que pagou.
+                if (estaPago && (tipo === 'OS' || tipo === 'Recibo')) {
+                    if (pixBox) pixBox.style.display = 'none';
+                    if (carimboPago) carimboPago.classList.add('ativo');
+                } else {
+                    if (pixBox) pixBox.style.display = 'block';
+                    if (carimboPago) carimboPago.classList.remove('ativo');
+                }
+
+                // Textos dinâmicos de pagamento
+                if (tipo === 'Orçamento') {
+                    condicoesContainer.innerHTML = `
+                        <h3>Pagamento</h3>
+                        <p><strong>Condições Gerais:</strong></p>
+                        <p>• 50% de entrada para agendamento e início do serviço.</p>
+                        <p>• 50% na conclusão da instalação.</p>
+                        <br>
+                        <p><strong>Formas aceitas:</strong></p>
+                        <p>• PIX, Dinheiro em espécie</p>
+                        <p>• Cartões (Aproximação)</p>
+                        <p>• Crédito à vista ou Crédito parcelado (juros por parte do cliente)</p>
+                        <p>• Débito</p>
+                    `;
+                } else {
+                    // Para OS e Recibos
+                    if(estaPago) {
+                        condicoesContainer.innerHTML = `
+                            <h3>Pagamento</h3>
+                            <p><strong>Situação:</strong> <span style="color: #16a34a; font-weight: bold;">SERVIÇO PAGO</span></p>
+                            <p>Obrigado pela preferência e confiança na BRvolts!</p>
+                        `;
+                    } else {
+                        condicoesContainer.innerHTML = `
+                            <h3>Pagamento</h3>
+                            <p><strong>Condições:</strong><br>• 50% de entrada para agendamento e início do serviço;<br>• 50% na conclusão da instalação.</p>
+                        `;
+                    }
+                }
+
+                // GERAÇÃO DO LINK WHATSAPP
                 let linkWhatsApp = null;
                 if(cliente.tel) {
                     let telRaw = String(cliente.tel).replace(/\D/g, '');
