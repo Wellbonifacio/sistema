@@ -207,7 +207,9 @@
                             <option value="2027">2027</option><option value="2028">2028</option><option value="2029">2029</option>
                         </select>
                         <button onclick="forcarSincronizacao()" title="Sincronizar Dados" class="bg-blue-700 hover:bg-blue-600 text-white font-bold py-2 px-3 rounded shadow transition">🔄</button>
-                        <button onclick="exportarCSV()" title="Exportar Excel" class="bg-green-700 hover:bg-green-600 text-white font-bold py-2 px-3 rounded shadow transition">📥</button>
+                        <button onclick="exportarCSV()" title="Exportar Excel" class="bg-green-700 hover:bg-green-600 text-white font-bold py-2 px-3 rounded shadow transition">📥 CSV</button>
+                        <!-- BOTÃO DE BACKUP JSON ADICIONADO -->
+                        <button onclick="exportarJSON()" title="Salvar Backup de Segurança" class="bg-purple-700 hover:bg-purple-600 text-white font-bold py-2 px-3 rounded shadow transition">💾 JSON</button>
                     </div>
                 </div>
                 
@@ -234,10 +236,20 @@
                     <ul id="dash-top-clientes" class="divide-y divide-zinc-800 text-sm"></ul>
                 </div>
 
-                <div id="alerta-manutencao" class="mb-6 hidden">
-                    <h3 class="text-sm font-bold text-yellow-500 mb-2 uppercase flex items-center gap-2">⚠️ Revisão Anual Vencendo</h3>
-                    <div class="bg-yellow-900/20 border border-yellow-700/50 rounded-xl overflow-hidden">
-                        <ul id="lista-alertas" class="divide-y divide-yellow-900/30 text-sm"></ul>
+                <!-- ALERTA MANUTENÇÃO E GARANTIA -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div id="alerta-manutencao" class="hidden">
+                        <h3 class="text-sm font-bold text-yellow-500 mb-2 uppercase flex items-center gap-2">⚠️ Revisão Anual Vencendo</h3>
+                        <div class="bg-yellow-900/20 border border-yellow-700/50 rounded-xl overflow-hidden">
+                            <ul id="lista-alertas" class="divide-y divide-yellow-900/30 text-sm"></ul>
+                        </div>
+                    </div>
+                    
+                    <div id="alerta-garantia" class="hidden">
+                        <h3 class="text-sm font-bold text-blue-400 mb-2 uppercase flex items-center gap-2">🛡️ Garantia Vencendo (90 dias)</h3>
+                        <div class="bg-blue-900/20 border border-blue-700/50 rounded-xl overflow-hidden">
+                            <ul id="lista-garantias" class="divide-y divide-blue-900/30 text-sm"></ul>
+                        </div>
                     </div>
                 </div>
 
@@ -257,7 +269,7 @@
                 </div>
             </div>
 
-            <!-- AGENDA -->
+            <!-- AGENDA (COM CALENDÁRIO VISUAL) -->
             <div id="agenda" class="section">
                 <div class="flex items-center gap-3 mb-6">
                     <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-900/30 text-blue-500">
@@ -269,7 +281,6 @@
                     </div>
                 </div>
 
-                <!-- Visão de Calendário -->
                 <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 mb-6 transition-colors max-w-md mx-auto">
                     <div class="cal-grid" id="calendario-dias">
                         <!-- Gerado via JS -->
@@ -280,7 +291,7 @@
                 <ul id="lista-agenda" class="space-y-4 max-w-2xl"></ul>
             </div>
 
-            <!-- CLIENTES -->
+            <!-- CLIENTES (COM EDIÇÃO E MÁSCARAS) -->
             <div id="clientes" class="section">
                 <h2 class="text-xl font-bold text-white mb-4">Novo Cliente</h2>
                 <div class="space-y-4 max-w-xl">
@@ -313,7 +324,7 @@
                 </div>
             </div>
 
-            <!-- SERVIÇO (ORÇAMENTOS) -->
+            <!-- SERVIÇO (ORÇAMENTOS - MOEDA AUTOMÁTICA) -->
             <div id="orcamentos" class="section">
                 <h2 class="text-xl font-bold text-white mb-4" id="titulo-aba-servico">Descrever Serviço</h2>
                 <div class="space-y-4 max-w-2xl">
@@ -356,7 +367,6 @@
                             <input type="tel" id="orc-despesas" placeholder="R$ 0,00" oninput="maskCurrency(event)" class="border-red-900/50 bg-red-900/10 focus:border-red-500 text-red-500 font-bold">
                         </div>
                         
-                        <!-- TOGGLE DE PAGAMENTO -->
                         <div class="col-span-1 md:col-span-2 flex items-center justify-between bg-zinc-900 p-4 rounded-xl border border-zinc-800 mt-2">
                             <div>
                                 <p class="font-bold text-sm text-white">Status de Pagamento</p>
@@ -407,7 +417,6 @@
 
     <!-- MODAIS -->
 
-    <!-- MODAL DE EDIÇÃO DE CLIENTE -->
     <div id="modal-editar-cliente" class="modal-overlay">
         <div class="modal-content">
             <h3 class="text-white font-bold text-lg mb-4">Editar Cliente</h3>
@@ -424,7 +433,6 @@
         </div>
     </div>
 
-    <!-- MODAL PÓS IMPRESSÃO (WHATSAPP) -->
     <div id="whatsapp-modal" class="modal-overlay">
         <div class="modal-content text-center">
             <h3 class="text-white font-bold text-xl mb-2">Documento Gerado!</h3>
@@ -434,7 +442,6 @@
         </div>
     </div>
 
-    <!-- MODAL DE HISTÓRICO -->
     <div id="historico-modal" class="modal-overlay">
         <div class="modal-content">
             <div class="flex justify-between items-center mb-4 border-b border-zinc-700 pb-2">
@@ -490,7 +497,6 @@
             <p><strong>Garantia de Qualidade:</strong> Garantia de 90 dias para a mão de obra prestada, conforme art. 26 do Código de Defesa do Consumidor (CDC).</p>
         </div>
 
-        <!-- BOTÃO DE AVALIAÇÃO COM INLINE STYLES PARA EVITAR BUGS NO PDF -->
         <div class="doc-footer">
             <p id="print-rodape-data" style="font-size: 11pt; font-weight: 600; margin-bottom: 12px;"></p>
             <p id="print-validade" style="margin-bottom: 15px; color: #dc2626;"></p>
@@ -509,7 +515,6 @@
     </div>
 
     <script>
-        // MÁSCARAS DE INPUT
         function maskPhone(e) {
             let v = e.target.value.replace(/\D/g, "");
             if (v.length > 11) v = v.slice(0, 11);
@@ -562,6 +567,21 @@
                 return { dia: dia.padStart(2, '0'), mes: mes.padStart(2, '0'), ano: ano };
             }
             return null;
+        }
+
+        function exportarJSON() {
+            if (clientes.length === 0 && orcamentos.length === 0) {
+                return showToast("Nenhum dado para fazer backup.", "error");
+            }
+            const data = { clientes: clientes, orcamentos: orcamentos };
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
+            const link = document.createElement("a");
+            link.setAttribute("href", dataStr);
+            link.setAttribute("download", `brvolts_backup_dados_${new Date().toISOString().slice(0,10)}.json`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            showToast("Backup JSON baixado com sucesso!", "success");
         }
 
         async function forcarSincronizacao() {
@@ -745,7 +765,6 @@
                 const nome = document.getElementById('cli-nome').value;
                 const tel = document.getElementById('cli-tel').value;
                 
-                // Montagem Inteligente do Endereço
                 const rua = document.getElementById('cli-rua').value;
                 const num = document.getElementById('cli-num').value;
                 const comp = document.getElementById('cli-comp').value;
@@ -1275,18 +1294,26 @@
                 }
 
                 const alertas = [];
+                const garantias = [];
+                
                 (orcamentos || []).forEach(o => {
                     const statusStr = o.status ? o.status.trim().toLowerCase() : '';
                     if (statusStr === 'concluído' || statusStr === 'concluido') {
                         const d = extrairData(o.data);
                         if (d) {
                             const dataOS = new Date(d.ano, parseInt(d.mes) - 1, d.dia);
-                            const diffDays = Math.ceil(Math.abs(new Date() - dataOS) / (1000 * 60 * 60 * 24));
+                            const diffDays = Math.ceil((new Date() - dataOS) / (1000 * 60 * 60 * 24));
+                            
+                            // Revisão Anual (entre 330 e 390 dias)
                             if(diffDays >= 330 && diffDays <= 390) alertas.push(o);
+                            
+                            // Garantia (entre 80 e 90 dias)
+                            if(diffDays >= 80 && diffDays <= 90) garantias.push({os: o, dias: diffDays});
                         }
                     }
                 });
                 
+                // Render Alerta Anual
                 const divAlerta = document.getElementById('alerta-manutencao');
                 if(divAlerta) {
                     if(alertas.length > 0) {
@@ -1296,11 +1323,30 @@
                             const c = (clientes || []).find(cli => String(cli.id) === String(o.clienteId));
                             if(!c) return '';
                             const numRaw = c.tel ? c.tel.replace(/\D/g, '') : '';
-                            const txt = encodeURIComponent(`Olá ${c.nome}! Aqui é o Wellington da BRvolts. Nosso sistema avisou que faz cerca de 1 ano desde a nossa última manutenção. Gostaria de agendar uma revisão preventiva?`);
+                            const txt = encodeURIComponent(`Olá ${c.nome}! Aqui é o Wellington da BRvolts. Nosso sistema avisou que faz cerca de 1 ano desde a nossa última manutenção.\n\nGostaria de agendar uma revisão preventiva?`);
                             return `<li class="p-3 flex justify-between items-center"><p class="text-yellow-500 font-bold text-xs truncate">${c.nome} <span class="text-yellow-700 font-normal ml-1">${o.data}</span></p><a href="https://api.whatsapp.com/send?phone=55${numRaw}&text=${txt}" target="_blank" class="bg-green-600 text-white text-[10px] px-2 py-1 rounded shrink-0">Chamar</a></li>`;
                         }).join('');
                     } else { divAlerta.classList.add('hidden'); }
                 }
+
+                // Render Alerta Garantia
+                const divGarantia = document.getElementById('alerta-garantia');
+                if(divGarantia) {
+                    if(garantias.length > 0) {
+                        divGarantia.classList.remove('hidden');
+                        const lGarantias = document.getElementById('lista-garantias');
+                        if(lGarantias) lGarantias.innerHTML = garantias.map(item => {
+                            const o = item.os;
+                            const c = (clientes || []).find(cli => String(cli.id) === String(o.clienteId));
+                            if(!c) return '';
+                            const numRaw = c.tel ? c.tel.replace(/\D/g, '') : '';
+                            const diasRestantes = 90 - item.dias;
+                            const txt = encodeURIComponent(`Olá *${c.nome}*, tudo bem?\n\nAqui é o Wellington da BRvolts. Passando pra lembrar que a garantia de mão de obra do serviço feito no dia ${o.data} vence em ${diasRestantes} dia(s).\n\nTudo operando nos conformes por aí? Qualquer coisa é só chamar!`);
+                            return `<li class="p-3 flex justify-between items-center"><p class="text-blue-400 font-bold text-xs truncate">${c.nome} <span class="text-blue-600 font-normal ml-1">Vence em ${diasRestantes}d</span></p><a href="https://api.whatsapp.com/send?phone=55${numRaw}&text=${txt}" target="_blank" class="bg-blue-600 text-white text-[10px] px-2 py-1 rounded shrink-0">Chamar</a></li>`;
+                        }).join('');
+                    } else { divGarantia.classList.add('hidden'); }
+                }
+
             } catch(e) { console.error("Erro atualizar dashboard", e); }
         }
 
@@ -1353,7 +1399,6 @@
             const lista = document.getElementById('lista-agenda');
             if(!lista) return;
 
-            // ORDENAÇÃO CORRIGIDA: Datas futuras/recentes no topo (Ordem Decrescente)
             const agendados = orcamentos.filter(o => o.status !== 'Concluído' && o.status !== 'Cancelado').sort((a,b) => {
                 const da = a.data ? a.data.split('/').reverse().join('-') : '0000-00-00';
                 const db = b.data ? b.data.split('/').reverse().join('-') : '0000-00-00';
@@ -1473,7 +1518,6 @@
                 }
                 document.getElementById('print-validade').innerHTML = validadeStr ? `Documento válido até <strong>${validadeStr}</strong>.` : '';
 
-                // CONTROLE DE FOTOS
                 const incluirFotos = document.getElementById('chk-incluir-fotos').checked;
                 const sf = document.getElementById('print-section-fotos');
                 if(sf) {
@@ -1484,7 +1528,6 @@
                     } else { sf.style.display = 'none'; }
                 }
 
-                // CONTROLE DE CONDIÇÕES DE PAGAMENTO, PIX E CARIMBO
                 const pixBox = document.getElementById('print-pix-box');
                 const carimboPago = document.getElementById('carimbo-pago-print');
                 const condicoesContainer = document.querySelector('.payment-conditions');
@@ -1526,7 +1569,6 @@
                     }
                 }
 
-                // GERAÇÃO DO LINK WHATSAPP
                 let linkWhatsApp = null;
                 if(cliente.tel) {
                     let telRaw = String(cliente.tel).replace(/\D/g, '');
