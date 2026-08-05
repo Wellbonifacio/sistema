@@ -14,7 +14,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #000; color: #e5e7eb; -webkit-tap-highlight-color: transparent; transition: background-color 0.3s, color 0.3s; }
+        body { font-family: 'Inter', sans-serif; background-color: #000; color: #e5e7eb; -webkit-tap-highlight-color: transparent; transition: background-color 0.3s, color 0.3s; overflow-x: hidden; }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
@@ -23,7 +23,7 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
         #main-container { display: flex; flex-direction: column; min-height: 100vh; }
-        #app-area { flex: 1; width: 100%; max-width: 48rem; margin: 0 auto; padding: 1rem; }
+        #app-area { flex: 1; width: 100%; max-width: 64rem; margin: 0 auto; padding: 1rem; }
         
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; width: 100%; background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(10px); border-top: 1px solid #27272a; display: flex; justify-content: space-around; padding: 10px 5px 20px 5px; z-index: 50; transition: background-color 0.3s, border-color 0.3s; }
         .nav-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 20%; background: transparent; color: #6b7280; border: none; font-size: 0.6rem; font-weight: 600; padding: 8px 0; border-radius: 8px; transition: all 0.2s; cursor: pointer; }
@@ -36,7 +36,7 @@
             .bottom-nav { top: 0; bottom: auto; left: 0; width: 260px; height: 100vh; flex-direction: column; justify-content: flex-start; align-items: flex-start; padding: 80px 15px 20px 15px; border-top: none; border-right: 1px solid #27272a; }
             .nav-btn { width: 100%; flex-direction: row; justify-content: flex-start; padding: 15px 20px; font-size: 0.9rem; margin-bottom: 5px; }
             .nav-btn svg { margin: 0 15px 0 0; }
-            #app-area { margin-left: 260px; max-width: 1000px; padding: 2rem; }
+            #app-area { margin-left: 260px; max-width: 1200px; padding: 2rem; }
             header { z-index: 60; }
             .section { padding-bottom: 20px; }
         }
@@ -48,6 +48,7 @@
         input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type="number"] { -moz-appearance: textfield; }
         input[type="file"] { display: none; }
+        input[type="checkbox"].chk-custom { width: 18px; height: 18px; accent-color: #3b82f6; cursor: pointer; margin-top: 0; }
         
         .file-upload-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: #27272a; border: 1px dashed #6b7280; color: #d1d5db; padding: 12px; border-radius: 8px; width: 100%; cursor: pointer; font-size: 0.9rem; font-weight: 600; margin-top: 4px; transition: background 0.2s; }
         .file-upload-btn:hover { background: #3f3f46; }
@@ -58,25 +59,30 @@
         .toggle-checkbox:checked { right: 0; border-color: #3b82f6; }
         .toggle-checkbox:checked + .toggle-label { background-color: #3b82f6; }
 
-        /* MODO CLARO */
+        .kanban-board { display: flex; overflow-x: auto; gap: 1rem; padding-bottom: 1rem; scroll-snap-type: x mandatory; }
+        .kanban-col { min-width: 280px; width: 280px; background: rgba(24, 24, 27, 0.5); border-radius: 0.75rem; padding: 0.75rem; display: flex; flex-direction: column; max-height: 70vh; scroll-snap-align: center; }
+        .kanban-cards { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 0.75rem; padding-right: 0.25rem; }
+        .kanban-card { background: #18181b; border: 1px solid #27272a; border-radius: 0.5rem; padding: 0.75rem; transition: transform 0.2s, box-shadow 0.2s; }
+        .kanban-card:hover { transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5); }
+
         body.light-mode { background-color: #f3f4f6; color: #1f2937; }
         body.light-mode header { background-color: #ffffff; border-bottom-color: #e5e7eb; }
         body.light-mode .bottom-nav { background-color: #ffffff; border-color: #e5e7eb; }
         body.light-mode .nav-btn { color: #6b7280; }
         body.light-mode .nav-btn:hover { background: #f3f4f6; }
         body.light-mode .nav-btn.active { color: #3b82f6; background: #eff6ff; }
-        body.light-mode .bg-zinc-900, body.light-mode .modal-content { background-color: #ffffff; border-color: #e5e7eb; }
+        body.light-mode .bg-zinc-900, body.light-mode .modal-content, body.light-mode .kanban-card { background-color: #ffffff; border-color: #e5e7eb; }
+        body.light-mode .kanban-col { background-color: #e5e7eb; }
         body.light-mode input, body.light-mode textarea, body.light-mode select { background-color: #f9fafb; border-color: #d1d5db; color: #111827; }
         body.light-mode .text-white { color: #111827 !important; }
         body.light-mode .text-gray-200 { color: #374151 !important; }
         body.light-mode .text-gray-400 { color: #6b7280 !important; }
-        body.light-mode .border-zinc-800 { border-color: #e5e7eb; }
+        body.light-mode .border-zinc-800, body.light-mode .border-zinc-700 { border-color: #e5e7eb; }
         body.light-mode .bg-zinc-800 { background-color: #f3f4f6; border-color: #d1d5db; color: #111; }
         body.light-mode .bg-zinc-700 { background-color: #e5e7eb; color: #111; }
         body.light-mode .bg-zinc-700:hover { background-color: #d1d5db; }
         body.light-mode .file-upload-btn { background-color: #f9fafb; color: #374151; border-color: #d1d5db; }
 
-        /* Loader & Toasts */
         #global-loader { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; justify-content: center; align-items: center; }
         .spinner { border: 4px solid rgba(255,255,255,0.1); border-left-color: #3b82f6; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -91,10 +97,8 @@
         #login-screen { position: fixed; inset: 0; background: #000; z-index: 99999; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; transition: opacity 0.5s; }
         .pin-input { font-size: 2rem; text-align: center; letter-spacing: 0.5em; font-weight: bold; }
 
-        /* Calendário Customizado */
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
 
-        /* ESTILOS DE IMPRESSÃO */
         #print-area { display: none; position: relative; }
         @media print {
             @page { size: A4; margin: 8mm 10mm; }
@@ -115,8 +119,15 @@
             .doc-section { margin-bottom: 15px; }
             .doc-section h3 { margin: 0 0 5px 0; font-size: 12pt; border-bottom: 1px solid #cbd5e1; padding-bottom: 3px; color: #0f172a; }
             .doc-section p { margin: 0; font-size: 10pt; line-height: 1.4; text-align: justify; white-space: pre-wrap; }
-            .print-fotos-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
-            .print-fotos-grid img { width: 48%; height: 200px; object-fit: cover; border: 1px solid #cbd5e1; border-radius: 6px; page-break-inside: avoid; }
+            
+            /* LAYOUT FOTOS ANTES E DEPOIS */
+            .print-fotos-wrapper { display: flex; justify-content: space-between; gap: 15px; margin-top: 10px; }
+            .print-fotos-col { width: 48%; }
+            .print-fotos-col h4 { text-align: center; text-transform: uppercase; font-size: 10pt; margin: 0 0 8px 0; padding-bottom: 4px; border-bottom: 2px solid #e2e8f0; }
+            .print-fotos-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+            .print-fotos-grid img { width: 48%; height: 140px; object-fit: cover; border: 1px solid #cbd5e1; border-radius: 6px; page-break-inside: avoid; }
+            .print-fotos-full { width: 100%; display: flex; flex-wrap: wrap; gap: 8px; }
+            .print-fotos-full img { width: 32%; height: 160px; object-fit: cover; border: 1px solid #cbd5e1; border-radius: 6px; }
             
             .payment-grid { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
             .payment-conditions { width: 50%; font-size: 9pt; }
@@ -137,6 +148,9 @@
             
             .carimbo-pago-css { display: none; position: absolute; top: 55%; left: 50%; transform: translate(-50%, -50%) rotate(-25deg); font-size: 65pt; font-weight: 900; color: #16a34a; border: 8px solid #16a34a; border-radius: 15px; padding: 10px 40px; text-transform: uppercase; letter-spacing: 10px; opacity: 0.3; pointer-events: none; z-index: 9999; }
             .carimbo-pago-css.ativo { display: block !important; }
+
+            .laudo-list { list-style: none; padding: 0; margin-top: 5px; font-size: 10pt; }
+            .laudo-list li { margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
         }
 
         #mobile-print-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; }
@@ -163,7 +177,9 @@
     </div>
 
     <header class="fixed top-0 w-full z-40 bg-black/90 backdrop-blur-md border-b border-zinc-900 px-4 py-3 flex items-center justify-between transition-colors duration-300">
-        <div class="w-8"></div>
+        <button onclick="abrirCalculadora()" class="text-blue-400 hover:text-blue-300" title="Calculadora de Dimensionamento">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+        </button>
         <img src="https://www.brvolts.site/logo1.png" alt="BRvolts Logo" class="h-8 object-contain">
         <button onclick="toggleTheme()" class="text-gray-400 hover:text-white" title="Modo Claro/Escuro">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
@@ -188,110 +204,103 @@
 
         <div id="app-area">
             
-            <!-- DASHBOARD -->
             <div id="dashboard" class="section active">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-2">
-                    <h2 class="text-xl font-bold text-white">Visão Geral</h2>
+                    <h2 class="text-xl font-bold text-white">Funil de Serviços</h2>
                     
-                    <div class="flex gap-2 w-full md:w-auto">
-                        <select id="filtro-mes" class="text-sm py-2 px-3 bg-zinc-800 border-zinc-700 w-full md:w-auto" onchange="atualizarDashboard()">
+                    <div class="flex flex-wrap gap-2 w-full md:w-auto">
+                        <select id="filtro-mes" class="text-sm py-2 px-3 bg-zinc-800 border-zinc-700 w-auto flex-grow md:flex-grow-0" onchange="atualizarDashboard()">
                             <option value="ALL">Todos os meses</option>
                             <option value="01">Janeiro</option><option value="02">Fevereiro</option><option value="03">Março</option>
                             <option value="04">Abril</option><option value="05">Maio</option><option value="06">Junho</option>
                             <option value="07">Julho</option><option value="08">Agosto</option><option value="09">Setembro</option>
                             <option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option>
                         </select>
-                        <select id="filtro-ano" class="text-sm py-2 px-3 bg-zinc-800 border-zinc-700 w-full md:w-auto" onchange="atualizarDashboard()">
-                            <option value="ALL">Todos os anos</option>
+                        <select id="filtro-ano" class="text-sm py-2 px-3 bg-zinc-800 border-zinc-700 w-auto flex-grow md:flex-grow-0" onchange="atualizarDashboard()">
+                            <option value="ALL">Todos anos</option>
                             <option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option>
-                            <option value="2027">2027</option><option value="2028">2028</option><option value="2029">2029</option>
+                            <option value="2027">2027</option>
                         </select>
                         <button onclick="forcarSincronizacao()" title="Sincronizar Dados" class="bg-blue-700 hover:bg-blue-600 text-white font-bold py-2 px-3 rounded shadow transition">🔄</button>
                         <button onclick="exportarCSV()" title="Exportar Excel" class="bg-green-700 hover:bg-green-600 text-white font-bold py-2 px-3 rounded shadow transition">📥 CSV</button>
-                        <!-- BOTÃO DE BACKUP JSON ADICIONADO -->
                         <button onclick="exportarJSON()" title="Salvar Backup de Segurança" class="bg-purple-700 hover:bg-purple-600 text-white font-bold py-2 px-3 rounded shadow transition">💾 JSON</button>
                     </div>
                 </div>
-                
-                <div class="grid grid-cols-2 gap-3 mb-4">
-                    <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 shadow transition-colors">
-                        <p class="text-xs text-gray-400 font-semibold mb-1">Faturamento Bruto</p>
-                        <p class="text-lg font-bold text-green-500" id="dash-faturamento">R$ 0,00</p>
-                    </div>
-                    <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 shadow transition-colors">
-                        <p class="text-xs text-gray-400 font-semibold mb-1">Despesas / Custos</p>
-                        <p class="text-lg font-bold text-red-500" id="dash-despesas">R$ 0,00</p>
-                    </div>
-                </div>
-                
-                <div class="bg-blue-900/30 p-4 rounded-xl border border-blue-900/50 shadow mb-6 transition-colors">
-                    <p class="text-xs text-blue-500 font-semibold mb-1 uppercase tracking-wider">Lucro Líquido no Bolso</p>
-                    <p class="text-3xl font-black text-blue-600" id="dash-lucro">R$ 0,00</p>
-                </div>
 
-                <div class="bg-zinc-900 rounded-xl border border-zinc-800 overflow-hidden mb-6 transition-colors">
-                    <div class="p-3 bg-black/20 border-b border-zinc-800 text-xs font-bold text-gray-400 uppercase tracking-wider">
-                        🏆 Top 5 Clientes (Período Selecionado)
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
+                    <div id="alerta-followup" class="hidden">
+                        <h3 class="text-sm font-bold text-orange-400 mb-2 uppercase flex items-center gap-2">💰 Negócios na Mesa</h3>
+                        <div class="bg-orange-900/20 border border-orange-700/50 rounded-xl overflow-hidden">
+                            <ul id="lista-followup" class="divide-y divide-orange-900/30 text-sm"></ul>
+                        </div>
                     </div>
-                    <ul id="dash-top-clientes" class="divide-y divide-zinc-800 text-sm"></ul>
-                </div>
-
-                <!-- ALERTA MANUTENÇÃO E GARANTIA -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                     <div id="alerta-manutencao" class="hidden">
-                        <h3 class="text-sm font-bold text-yellow-500 mb-2 uppercase flex items-center gap-2">⚠️ Revisão Anual Vencendo</h3>
+                        <h3 class="text-sm font-bold text-yellow-500 mb-2 uppercase flex items-center gap-2">⚠️ Revisão (1 Ano)</h3>
                         <div class="bg-yellow-900/20 border border-yellow-700/50 rounded-xl overflow-hidden">
                             <ul id="lista-alertas" class="divide-y divide-yellow-900/30 text-sm"></ul>
                         </div>
                     </div>
-                    
                     <div id="alerta-garantia" class="hidden">
-                        <h3 class="text-sm font-bold text-blue-400 mb-2 uppercase flex items-center gap-2">🛡️ Garantia Vencendo (90 dias)</h3>
+                        <h3 class="text-sm font-bold text-blue-400 mb-2 uppercase flex items-center gap-2">🛡️ Garantia (90 dias)</h3>
                         <div class="bg-blue-900/20 border border-blue-700/50 rounded-xl overflow-hidden">
                             <ul id="lista-garantias" class="divide-y divide-blue-900/30 text-sm"></ul>
                         </div>
                     </div>
                 </div>
-
-                <div class="flex flex-col md:flex-row md:items-center justify-between mb-3 gap-2">
-                    <h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider">Gestão de Status</h3>
-                    <input type="text" id="busca-os" placeholder="🔍 Procurar OS ou Cliente..." oninput="atualizarDashboard()" class="text-sm py-2 px-3 md:w-64 bg-zinc-800 border-zinc-700">
-                </div>
                 
-                <div class="bg-zinc-900 rounded-xl border border-zinc-800 overflow-hidden mb-6 transition-colors">
-                    <div class="hidden md:flex p-3 bg-black/20 border-b border-zinc-800 text-xs font-bold text-gray-400">
-                        <div class="w-1/4">Nº OS</div>
-                        <div class="w-1/4">Cliente</div>
-                        <div class="w-1/4">Valor Total</div>
-                        <div class="w-1/4 text-center">Ações</div>
+                <div class="grid grid-cols-2 gap-3 mb-6">
+                    <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 shadow transition-colors">
+                        <p class="text-xs text-gray-400 font-semibold mb-1">Faturamento Bruto</p>
+                        <p class="text-lg font-bold text-green-500" id="dash-faturamento">R$ 0,00</p>
                     </div>
-                    <ul id="dash-lista-os" class="divide-y divide-zinc-800 text-sm"></ul>
+                    <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 shadow transition-colors">
+                        <p class="text-xs text-blue-500 font-semibold mb-1">Lucro Líquido</p>
+                        <p class="text-lg font-bold text-blue-500" id="dash-lucro">R$ 0,00</p>
+                    </div>
+                </div>
+
+                <div class="kanban-board hide-scrollbar">
+                    <div class="kanban-col border-t-4 border-yellow-500">
+                        <h3 class="font-bold text-gray-300 mb-3 flex justify-between items-center text-sm">ORÇAMENTOS <span class="bg-yellow-500/20 text-yellow-500 px-2 py-0.5 rounded-full text-xs" id="kb-count-pendente">0</span></h3>
+                        <div class="kanban-cards" id="kb-pendente"></div>
+                    </div>
+                    <div class="kanban-col border-t-4 border-green-500">
+                        <h3 class="font-bold text-gray-300 mb-3 flex justify-between items-center text-sm">AGENDADOS <span class="bg-green-500/20 text-green-500 px-2 py-0.5 rounded-full text-xs" id="kb-count-aprovado">0</span></h3>
+                        <div class="kanban-cards" id="kb-aprovado"></div>
+                    </div>
+                    <div class="kanban-col border-t-4 border-purple-500">
+                        <h3 class="font-bold text-gray-300 mb-3 flex justify-between items-center text-sm">EM ANDAMENTO <span class="bg-purple-500/20 text-purple-400 px-2 py-0.5 rounded-full text-xs" id="kb-count-andamento">0</span></h3>
+                        <div class="kanban-cards" id="kb-andamento"></div>
+                    </div>
+                    <div class="kanban-col border-t-4 border-blue-500">
+                        <h3 class="font-bold text-gray-300 mb-3 flex justify-between items-center text-sm">CONCLUÍDOS <span class="bg-blue-500/20 text-blue-500 px-2 py-0.5 rounded-full text-xs" id="kb-count-concluido">0</span></h3>
+                        <div class="kanban-cards" id="kb-concluido"></div>
+                    </div>
                 </div>
             </div>
 
-            <!-- AGENDA (COM CALENDÁRIO VISUAL) -->
             <div id="agenda" class="section">
-                <div class="flex items-center gap-3 mb-6">
-                    <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-900/30 text-blue-500">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+                    <div class="flex items-center gap-3">
+                        <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-900/30 text-blue-500">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-bold text-white">Agenda de Serviços</h2>
+                            <p class="text-sm text-gray-400" id="mes-atual-agenda">Mês Atual</p>
+                        </div>
                     </div>
-                    <div>
-                        <h2 class="text-xl font-bold text-white">Agenda de Serviços</h2>
-                        <p class="text-sm text-gray-400" id="mes-atual-agenda">Mês Atual</p>
-                    </div>
+                    <button onclick="gerarRotaDoDia()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg flex items-center justify-center gap-2 shadow-lg transition">📍 Rota de Hoje (Maps)</button>
                 </div>
 
                 <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 mb-6 transition-colors max-w-md mx-auto">
-                    <div class="cal-grid" id="calendario-dias">
-                        <!-- Gerado via JS -->
-                    </div>
+                    <div class="cal-grid" id="calendario-dias"></div>
                 </div>
 
                 <h3 class="text-sm font-bold text-gray-400 mb-3 uppercase tracking-wider">Próximos Agendamentos</h3>
                 <ul id="lista-agenda" class="space-y-4 max-w-2xl"></ul>
             </div>
 
-            <!-- CLIENTES (COM EDIÇÃO E MÁSCARAS) -->
             <div id="clientes" class="section">
                 <h2 class="text-xl font-bold text-white mb-4">Novo Cliente</h2>
                 <div class="space-y-4 max-w-xl">
@@ -324,7 +333,7 @@
                 </div>
             </div>
 
-            <!-- SERVIÇO (ORÇAMENTOS - MOEDA AUTOMÁTICA) -->
+            <!-- SERVIÇO (ORÇAMENTOS) COM FOTOS ANTES E DEPOIS -->
             <div id="orcamentos" class="section">
                 <h2 class="text-xl font-bold text-white mb-4" id="titulo-aba-servico">Descrever Serviço</h2>
                 <div class="space-y-4 max-w-2xl">
@@ -350,11 +359,33 @@
                     
                     <div><label>Observações Técnicas</label><textarea id="orc-obs" rows="2" spellcheck="true" lang="pt-BR" placeholder="O serviço exige desmontagem..."></textarea></div>
                     
-                    <div>
-                        <label>Fotos de Registro (Duração 24h na Nuvem)</label>
-                        <label for="orc-fotos" class="file-upload-btn">📸 Selecionar Imagens</label>
-                        <input type="file" id="orc-fotos" accept="image/*" multiple onchange="processarFotos(event)">
-                        <div id="preview-fotos" class="flex flex-wrap gap-2 mt-2"></div>
+                    <!-- NOVO SISTEMA FOTOGRÁFICO ANTES/DEPOIS -->
+                    <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 transition-colors">
+                        <h3 class="font-bold text-sm text-white mb-3 flex items-center gap-2">📸 Relatório Fotográfico (Nuvem 24h)</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-red-400 font-bold text-xs uppercase">Fotos do ANTES</label>
+                                <label for="orc-fotos-antes" class="file-upload-btn border-red-900/50 hover:bg-red-900/20">Anexar Antes</label>
+                                <input type="file" id="orc-fotos-antes" accept="image/*" multiple onchange="processarFotos(event, 'antes')">
+                                <div id="preview-fotos-antes" class="flex flex-wrap gap-2 mt-2"></div>
+                            </div>
+                            <div>
+                                <label class="text-green-400 font-bold text-xs uppercase">Fotos do DEPOIS</label>
+                                <label for="orc-fotos-depois" class="file-upload-btn border-green-900/50 hover:bg-green-900/20">Anexar Depois</label>
+                                <input type="file" id="orc-fotos-depois" accept="image/*" multiple onchange="processarFotos(event, 'depois')">
+                                <div id="preview-fotos-depois" class="flex flex-wrap gap-2 mt-2"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 transition-colors mt-4">
+                        <h3 class="font-bold text-sm text-white mb-3">✅ Checklist de Segurança (Laudo Prévio)</h3>
+                        <div class="space-y-3">
+                            <label class="flex items-center gap-3 text-sm text-gray-300"><input type="checkbox" id="chk-laudo-aterramento" class="chk-custom"> Verificação de Aterramento (TT/TN-S)</label>
+                            <label class="flex items-center gap-3 text-sm text-gray-300"><input type="checkbox" id="chk-laudo-bornes" class="chk-custom"> Reaperto de Bornes (Torque adequado)</label>
+                            <label class="flex items-center gap-3 text-sm text-gray-300"><input type="checkbox" id="chk-laudo-isolacao" class="chk-custom"> Testes de Tensão e/ou Isolação realizados</label>
+                            <label class="flex items-center gap-3 text-sm text-gray-300"><input type="checkbox" id="chk-laudo-instrucao" class="chk-custom"> Cliente instruído sobre o uso e garantia</label>
+                        </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -396,7 +427,7 @@
 
                     <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 flex items-center justify-between transition-colors">
                         <div>
-                            <p class="font-bold text-sm text-white flex items-center gap-2">📸 Imagens de Registro</p>
+                            <p class="font-bold text-sm text-white flex items-center gap-2">📸 Relatório Antes/Depois</p>
                             <p class="text-xs text-gray-400">Anexar as fotos ao final do PDF.</p>
                         </div>
                         <div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
@@ -415,7 +446,34 @@
         </div>
     </div>
 
-    <!-- MODAIS -->
+    <!-- MODAIS E PRINT AREA OCULTOS ABAIXO -->
+    <div id="modal-calculadora" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="text-white font-bold text-lg mb-4 flex items-center gap-2">🧮 Calculadora de Campo</h3>
+            <div class="space-y-4">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label>Tensão (V)</label>
+                        <select id="calc-tensao"><option value="127">127V</option><option value="220" selected>220V</option></select>
+                    </div>
+                    <div>
+                        <label>Rede</label>
+                        <select id="calc-fases"><option value="1">Monofásico</option><option value="2">Bifásico</option><option value="3">Trifásico</option></select>
+                    </div>
+                </div>
+                <div><label>Potência do Equipamento (W)</label><input type="number" id="calc-potencia" placeholder="Ex: 5500 (Chuveiro)"></div>
+                <div class="bg-blue-900/20 border border-blue-800/50 rounded-lg p-4 mt-2 hidden" id="calc-resultado">
+                    <p class="text-sm text-gray-300">Corrente Calculada: <strong id="res-corrente" class="text-white text-lg">0 A</strong></p>
+                    <p class="text-sm text-gray-300 mt-2">Disjuntor Sugerido: <strong id="res-disjuntor" class="text-blue-400 text-lg">10 A</strong></p>
+                    <p class="text-sm text-gray-300 mt-2">Bitola Mínima: <strong id="res-bitola" class="text-green-400 text-lg">2.5 mm²</strong></p>
+                </div>
+            </div>
+            <div class="flex gap-3 mt-6">
+                <button onclick="fecharCalculadora()" class="flex-1 bg-zinc-700 hover:bg-zinc-600 text-white py-3 rounded-lg font-bold transition">Fechar</button>
+                <button onclick="calcularDimensionamento()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-bold shadow-lg transition">Calcular</button>
+            </div>
+        </div>
+    </div>
 
     <div id="modal-editar-cliente" class="modal-overlay">
         <div class="modal-content">
@@ -472,7 +530,29 @@
         <div class="doc-info" id="print-info"></div>
         <div class="doc-section"><h3>Serviços e Mão de Obra</h3><p id="print-servicos"></p></div>
         <div class="doc-section" id="print-section-materiais"><h3>Materiais</h3><p id="print-materiais"></p></div>
-        <div class="doc-section" id="print-section-fotos" style="display: none;"><h3>Registro Fotográfico</h3><div class="print-fotos-grid" id="print-fotos-container"></div></div>
+        
+        <div class="doc-section" id="print-section-laudo" style="display: none; background-color: #f8fafc; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px;">
+            <h3 style="margin-top: 0; color: #1e293b;">Laudo de Conformidade Técnica</h3>
+            <ul class="laudo-list" id="print-laudo-lista"></ul>
+        </div>
+
+        <!-- RELATÓRIO FOTOGRÁFICO ANTES E DEPOIS -->
+        <div class="doc-section" id="print-section-fotos" style="display: none;">
+            <h3>Relatório Fotográfico</h3>
+            <div class="print-fotos-wrapper" id="print-fotos-wrapper">
+                <div class="print-fotos-col" id="print-col-antes" style="display: none;">
+                    <h4>ANTES</h4>
+                    <div class="print-fotos-grid" id="print-fotos-antes-container"></div>
+                </div>
+                <div class="print-fotos-col" id="print-col-depois" style="display: none;">
+                    <h4 style="border-bottom-color: #16a34a;">DEPOIS</h4>
+                    <div class="print-fotos-grid" id="print-fotos-depois-container"></div>
+                </div>
+            </div>
+            <!-- Container caso seja apenas um tipo de foto (para preencher 100% da tela) -->
+            <div class="print-fotos-full" id="print-fotos-full-container" style="display: none; margin-top: 10px;"></div>
+        </div>
+
         <div class="doc-section"><h3>Observações</h3><p id="print-obs"></p></div>
         
         <div class="doc-section">
@@ -515,127 +595,74 @@
     </div>
 
     <script>
-        function maskPhone(e) {
-            let v = e.target.value.replace(/\D/g, "");
-            if (v.length > 11) v = v.slice(0, 11);
-            if (v.length > 10) v = v.replace(/^(\d\d)(\d{5})(\d{4}).*/, "($1) $2-$3");
-            else if (v.length > 5) v = v.replace(/^(\d\d)(\d{4})(\d{0,4}).*/, "($1) $2-$3");
-            else if (v.length > 2) v = v.replace(/^(\d\d)(\d{0,5})/, "($1) $2");
-            e.target.value = v;
+        let timeTrackerMeta = JSON.parse(localStorage.getItem('brvolts_timetracker')) || {};
+        function saveTimeTracker() { localStorage.setItem('brvolts_timetracker', JSON.stringify(timeTrackerMeta)); }
+
+        function abrirCalculadora() { document.getElementById('modal-calculadora').style.display = 'flex'; }
+        function fecharCalculadora() { document.getElementById('modal-calculadora').style.display = 'none'; }
+        function calcularDimensionamento() {
+            const tensao = parseFloat(document.getElementById('calc-tensao').value);
+            const fases = parseInt(document.getElementById('calc-fases').value);
+            const potencia = parseFloat(document.getElementById('calc-potencia').value);
+            if(!potencia || potencia <= 0) return showToast("Insira a potência", "error");
+
+            let corrente = 0;
+            if(fases === 1 || fases === 2) corrente = potencia / tensao; else if(fases === 3) corrente = potencia / (tensao * 1.732);
+            document.getElementById('res-corrente').innerText = corrente.toFixed(1) + " A";
+            
+            const valoresDisjuntor = [10, 16, 20, 25, 32, 40, 50, 63, 80, 100, 125];
+            let disjuntor = valoresDisjuntor.find(v => v >= corrente); if(!disjuntor) disjuntor = "> 125";
+            document.getElementById('res-disjuntor').innerText = disjuntor + " A";
+
+            let bitola = "1.5";
+            if(disjuntor > 15.5) bitola = "2.5"; if(disjuntor > 21) bitola = "4.0"; if(disjuntor > 28) bitola = "6.0";
+            if(disjuntor > 36) bitola = "10.0"; if(disjuntor > 50) bitola = "16.0"; if(disjuntor > 68) bitola = "25.0"; if(disjuntor > 89) bitola = "35.0";
+
+            document.getElementById('res-bitola').innerText = bitola + " mm²";
+            document.getElementById('calc-resultado').classList.remove('hidden');
         }
 
-        function maskCEP(e) {
-            let v = e.target.value.replace(/\D/g, "");
-            if (v.length > 8) v = v.slice(0, 8);
-            if (v.length > 5) v = v.replace(/^(\d{5})(\d{1,3}).*/, "$1-$2");
-            e.target.value = v;
-        }
-
-        function maskCurrency(e) {
-            let value = e.target.value.replace(/\D/g, "");
-            if(!value) { e.target.value = ""; return; }
-            value = (parseInt(value) / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-            e.target.value = value;
-        }
-
-        function parseDinheiro(val) {
-            if (!val) return 0;
-            if (typeof val === 'number') return val;
-            const str = String(val).replace(/[R$\s\.]/g, '').replace(',', '.');
-            return parseFloat(str) || 0;
-        }
-
-        function formatarDinheiroInput(val) {
-            if (!val) return '';
-            return parseFloat(val).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-        }
+        function maskPhone(e) { let v = e.target.value.replace(/\D/g, ""); if (v.length > 11) v = v.slice(0, 11); if (v.length > 10) v = v.replace(/^(\d\d)(\d{5})(\d{4}).*/, "($1) $2-$3"); else if (v.length > 5) v = v.replace(/^(\d\d)(\d{4})(\d{0,4}).*/, "($1) $2-$3"); else if (v.length > 2) v = v.replace(/^(\d\d)(\d{0,5})/, "($1) $2"); e.target.value = v; }
+        function maskCEP(e) { let v = e.target.value.replace(/\D/g, ""); if (v.length > 8) v = v.slice(0, 8); if (v.length > 5) v = v.replace(/^(\d{5})(\d{1,3}).*/, "$1-$2"); e.target.value = v; }
+        function maskCurrency(e) { let value = e.target.value.replace(/\D/g, ""); if(!value) { e.target.value = ""; return; } value = (parseInt(value) / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); e.target.value = value; }
+        function parseDinheiro(val) { if (!val) return 0; if (typeof val === 'number') return val; const str = String(val).replace(/[R$\s\.]/g, '').replace(',', '.'); return parseFloat(str) || 0; }
+        function formatarDinheiroInput(val) { if (!val) return ''; return parseFloat(val).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); }
 
         function extrairData(dataString) {
-            if (!dataString) return null;
-            let dia, mes, ano;
-            if (dataString.includes('/')) {
-                const p = dataString.split('/');
-                if (p.length >= 3) { dia = p[0]; mes = p[1]; ano = p[2]; }
-            } else if (dataString.includes('-')) {
-                const p = dataString.split('-');
-                if (p.length >= 3) {
-                    if (p[0].length === 4) { ano = p[0]; mes = p[1]; dia = p[2]; } 
-                    else { dia = p[0]; mes = p[1]; ano = p[2]; } 
-                }
-            }
-            if (dia && mes && ano) {
-                return { dia: dia.padStart(2, '0'), mes: mes.padStart(2, '0'), ano: ano };
-            }
+            if (!dataString) return null; let dia, mes, ano;
+            if (dataString.includes('/')) { const p = dataString.split('/'); if (p.length >= 3) { dia = p[0]; mes = p[1]; ano = p[2]; } } 
+            else if (dataString.includes('-')) { const p = dataString.split('-'); if (p.length >= 3) { if (p[0].length === 4) { ano = p[0]; mes = p[1]; dia = p[2]; } else { dia = p[0]; mes = p[1]; ano = p[2]; } } }
+            if (dia && mes && ano) return { dia: dia.padStart(2, '0'), mes: mes.padStart(2, '0'), ano: ano };
             return null;
         }
 
         function exportarJSON() {
-            if (clientes.length === 0 && orcamentos.length === 0) {
-                return showToast("Nenhum dado para fazer backup.", "error");
-            }
-            const data = { clientes: clientes, orcamentos: orcamentos };
+            if (clientes.length === 0 && orcamentos.length === 0) return showToast("Nenhum dado.", "error");
+            const data = { clientes: clientes, orcamentos: orcamentos, tracker: timeTrackerMeta };
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
-            const link = document.createElement("a");
-            link.setAttribute("href", dataStr);
-            link.setAttribute("download", `brvolts_backup_dados_${new Date().toISOString().slice(0,10)}.json`);
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-            showToast("Backup JSON baixado com sucesso!", "success");
+            const link = document.createElement("a"); link.setAttribute("href", dataStr); link.setAttribute("download", `brvolts_backup_${new Date().toISOString().slice(0,10)}.json`); document.body.appendChild(link); link.click(); link.remove(); showToast("Backup baixado!", "success");
         }
 
-        async function forcarSincronizacao() {
-            document.getElementById('global-loader').style.display = 'flex';
-            await initApp();
-            showToast("Nuvem sincronizada com sucesso!", "success");
-        }
+        async function forcarSincronizacao() { document.getElementById('global-loader').style.display = 'flex'; await initApp(); showToast("Sincronizado!", "success"); }
 
         function checkLogin() {
             const savedPin = localStorage.getItem('brvolts_pin');
-            const loginScreen = document.getElementById('login-screen');
-            const mainApp = document.getElementById('main-container');
-            const title = document.getElementById('login-title');
-            const desc = document.getElementById('login-desc');
-
-            if (!savedPin) {
-                title.innerText = "Bem-vindo(a) à BRvolts";
-                desc.innerText = "Crie um PIN numérico de 4 dígitos para proteger o seu sistema.";
-            }
-            loginScreen.style.display = 'flex';
-            mainApp.classList.add('hidden');
+            if (!savedPin) { document.getElementById('login-title').innerText = "Bem-vindo(a)"; document.getElementById('login-desc').innerText = "Crie um PIN numérico."; }
+            document.getElementById('login-screen').style.display = 'flex';
         }
 
         function verificarLogin() {
-            const input = document.getElementById('pin-input').value;
-            const savedPin = localStorage.getItem('brvolts_pin');
-
-            if (input.length < 4) return showToast("O PIN deve ter 4 dígitos.", "error");
-
-            if (!savedPin) {
-                localStorage.setItem('brvolts_pin', input);
-                desbloquearApp();
-                showToast("PIN criado com sucesso!", "success");
-            } else {
-                if (input === savedPin) {
-                    desbloquearApp();
-                } else {
-                    showToast("PIN Incorreto", "error");
-                    document.getElementById('pin-input').value = '';
-                }
-            }
+            const input = document.getElementById('pin-input').value; const savedPin = localStorage.getItem('brvolts_pin');
+            if (input.length < 4) return showToast("PIN de 4 dígitos.", "error");
+            if (!savedPin) { localStorage.setItem('brvolts_pin', input); desbloquearApp(); showToast("PIN criado!", "success"); } 
+            else { if (input === savedPin) desbloquearApp(); else { showToast("PIN Incorreto", "error"); document.getElementById('pin-input').value = ''; } }
         }
 
         function desbloquearApp() {
             document.getElementById('login-screen').style.opacity = '0';
             setTimeout(() => {
-                document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('main-container').classList.remove('hidden');
-                document.getElementById('global-loader').style.display = 'flex';
-                
-                const now = new Date();
-                document.getElementById('filtro-mes').value = String(now.getMonth() + 1).padStart(2, '0');
-                document.getElementById('filtro-ano').value = String(now.getFullYear());
-                
+                document.getElementById('login-screen').style.display = 'none'; document.getElementById('main-container').classList.remove('hidden'); document.getElementById('global-loader').style.display = 'flex';
+                const now = new Date(); document.getElementById('filtro-mes').value = String(now.getMonth() + 1).padStart(2, '0'); document.getElementById('filtro-ano').value = String(now.getFullYear());
                 initApp();
             }, 500);
         }
@@ -643,102 +670,54 @@
         checkLogin();
 
         let supabaseClient = null;
-        try {
-            if (window.supabase) {
-                const supabaseUrl = 'https://mflvwscgghdvtxasgmdd.supabase.co';
-                const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1mbHZ3c2NnZ2hkdnR4YXNnbWRkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0ODgyNjQsImV4cCI6MjA5ODA2NDI2NH0.tB34mGuyV-Y4xGwnF-1UANJl-p534yEmvsPPcDUA4sk';
-                supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
-            }
-        } catch(e) { console.error("Erro ao iniciar Supabase", e); }
+        try { if (window.supabase) supabaseClient = window.supabase.createClient('https://mflvwscgghdvtxasgmdd.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1mbHZ3c2NnZ2hkdnR4YXNnbWRkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0ODgyNjQsImV4cCI6MjA5ODA2NDI2NH0.tB34mGuyV-Y4xGwnF-1UANJl-p534yEmvsPPcDUA4sk'); } catch(e) {}
 
-        let clientes = [];
-        let orcamentos = [];
-        let fotosTemporarias = [];
-        let editandoOSId = null;
+        let clientes = []; let orcamentos = []; let editandoOSId = null;
+        let fotosAntesTemporarias = []; let fotosDepoisTemporarias = [];
 
         function showToast(message, type = 'success') {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
+            const container = document.getElementById('toast-container'); const toast = document.createElement('div');
             const color = type === 'success' ? 'bg-green-600' : type === 'error' ? 'bg-red-600' : 'bg-blue-600';
-            toast.className = `toast ${color}`;
-            toast.innerText = message;
-            container.appendChild(toast);
-            
-            setTimeout(() => toast.classList.add('show'), 10);
-            setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 300); }, 3000);
+            toast.className = `toast ${color}`; toast.innerText = message; container.appendChild(toast);
+            setTimeout(() => toast.classList.add('show'), 10); setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 300); }, 3000);
         }
 
         function toggleTheme() {
             const isLight = document.body.classList.toggle('light-mode');
             const metaTheme = document.getElementById('theme-color-meta');
-            if (isLight) {
-                localStorage.setItem('brvolts-theme', 'light');
-                metaTheme.setAttribute('content', '#ffffff');
-            } else {
-                localStorage.setItem('brvolts-theme', 'dark');
-                metaTheme.setAttribute('content', '#000000');
-            }
+            localStorage.setItem('brvolts-theme', isLight ? 'light' : 'dark'); metaTheme.setAttribute('content', isLight ? '#ffffff' : '#000000');
         }
 
-        const initialHeight = window.innerHeight;
-        window.addEventListener('resize', () => {
-            if (window.innerWidth < 1024) {
-                const nav = document.getElementById('main-nav');
-                if (window.innerHeight < initialHeight - 100) nav.style.display = 'none';
-                else nav.style.display = 'flex';
-            }
-        });
-
         document.addEventListener('keydown', (e) => {
-            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-                e.preventDefault();
-                const activeSection = document.querySelector('.section.active').id;
-                if(activeSection === 'orcamentos') salvarOrcamento();
-                else if(activeSection === 'clientes') salvarCliente();
-            }
-            if (e.key === 'Escape') {
-                fecharHistorico();
-                fecharModalWhatsapp();
-                fecharModalEdicaoCliente();
-            }
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); const active = document.querySelector('.section.active').id; if(active === 'orcamentos') salvarOrcamento(); else if(active === 'clientes') salvarCliente(); }
+            if (e.key === 'Escape') { fecharHistorico(); fecharModalWhatsapp(); fecharModalEdicaoCliente(); fecharCalculadora(); }
         });
 
-        document.addEventListener('DOMContentLoaded', async () => {
-            if(localStorage.getItem('brvolts-theme') === 'light') toggleTheme();
-        });
+        document.addEventListener('DOMContentLoaded', async () => { if(localStorage.getItem('brvolts-theme') === 'light') toggleTheme(); });
 
         async function initApp() {
             if(supabaseClient) {
                 try {
-                    const [resCli, resServ] = await Promise.all([
-                        supabaseClient.from('clientes').select('*'),
-                        supabaseClient.from('servicos').select('*')
-                    ]);
-                    
+                    const [resCli, resServ] = await Promise.all([ supabaseClient.from('clientes').select('*'), supabaseClient.from('servicos').select('*') ]);
                     if(resCli && resCli.data) clientes = resCli.data.map(c => ({id: c.id, nome: c.nome || '', tel: c.telefone || '', end: c.endereco || ''}));
                     if(resServ && resServ.data) {
                         orcamentos = resServ.data.map(s => ({
                             id: s.id, osNumber: s.os_number || '', clienteId: s.cliente_id, desc: s.descricao || '', obs: s.observacoes || '',
                             materiaisStatus: s.materiais_status || '', materiaisLista: s.materiais_lista || '', valor: s.valor_servico || 0,
-                            despesas: s.despesas || 0, status: s.status || 'Pendente', data: s.data_servico || '',
-                            fotos: s.fotos || [], pago: s.pago || false
+                            despesas: s.despesas || 0, status: s.status || 'Pendente', data: s.data_servico || '', fotos: s.fotos || [], pago: s.pago || false,
+                            laudoAterramento: s.laudo_aterramento || false, laudoBornes: s.laudo_bornes || false, laudoIsolacao: s.laudo_isolacao || false, laudoInstrucao: s.laudo_instrucao || false
                         }));
                     }
-                } catch(e) { console.error("Erro Supabase:", e); showToast("Erro ao sincronizar nuvem", "error"); }
+                } catch(e) {}
             }
-            document.getElementById('global-loader').style.display = 'none';
-            atualizarTelas();
+            document.getElementById('global-loader').style.display = 'none'; atualizarTelas();
         }
 
         function mudarAba(aba) {
-            try {
-                document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-                document.getElementById(aba).classList.add('active');
-                document.getElementById('tab-' + aba).classList.add('active');
-                window.scrollTo(0, 0);
-            } catch(e) {}
-            atualizarTelas();
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(aba).classList.add('active'); document.getElementById('tab-' + aba).classList.add('active');
+            window.scrollTo(0, 0); atualizarTelas();
         }
 
         const cepInput = document.getElementById('cli-cep');
@@ -746,872 +725,554 @@
             cepInput.addEventListener('input', async function(e) {
                 let cep = e.target.value.replace(/\D/g, '');
                 if (cep.length === 8) {
-                    try {
-                        let res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-                        let data = await res.json();
-                        if(!data.erro) {
-                            document.getElementById('cli-rua').value = data.logradouro;
-                            document.getElementById('cli-bairro').value = data.bairro;
-                            document.getElementById('cli-cidade_uf').value = `${data.localidade}/${data.uf}`;
-                            document.getElementById('cli-num').focus();
-                        }
+                    try { let res = await fetch(`https://viacep.com.br/ws/${cep}/json/`); let data = await res.json();
+                        if(!data.erro) { document.getElementById('cli-rua').value = data.logradouro; document.getElementById('cli-bairro').value = data.bairro; document.getElementById('cli-cidade_uf').value = `${data.localidade}/${data.uf}`; document.getElementById('cli-num').focus(); }
                     } catch(err) {}
                 }
             });
         }
 
         async function salvarCliente() {
-            try {
-                const nome = document.getElementById('cli-nome').value;
-                const tel = document.getElementById('cli-tel').value;
-                
-                const rua = document.getElementById('cli-rua').value;
-                const num = document.getElementById('cli-num').value;
-                const comp = document.getElementById('cli-comp').value;
-                const bairro = document.getElementById('cli-bairro').value;
-                const cidUf = document.getElementById('cli-cidade_uf').value;
-                
-                let end = '';
-                if(rua) {
-                    end = `${rua}, ${num || 'S/N'}${comp ? ' - ' + comp : ''} - ${bairro}, ${cidUf}`;
-                }
-
-                if(!nome) return showToast('Preencha o nome do cliente!', 'error');
-                
-                const tempId = Date.now();
-                clientes.push({ id: tempId, nome, tel, end });
-                atualizarTelas();
-                
-                if(supabaseClient) {
-                    const { data } = await supabaseClient.from('clientes').insert([{ nome, telefone: tel, endereco: end }]).select();
-                    if(data && data.length > 0) {
-                        const idx = clientes.findIndex(c => c.id === tempId);
-                        if(idx > -1) clientes[idx].id = data[0].id;
-                        atualizarTelas();
-                    }
-                }
-
-                document.getElementById('cli-nome').value = ''; document.getElementById('cli-tel').value = ''; 
-                ['cli-cep', 'cli-rua', 'cli-num', 'cli-comp', 'cli-bairro', 'cli-cidade_uf'].forEach(id => {
-                    const el = document.getElementById(id); if(el) el.value = '';
-                });
-                showToast('Cliente cadastrado com sucesso!');
-            } catch(e) { showToast("Erro salvar cliente", "error"); }
+            const nome = document.getElementById('cli-nome').value; const tel = document.getElementById('cli-tel').value;
+            const rua = document.getElementById('cli-rua').value; const num = document.getElementById('cli-num').value;
+            const comp = document.getElementById('cli-comp').value; const bairro = document.getElementById('cli-bairro').value; const cidUf = document.getElementById('cli-cidade_uf').value;
+            let end = ''; if(rua) end = `${rua}, ${num || 'S/N'}${comp ? ' - ' + comp : ''} - ${bairro}, ${cidUf}`;
+            if(!nome) return showToast('Preencha o nome!', 'error');
+            const tempId = Date.now(); clientes.push({ id: tempId, nome, tel, end }); atualizarTelas();
+            if(supabaseClient) {
+                const { data } = await supabaseClient.from('clientes').insert([{ nome, telefone: tel, endereco: end }]).select();
+                if(data && data.length > 0) { const idx = clientes.findIndex(c => c.id === tempId); if(idx > -1) clientes[idx].id = data[0].id; atualizarTelas(); }
+            }
+            document.getElementById('cli-nome').value = ''; document.getElementById('cli-tel').value = ''; 
+            ['cli-cep', 'cli-rua', 'cli-num', 'cli-comp', 'cli-bairro', 'cli-cidade_uf'].forEach(id => { document.getElementById(id).value = ''; }); showToast('Cliente cadastrado!');
         }
 
         function renderizarListaClientes() {
             const termo = (document.getElementById('busca-lista-clientes')?.value || '').toLowerCase();
             const filtrados = (clientes || []).filter(c => c.nome && c.nome.toLowerCase().includes(termo)).reverse();
-            
-            const lista = document.getElementById('lista-clientes');
-            if(!lista) return;
-
-            if (filtrados.length === 0) {
-                lista.innerHTML = '<li class="p-4 text-gray-500 text-center">Nenhum cliente encontrado.</li>';
-                return;
-            }
-
+            const lista = document.getElementById('lista-clientes'); if(!lista) return;
+            if (filtrados.length === 0) { lista.innerHTML = '<li class="p-4 text-gray-500 text-center">Nenhum cliente.</li>'; return; }
             lista.innerHTML = filtrados.map(c => `
                 <li class="p-4 flex flex-col sm:flex-row sm:justify-between sm:items-center hover:bg-zinc-800 transition border-zinc-800 border-b last:border-0 gap-3">
-                    <div class="min-w-0">
-                        <p class="font-bold text-gray-200 truncate">${c.nome}</p>
-                        <p class="text-xs text-gray-500">${c.tel || 'Sem telefone'}</p>
-                    </div>
+                    <div class="min-w-0"><p class="font-bold text-gray-200 truncate">${c.nome}</p><p class="text-xs text-gray-500">${c.tel || 'S/N'}</p></div>
                     <div class="flex flex-wrap gap-2 shrink-0">
                         <button onclick="abrirModalEdicaoCliente(${c.id})" class="text-xs font-bold text-blue-400 p-2" title="Editar">✏️</button>
                         <button onclick="excluirCliente(${c.id})" class="text-xs font-bold text-red-500 p-2" title="Excluir">🗑️</button>
                         <button onclick="verHistoricoCliente(${c.id})" class="text-xs font-bold bg-zinc-700 hover:bg-zinc-600 px-3 py-2 rounded text-white transition">Histórico</button>
                         <button onclick="iniciarOS(${c.id})" class="text-xs font-bold bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded text-white transition">+ Nova OS</button>
                     </div>
-                </li>
-            `).join('');
+                </li>`).join('');
         }
 
         function abrirModalEdicaoCliente(id) {
-            const cliente = clientes.find(c => String(c.id) === String(id));
-            if(!cliente) return;
-            document.getElementById('edit-cli-id').value = cliente.id;
-            document.getElementById('edit-cli-nome').value = cliente.nome || '';
-            document.getElementById('edit-cli-tel').value = cliente.tel || '';
-            document.getElementById('edit-cli-end').value = cliente.end || '';
+            const cliente = clientes.find(c => String(c.id) === String(id)); if(!cliente) return;
+            document.getElementById('edit-cli-id').value = cliente.id; document.getElementById('edit-cli-nome').value = cliente.nome || '';
+            document.getElementById('edit-cli-tel').value = cliente.tel || ''; document.getElementById('edit-cli-end').value = cliente.end || '';
             document.getElementById('modal-editar-cliente').style.display = 'flex';
         }
-
-        function fecharModalEdicaoCliente() {
-            document.getElementById('modal-editar-cliente').style.display = 'none';
-        }
-
+        function fecharModalEdicaoCliente() { document.getElementById('modal-editar-cliente').style.display = 'none'; }
         async function salvarEdicaoCliente() {
-            const id = document.getElementById('edit-cli-id').value;
-            const nome = document.getElementById('edit-cli-nome').value;
-            const tel = document.getElementById('edit-cli-tel').value;
-            const end = document.getElementById('edit-cli-end').value;
-
+            const id = document.getElementById('edit-cli-id').value; const nome = document.getElementById('edit-cli-nome').value;
+            const tel = document.getElementById('edit-cli-tel').value; const end = document.getElementById('edit-cli-end').value;
             if(!nome) return showToast("Nome é obrigatório", "error");
-
             const cliente = clientes.find(c => String(c.id) === String(id));
             if(cliente) {
-                cliente.nome = nome; cliente.tel = tel; cliente.end = end;
-                atualizarTelas();
-                showToast("Cliente atualizado!");
-                fecharModalEdicaoCliente();
-                
-                if(supabaseClient) {
-                    await supabaseClient.from('clientes').update({ nome, telefone: tel, endereco: end }).eq('id', id);
-                }
+                cliente.nome = nome; cliente.tel = tel; cliente.end = end; atualizarTelas(); showToast("Atualizado!"); fecharModalEdicaoCliente();
+                if(supabaseClient) await supabaseClient.from('clientes').update({ nome, telefone: tel, endereco: end }).eq('id', id);
             }
         }
-
         async function excluirCliente(id) {
-            if(!confirm("Deseja realmente EXCLUIR este cliente? As OS vinculadas a ele ficarão sem nome.")) return;
-            
-            clientes = clientes.filter(c => String(c.id) !== String(id));
-            atualizarTelas();
-            showToast("Cliente excluído.", "info");
-
-            if(supabaseClient) {
-                try { await supabaseClient.from('clientes').delete().eq('id', id); } catch(e) {}
-            }
+            if(!confirm("Deseja realmente EXCLUIR este cliente?")) return;
+            clientes = clientes.filter(c => String(c.id) !== String(id)); atualizarTelas(); showToast("Excluído.", "info");
+            if(supabaseClient) { try { await supabaseClient.from('clientes').delete().eq('id', id); } catch(e) {} }
         }
 
         function iniciarOS(clienteId) {
             limparFormularioOS();
-            const orcCliente = document.getElementById('orc-cliente');
-            if (orcCliente) orcCliente.value = clienteId;
-            mudarAba('orcamentos');
-            showToast("Nova OS iniciada para o cliente.");
+            const orcCliente = document.getElementById('orc-cliente'); if (orcCliente) orcCliente.value = clienteId;
+            mudarAba('orcamentos'); showToast("Nova OS iniciada.");
         }
 
         function filtrarClientesDropdown() {
-            try {
-                const buscaEl = document.getElementById('busca-cliente');
-                const termo = buscaEl ? buscaEl.value.toLowerCase() : '';
-                const filtrados = (clientes || []).filter(c => c && c.nome && c.nome.toLowerCase().includes(termo));
-                const options = [...filtrados].sort((a, b) => a.nome.localeCompare(b.nome)).map(c => `<option value="${c.id}">${c.nome}</option>`).join('');
-                const orcCliente = document.getElementById('orc-cliente');
-                if(orcCliente) {
-                    const valAtual = orcCliente.value;
-                    orcCliente.innerHTML = '<option value="" disabled selected>Selecione o cliente abaixo...</option>' + options;
-                    if(valAtual && filtrados.find(c => String(c.id) === String(valAtual))) orcCliente.value = valAtual;
-                }
-            } catch(e) {}
+            const buscaEl = document.getElementById('busca-cliente'); const termo = buscaEl ? buscaEl.value.toLowerCase() : '';
+            const filtrados = (clientes || []).filter(c => c && c.nome && c.nome.toLowerCase().includes(termo));
+            const options = [...filtrados].sort((a, b) => a.nome.localeCompare(b.nome)).map(c => `<option value="${c.id}">${c.nome}</option>`).join('');
+            const orcCliente = document.getElementById('orc-cliente');
+            if(orcCliente) {
+                const valAtual = orcCliente.value; orcCliente.innerHTML = '<option value="" disabled selected>Selecione...</option>' + options;
+                if(valAtual && filtrados.find(c => String(c.id) === String(valAtual))) orcCliente.value = valAtual;
+            }
         }
 
         function verHistoricoCliente(id) {
-            const cliente = clientes.find(c => String(c.id) === String(id));
-            if(!cliente) return;
-
-            const osCliente = orcamentos.filter(o => String(o.clienteId) === String(id));
-            let totalGasto = 0;
-            
-            const historicoHtml = osCliente.length === 0 ? '<li class="p-3 text-gray-500 text-xs">Nenhum serviço realizado ainda.</li>' : osCliente.map(o => {
+            const cliente = clientes.find(c => String(c.id) === String(id)); if(!cliente) return;
+            const osCliente = orcamentos.filter(o => String(o.clienteId) === String(id)); let totalGasto = 0;
+            const historicoHtml = osCliente.length === 0 ? '<li class="p-3 text-gray-500 text-xs">Nenhum serviço realizado.</li>' : osCliente.map(o => {
                 if(o.status === 'Concluído') totalGasto += parseFloat(o.valor || 0);
                 return `<li class="py-3 flex justify-between items-center"><div class="min-w-0"><p class="text-sm font-bold text-gray-200">OS ${o.osNumber}</p><p class="text-xs text-gray-500">${o.data} | Status: ${o.status}</p></div><p class="text-sm font-bold text-green-500">R$ ${(parseFloat(o.valor)||0).toLocaleString('pt-BR', {minimumFractionDigits:2})}</p></li>`;
             }).reverse().join('');
-
-            document.getElementById('hist-nome').innerText = `Histórico: ${cliente.nome}`;
-            document.getElementById('hist-total').innerText = `R$ ${totalGasto.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
-            document.getElementById('hist-lista').innerHTML = historicoHtml;
-            document.getElementById('historico-modal').style.display = 'flex';
+            document.getElementById('hist-nome').innerText = `Histórico: ${cliente.nome}`; document.getElementById('hist-total').innerText = `R$ ${totalGasto.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
+            document.getElementById('hist-lista').innerHTML = historicoHtml; document.getElementById('historico-modal').style.display = 'flex';
         }
-
         function fecharHistorico() { document.getElementById('historico-modal').style.display = 'none'; }
 
-        const IMGBB_API_KEY = '34c16686fb4cdc4ae33bc426bebfda47'; 
-
-        async function processarFotos(event) {
-            try {
-                const files = event.target.files;
-                if(!files.length) return;
-                
-                showToast("Enviando imagens para a nuvem (24h)...", "info");
-                document.getElementById('global-loader').style.display = 'flex';
-
-                for(let file of files) {
-                    const base64 = await new Promise((resolve) => {
-                        const reader = new FileReader();
-                        reader.onload = (e) => resolve(e.target.result);
-                        reader.readAsDataURL(file);
-                    });
-
-                    if(!IMGBB_API_KEY || IMGBB_API_KEY === '') {
-                        fotosTemporarias.push(base64);
-                    } else {
-                        try {
-                            const formData = new FormData();
-                            formData.append('image', base64.split(',')[1]);
-                            formData.append('expiration', 86400); 
-
-                            const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
-                                method: 'POST', body: formData
-                            });
-                            const data = await res.json();
-                            
-                            if(data && data.data && data.data.url) {
-                                fotosTemporarias.push(data.data.url);
-                            } else {
-                                fotosTemporarias.push(base64);
-                            }
-                        } catch(err) {
-                            fotosTemporarias.push(base64);
-                        }
-                    }
-                    atualizarPreviewFotos();
+        // FOTOS ANTES E DEPOIS
+        async function processarFotos(event, tipo) {
+            const files = event.target.files; if(!files.length) return;
+            showToast("Enviando imagens (24h)...", "info"); document.getElementById('global-loader').style.display = 'flex';
+            for(let file of files) {
+                const base64 = await new Promise((resolve) => { const reader = new FileReader(); reader.onload = (e) => resolve(e.target.result); reader.readAsDataURL(file); });
+                try {
+                    const formData = new FormData(); formData.append('image', base64.split(',')[1]); formData.append('expiration', 86400); 
+                    const res = await fetch(`https://api.imgbb.com/1/upload?key=34c16686fb4cdc4ae33bc426bebfda47`, { method: 'POST', body: formData });
+                    const data = await res.json();
+                    
+                    const src = (data && data.data && data.data.url) ? data.data.url : base64;
+                    if(tipo === 'antes') fotosAntesTemporarias.push(src); else fotosDepoisTemporarias.push(src);
+                } catch(err) { 
+                    if(tipo === 'antes') fotosAntesTemporarias.push(base64); else fotosDepoisTemporarias.push(base64);
                 }
-                document.getElementById('global-loader').style.display = 'none';
-                showToast("Imagens prontas!", "success");
-            } catch(e) {
-                document.getElementById('global-loader').style.display = 'none';
+                atualizarPreviewFotos();
             }
+            document.getElementById('global-loader').style.display = 'none'; showToast("Pronto!", "success");
         }
-
+        
         function atualizarPreviewFotos() {
-            const container = document.getElementById('preview-fotos');
-            if(container) container.innerHTML = fotosTemporarias.map((src, i) => `<div class="relative w-16 h-16"><img src="${src}" class="w-full h-full object-cover rounded border border-zinc-700"><button onclick="removerFoto(${i})" class="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs shadow">X</button></div>`).join('');
+            const contAntes = document.getElementById('preview-fotos-antes');
+            if(contAntes) contAntes.innerHTML = fotosAntesTemporarias.map((src, i) => `<div class="relative w-16 h-16"><img src="${src}" class="w-full h-full object-cover rounded border border-red-900"><button onclick="removerFoto(${i}, 'antes')" class="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs shadow">X</button></div>`).join('');
+            
+            const contDepois = document.getElementById('preview-fotos-depois');
+            if(contDepois) contDepois.innerHTML = fotosDepoisTemporarias.map((src, i) => `<div class="relative w-16 h-16"><img src="${src}" class="w-full h-full object-cover rounded border border-green-900"><button onclick="removerFoto(${i}, 'depois')" class="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs shadow">X</button></div>`).join('');
         }
-        function removerFoto(i) { fotosTemporarias.splice(i, 1); atualizarPreviewFotos(); }
+        
+        function removerFoto(i, tipo) { 
+            if(tipo === 'antes') fotosAntesTemporarias.splice(i, 1); else fotosDepoisTemporarias.splice(i, 1);
+            atualizarPreviewFotos(); 
+        }
 
         function gerarNumeroOS() {
-            try {
-                const anoAtual = new Date().getFullYear().toString();
-                const osAno = orcamentos.filter(o => o.osNumber && o.osNumber.startsWith(anoAtual + '-'));
-                let maior = 0;
-                osAno.forEach(o => { const p = o.osNumber.split('-'); if(p.length === 2 && parseInt(p[1]) > maior) maior = parseInt(p[1]); });
-                return `${anoAtual}-${(maior + 1).toString().padStart(3, '0')}`;
-            } catch(e) { return "9999-001"; }
+            const anoAtual = new Date().getFullYear().toString();
+            const osAno = orcamentos.filter(o => o.osNumber && o.osNumber.startsWith(anoAtual + '-'));
+            let maior = 0; osAno.forEach(o => { const p = o.osNumber.split('-'); if(p.length === 2 && parseInt(p[1]) > maior) maior = parseInt(p[1]); });
+            return `${anoAtual}-${(maior + 1).toString().padStart(3, '0')}`;
         }
 
         async function salvarOrcamento() {
-            try {
-                const clienteIdEl = document.getElementById('orc-cliente');
-                const clienteId = clienteIdEl ? clienteIdEl.value : '';
-                const descEl = document.getElementById('orc-desc');
-                const desc = descEl ? descEl.value : '';
-                const obsEl = document.getElementById('orc-obs');
-                const obs = obsEl ? obsEl.value : '';
-                const matStatusEl = document.getElementById('orc-materiais-status');
-                const materiaisStatus = matStatusEl ? matStatusEl.value : '';
-                const matListaEl = document.getElementById('orc-materiais');
-                const materiaisLista = matListaEl ? matListaEl.value : '';
-                
-                const valor = parseDinheiro(document.getElementById('orc-valor').value);
-                const despesas = parseDinheiro(document.getElementById('orc-despesas').value);
-                const pago = document.getElementById('orc-pago').checked;
+            const clienteIdEl = document.getElementById('orc-cliente'); const clienteId = clienteIdEl ? clienteIdEl.value : '';
+            const desc = document.getElementById('orc-desc').value; const obs = document.getElementById('orc-obs').value;
+            const materiaisStatus = document.getElementById('orc-materiais-status').value;
+            const materiaisLista = document.getElementById('orc-materiais').value;
+            const valor = parseDinheiro(document.getElementById('orc-valor').value);
+            const despesas = parseDinheiro(document.getElementById('orc-despesas').value);
+            const pago = document.getElementById('orc-pago').checked;
+            const dataInput = document.getElementById('orc-data').value;
+            const dataServ = dataInput ? dataInput.split('-').reverse().join('/') : new Date().toLocaleDateString('pt-BR');
 
-                const dataInput = document.getElementById('orc-data').value;
-                const dataServ = dataInput ? dataInput.split('-').reverse().join('/') : new Date().toLocaleDateString('pt-BR');
+            const chkAterramento = document.getElementById('chk-laudo-aterramento').checked;
+            const chkBornes = document.getElementById('chk-laudo-bornes').checked;
+            const chkIsolacao = document.getElementById('chk-laudo-isolacao').checked;
+            const chkInstrucao = document.getElementById('chk-laudo-instrucao').checked;
 
-                if(!clienteId || !desc) return showToast('Selecione o cliente e preencha a descrição!', 'error');
-                
-                if(editandoOSId) {
-                    const idProtegido = editandoOSId; 
-                    
-                    const os = orcamentos.find(o => String(o.id) === String(idProtegido));
-                    if(os) {
-                        os.clienteId = parseInt(clienteId);
-                        os.desc = desc;
-                        os.obs = obs;
-                        os.materiaisStatus = materiaisStatus;
-                        os.materiaisLista = materiaisLista;
-                        os.valor = valor;
-                        os.despesas = despesas;
-                        os.fotos = [...fotosTemporarias];
-                        os.pago = pago;
-                        os.data = dataServ;
-                    }
-                    
-                    if(supabaseClient) {
-                        await supabaseClient.from('servicos').update({
-                            cliente_id: clienteId, descricao: desc, observacoes: obs,
-                            materiais_status: materiaisStatus, materiais_lista: materiaisLista,
-                            valor_servico: valor, despesas: despesas,
-                            fotos: [...fotosTemporarias],
-                            pago: pago, data_servico: dataServ
-                        }).eq('id', idProtegido);
-                    }
-                    
-                    atualizarTelas();
-                    showToast('Orçamento atualizado!');
-                    limparFormularioOS();
-                    mudarAba('os');
-                    
-                } else {
-                    const numOs = gerarNumeroOS();
-                    const tempId = Date.now();
+            if(!clienteId || !desc) return showToast('Selecione cliente e preencha descrição!', 'error');
+            
+            // Junta as fotos no formato para o BD (prefixando)
+            const fotosEstruturadas = [
+                ...fotosAntesTemporarias.map(f => 'antes|||' + f),
+                ...fotosDepoisTemporarias.map(f => 'depois|||' + f)
+            ];
 
-                    const novaOs = { 
-                        id: tempId, osNumber: numOs, clienteId: parseInt(clienteId), 
-                        desc, obs, materiaisStatus, materiaisLista, valor: valor, despesas: despesas,
-                        data: dataServ, status: 'Pendente', fotos: [...fotosTemporarias], pago: pago
-                    };
-                    
-                    orcamentos.push(novaOs);
-                    atualizarTelas();
-                    limparFormularioOS();
-                    showToast('Serviço salvo! Pode Gerar PDF.');
-                    mudarAba('os');
-
-                    if(supabaseClient) {
-                        const { data, error } = await supabaseClient.from('servicos').insert([{
-                            cliente_id: clienteId, os_number: numOs, descricao: desc, observacoes: obs,
-                            materiais_status: materiaisStatus, materiais_lista: materiaisLista,
-                            valor_servico: valor, despesas: despesas,
-                            data_servico: dataServ, status: 'Pendente',
-                            fotos: [...fotosTemporarias],
-                            pago: pago
-                        }]).select();
-
-                        if(!error && data && data.length > 0) {
-                            const idx = orcamentos.findIndex(o => o.id === tempId);
-                            if(idx > -1) orcamentos[idx].id = data[0].id;
-                            atualizarTelas();
-                        }
-                    }
+            if(editandoOSId) {
+                const idProtegido = editandoOSId; const os = orcamentos.find(o => String(o.id) === String(idProtegido));
+                if(os) {
+                    os.clienteId = parseInt(clienteId); os.desc = desc; os.obs = obs; os.materiaisStatus = materiaisStatus;
+                    os.materiaisLista = materiaisLista; os.valor = valor; os.despesas = despesas; os.fotos = fotosEstruturadas;
+                    os.pago = pago; os.data = dataServ; os.laudoAterramento = chkAterramento; os.laudoBornes = chkBornes;
+                    os.laudoIsolacao = chkIsolacao; os.laudoInstrucao = chkInstrucao;
                 }
-            } catch(e) { showToast("Erro crítico ao salvar", "error"); }
+                if(supabaseClient) {
+                    await supabaseClient.from('servicos').update({
+                        cliente_id: clienteId, descricao: desc, observacoes: obs, materiais_status: materiaisStatus,
+                        materiais_lista: materiaisLista, valor_servico: valor, despesas: despesas, fotos: fotosEstruturadas,
+                        pago: pago, data_servico: dataServ, laudo_aterramento: chkAterramento, laudo_bornes: chkBornes,
+                        laudo_isolacao: chkIsolacao, laudo_instrucao: chkInstrucao
+                    }).eq('id', idProtegido);
+                }
+                atualizarTelas(); showToast('Atualizado!'); limparFormularioOS(); mudarAba('os');
+            } else {
+                const numOs = gerarNumeroOS(); const tempId = Date.now();
+                const novaOs = { id: tempId, osNumber: numOs, clienteId: parseInt(clienteId), desc, obs, materiaisStatus, materiaisLista, valor: valor, despesas: despesas, data: dataServ, status: 'Pendente', fotos: fotosEstruturadas, pago: pago, laudoAterramento: chkAterramento, laudoBornes: chkBornes, laudoIsolacao: chkIsolacao, laudoInstrucao: chkInstrucao };
+                orcamentos.push(novaOs); atualizarTelas(); limparFormularioOS(); showToast('Salvo! Pode Gerar PDF.'); mudarAba('os');
+                if(supabaseClient) {
+                    const { data, error } = await supabaseClient.from('servicos').insert([{
+                        cliente_id: clienteId, os_number: numOs, descricao: desc, observacoes: obs, materiais_status: materiaisStatus,
+                        materiais_lista: materiaisLista, valor_servico: valor, despesas: despesas, data_servico: dataServ, status: 'Pendente',
+                        fotos: fotosEstruturadas, pago: pago, laudo_aterramento: chkAterramento, laudo_bornes: chkBornes,
+                        laudo_isolacao: chkIsolacao, laudo_instrucao: chkInstrucao
+                    }]).select();
+                    if(!error && data && data.length > 0) { const idx = orcamentos.findIndex(o => o.id === tempId); if(idx > -1) orcamentos[idx].id = data[0].id; atualizarTelas(); }
+                }
+            }
         }
 
         function clonarOS(id) {
-            const os = orcamentos.find(o => String(o.id) === String(id));
-            if(!os) return;
-            
+            const os = orcamentos.find(o => String(o.id) === String(id)); if(!os) return;
             limparFormularioOS();
-            document.getElementById('orc-cliente').value = os.clienteId;
-            document.getElementById('orc-desc').value = os.desc;
-            document.getElementById('orc-materiais-status').value = os.materiaisStatus;
-            document.getElementById('orc-materiais').value = os.materiaisLista;
-            document.getElementById('orc-obs').value = os.obs;
-            document.getElementById('orc-valor').value = formatarDinheiroInput(os.valor);
-            document.getElementById('orc-despesas').value = formatarDinheiroInput(os.despesas);
-            document.getElementById('orc-pago').checked = os.pago || false;
+            document.getElementById('orc-cliente').value = os.clienteId; document.getElementById('orc-desc').value = os.desc;
+            document.getElementById('orc-materiais-status').value = os.materiaisStatus; document.getElementById('orc-materiais').value = os.materiaisLista;
+            document.getElementById('orc-obs').value = os.obs; document.getElementById('orc-valor').value = formatarDinheiroInput(os.valor);
+            document.getElementById('orc-despesas').value = formatarDinheiroInput(os.despesas); document.getElementById('orc-pago').checked = os.pago || false;
+            document.getElementById('chk-laudo-aterramento').checked = os.laudoAterramento || false; document.getElementById('chk-laudo-bornes').checked = os.laudoBornes || false;
+            document.getElementById('chk-laudo-isolacao').checked = os.laudoIsolacao || false; document.getElementById('chk-laudo-instrucao').checked = os.laudoInstrucao || false;
+            if(os.data && os.data.includes('/')) document.getElementById('orc-data').value = os.data.split('/').reverse().join('-');
             
-            if(os.data && os.data.includes('/')) {
-                document.getElementById('orc-data').value = os.data.split('/').reverse().join('-');
-            }
-
-            fotosTemporarias = [...(os.fotos || [])];
+            fotosAntesTemporarias = []; fotosDepoisTemporarias = [];
+            (os.fotos || []).forEach(f => {
+                if(f.startsWith('antes|||')) fotosAntesTemporarias.push(f.replace('antes|||',''));
+                else if(f.startsWith('depois|||')) fotosDepoisTemporarias.push(f.replace('depois|||',''));
+                else fotosDepoisTemporarias.push(f); // Legacy cai no depois
+            });
             atualizarPreviewFotos();
-
-            showToast("OS Clonada! Salve para criar uma nova.", "info");
-            mudarAba('orcamentos');
+            showToast("Clonada! Salve para criar uma nova.", "info"); mudarAba('orcamentos');
         }
 
         function editarOS(id) {
-            const os = orcamentos.find(o => String(o.id) === String(id));
-            if(!os) return;
+            const os = orcamentos.find(o => String(o.id) === String(id)); if(!os) return;
             editandoOSId = os.id;
+            document.getElementById('orc-cliente').value = os.clienteId; document.getElementById('orc-desc').value = os.desc;
+            document.getElementById('orc-materiais-status').value = os.materiaisStatus; document.getElementById('orc-materiais').value = os.materiaisLista;
+            document.getElementById('orc-obs').value = os.obs; document.getElementById('orc-valor').value = formatarDinheiroInput(os.valor);
+            document.getElementById('orc-despesas').value = formatarDinheiroInput(os.despesas); document.getElementById('orc-pago').checked = os.pago || false;
+            document.getElementById('chk-laudo-aterramento').checked = os.laudoAterramento || false; document.getElementById('chk-laudo-bornes').checked = os.laudoBornes || false;
+            document.getElementById('chk-laudo-isolacao').checked = os.laudoIsolacao || false; document.getElementById('chk-laudo-instrucao').checked = os.laudoInstrucao || false;
+            if(os.data && os.data.includes('/')) document.getElementById('orc-data').value = os.data.split('/').reverse().join('-');
             
-            document.getElementById('orc-cliente').value = os.clienteId;
-            document.getElementById('orc-desc').value = os.desc;
-            document.getElementById('orc-materiais-status').value = os.materiaisStatus;
-            document.getElementById('orc-materiais').value = os.materiaisLista;
-            document.getElementById('orc-obs').value = os.obs;
-            document.getElementById('orc-valor').value = formatarDinheiroInput(os.valor);
-            document.getElementById('orc-despesas').value = formatarDinheiroInput(os.despesas);
-            document.getElementById('orc-pago').checked = os.pago || false;
-            
-            if(os.data && os.data.includes('/')) {
-                document.getElementById('orc-data').value = os.data.split('/').reverse().join('-');
-            }
-            
-            fotosTemporarias = [...(os.fotos || [])];
+            fotosAntesTemporarias = []; fotosDepoisTemporarias = [];
+            (os.fotos || []).forEach(f => {
+                if(f.startsWith('antes|||')) fotosAntesTemporarias.push(f.replace('antes|||',''));
+                else if(f.startsWith('depois|||')) fotosDepoisTemporarias.push(f.replace('depois|||',''));
+                else fotosDepoisTemporarias.push(f); // Legacy cai no depois
+            });
             atualizarPreviewFotos();
 
-            document.getElementById('titulo-aba-servico').innerText = `Editando OS: ${os.osNumber}`;
-            document.getElementById('btn-salvar-os').innerText = "Atualizar Serviço/Orçamento";
-            document.getElementById('btn-cancelar-edicao').classList.remove('hidden');
-            
+            document.getElementById('titulo-aba-servico').innerText = `Editando: ${os.osNumber}`;
+            document.getElementById('btn-salvar-os').innerText = "Atualizar"; document.getElementById('btn-cancelar-edicao').classList.remove('hidden');
             mudarAba('orcamentos');
         }
 
-        function cancelarEdicaoOS() {
-            limparFormularioOS();
-            showToast("Edição cancelada.");
-        }
+        function cancelarEdicaoOS() { limparFormularioOS(); showToast("Cancelada."); }
 
         function limparFormularioOS() {
             editandoOSId = null;
             document.getElementById('titulo-aba-servico').innerText = "Descrever Serviço";
             document.getElementById('btn-salvar-os').innerText = "Salvar Orçamento (Ctrl+S)";
             document.getElementById('btn-cancelar-edicao').classList.add('hidden');
-
-            const ids = ['orc-desc', 'orc-obs', 'orc-materiais', 'orc-valor', 'orc-despesas', 'orc-fotos', 'orc-data'];
-            ids.forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+            ['orc-desc', 'orc-obs', 'orc-materiais', 'orc-valor', 'orc-despesas', 'orc-data'].forEach(id => { document.getElementById(id).value = ''; });
+            ['orc-fotos-antes', 'orc-fotos-depois'].forEach(id => { document.getElementById(id).value = ''; });
             document.getElementById('orc-pago').checked = false;
-
-            fotosTemporarias = []; 
-            atualizarPreviewFotos();
+            ['chk-laudo-aterramento','chk-laudo-bornes','chk-laudo-isolacao','chk-laudo-instrucao'].forEach(id => { document.getElementById(id).checked = false; });
+            fotosAntesTemporarias = []; fotosDepoisTemporarias = []; atualizarPreviewFotos();
         }
 
         async function excluirOS(id) {
-            if(!confirm("Deseja excluir permanentemente este documento? Essa ação não pode ser desfeita.")) return;
-            
-            orcamentos = orcamentos.filter(o => String(o.id) !== String(id));
-            atualizarTelas();
-            showToast("OS Excluída.", "info");
-            
-            if(supabaseClient) {
-                try { await supabaseClient.from('servicos').delete().eq('id', id); } catch(e) {}
-            }
+            if(!confirm("Deseja excluir permanentemente este documento?")) return;
+            orcamentos = orcamentos.filter(o => String(o.id) !== String(id)); atualizarTelas(); showToast("OS Excluída.", "info");
+            if(supabaseClient) { try { await supabaseClient.from('servicos').delete().eq('id', id); } catch(e) {} }
         }
 
         function exportarCSV() {
-            if(orcamentos.length === 0) return showToast("Nenhum orçamento para exportar.", "error");
-            
-            let csvContent = "data:text/csv;charset=utf-8,";
-            csvContent += "OS Numero,Cliente,Data,Status,Pago,Valor Total,Despesas,Lucro Bruto\r\n";
-
+            if(orcamentos.length === 0) return showToast("Vazio.", "error");
+            let csvContent = "data:text/csv;charset=utf-8,OS Numero,Cliente,Data,Status,Pago,Valor Total,Despesas,Lucro Bruto\r\n";
             orcamentos.forEach(o => {
                 const c = clientes.find(cli => String(cli.id) === String(o.clienteId));
-                const nomeCli = c ? c.nome : "Desconhecido";
-                const lucro = (parseFloat(o.valor || 0) - parseFloat(o.despesas || 0)).toFixed(2);
-                const sitPago = o.pago ? 'Sim' : 'Não';
-                
-                const row = `${o.osNumber},"${nomeCli}",${o.data},${o.status},${sitPago},${o.valor || 0},${o.despesas || 0},${lucro}`;
-                csvContent += row + "\r\n";
+                const nomeCli = c ? c.nome : "Desconhecido"; const lucro = (parseFloat(o.valor || 0) - parseFloat(o.despesas || 0)).toFixed(2);
+                csvContent += `${o.osNumber},"${nomeCli}",${o.data},${o.status},${o.pago ? 'Sim' : 'Não'},${o.valor || 0},${o.despesas || 0},${lucro}\r\n`;
             });
+            const link = document.createElement("a"); link.setAttribute("href", encodeURI(csvContent)); link.setAttribute("download", "brvolts_os.csv");
+            document.body.appendChild(link); link.click(); document.body.removeChild(link);
+        }
 
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "brvolts_export_os.csv");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            showToast("Arquivo CSV baixado!");
+        // TIME TRACKING LÓGICA
+        function toggleTimer(id) {
+            const os = orcamentos.find(o => String(o.id) === String(id)); if(!os) return;
+            if(!timeTrackerMeta[id]) timeTrackerMeta[id] = { totalMinutos: 0, startedAt: null };
+            if(timeTrackerMeta[id].startedAt) {
+                const diffMs = Date.now() - timeTrackerMeta[id].startedAt; timeTrackerMeta[id].totalMinutos += (diffMs / 60000); timeTrackerMeta[id].startedAt = null;
+                mudarStatusOS(id, 'Concluído'); showToast(`Serviço Finalizado! Tempo salvo.`);
+            } else {
+                timeTrackerMeta[id].startedAt = Date.now(); mudarStatusOS(id, 'Em Andamento'); showToast(`Cronômetro Iniciado!`);
+            }
+            saveTimeTracker(); atualizarTelas();
         }
 
         function atualizarDashboard() {
-            try {
-                const dashFat = document.getElementById('dash-faturamento');
-                const pDesp = document.getElementById('dash-despesas');
-                const pLucro = document.getElementById('dash-lucro');
-                const filtroMes = document.getElementById('filtro-mes')?.value;
-                const filtroAno = document.getElementById('filtro-ano')?.value;
-                
-                if(!dashFat || !filtroMes || !filtroAno) return;
-                
-                let faturamento = 0, despesas = 0;
-                let clientesStats = {}; 
-                
-                (orcamentos || []).forEach(o => {
-                    const statusStr = o.status ? o.status.trim().toLowerCase() : '';
-                    if (statusStr === 'concluído' || statusStr === 'concluido') {
-                        const d = extrairData(o.data);
-                        if (d) {
-                            const matchMes = (filtroMes === 'ALL' || d.mes === filtroMes);
-                            const matchAno = (filtroAno === 'ALL' || d.ano === filtroAno);
-                            
-                            if(matchMes && matchAno) {
-                                const val = parseFloat(o.valor || 0);
-                                const desp = parseFloat(o.despesas || 0);
-                                faturamento += val;
-                                despesas += desp;
+            const dashFat = document.getElementById('dash-faturamento'); const pLucro = document.getElementById('dash-lucro');
+            const filtroMes = document.getElementById('filtro-mes')?.value; const filtroAno = document.getElementById('filtro-ano')?.value;
+            
+            let faturamento = 0, despesas = 0; let clientesStats = {}; const hojeData = new Date();
+            const kanbanLists = { 'Pendente': [], 'Aprovado': [], 'Em Andamento': [], 'Concluído': [] };
+            const followups = []; const alertas = []; const garantias = [];
 
-                                if(!clientesStats[o.clienteId]) {
-                                    clientesStats[o.clienteId] = { total: 0, count: 0 };
-                                }
-                                clientesStats[o.clienteId].total += val;
-                                clientesStats[o.clienteId].count += 1;
-                            }
+            (orcamentos || []).forEach(o => {
+                let st = o.status || 'Pendente'; if(st === 'Cancelado') return; if(!kanbanLists[st]) st = 'Pendente'; kanbanLists[st].push(o);
+                const d = extrairData(o.data); let dataOS = null; if(d) dataOS = new Date(d.ano, parseInt(d.mes) - 1, d.dia);
+
+                if (st === 'Pendente' && dataOS) { const diffDays = Math.ceil((hojeData - dataOS) / (1000 * 60 * 60 * 24)); if(diffDays >= 3) followups.push({os: o, dias: diffDays}); }
+                if (st === 'Concluído' || st === 'concluido') {
+                    if (d) {
+                        const matchMes = (filtroMes === 'ALL' || d.mes === filtroMes); const matchAno = (filtroAno === 'ALL' || d.ano === filtroAno);
+                        if(matchMes && matchAno) {
+                            const val = parseFloat(o.valor || 0); const desp = parseFloat(o.despesas || 0); faturamento += val; despesas += desp;
+                            if(!clientesStats[o.clienteId]) clientesStats[o.clienteId] = { total: 0, count: 0 };
+                            clientesStats[o.clienteId].total += val; clientesStats[o.clienteId].count += 1;
                         }
-                    }
-                });
-
-                dashFat.innerText = `R$ ${faturamento.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
-                pDesp.innerText = `R$ ${despesas.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
-                pLucro.innerText = `R$ ${(faturamento - despesas).toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
-
-                const topClients = Object.keys(clientesStats)
-                    .map(cid => ({ id: cid, ...clientesStats[cid] }))
-                    .sort((a, b) => b.total - a.total)
-                    .slice(0, 5);
-
-                const listaTopEl = document.getElementById('dash-top-clientes');
-                if(listaTopEl) {
-                    if(topClients.length === 0) {
-                        listaTopEl.innerHTML = '<li class="p-4 text-gray-500 text-center text-xs">Nenhum cliente com serviços concluídos neste período.</li>';
-                    } else {
-                        const medalhas = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣'];
-                        listaTopEl.innerHTML = topClients.map((tc, index) => {
-                            const c = (clientes || []).find(cli => String(cli.id) === String(tc.id));
-                            const cNome = c ? c.nome : 'Cliente Removido';
-                            return `<li class="p-3 flex justify-between items-center hover:bg-zinc-800 transition border-zinc-800 border-b last:border-0">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-xl">${medalhas[index]}</span>
-                                    <div class="min-w-0">
-                                        <p class="font-bold text-gray-200 truncate">${cNome}</p>
-                                        <p class="text-xs text-gray-500">${tc.count} serviço(s) finalizado(s)</p>
-                                    </div>
-                                </div>
-                                <p class="text-sm font-bold text-green-500">R$ ${tc.total.toLocaleString('pt-BR', {minimumFractionDigits:2})}</p>
-                            </li>`;
-                        }).join('');
+                        const diffDays = Math.ceil((hojeData - dataOS) / (1000 * 60 * 60 * 24));
+                        if(diffDays >= 330 && diffDays <= 390) alertas.push(o);
+                        if(diffDays >= 80 && diffDays <= 90) garantias.push({os: o, dias: diffDays});
                     }
                 }
+            });
 
-                const termoPesquisa = (document.getElementById('busca-os')?.value || '').toLowerCase();
-                
-                let ultimosOS = (orcamentos || []).filter(o => {
-                    const c = (clientes || []).find(cli => String(cli.id) === String(o.clienteId));
-                    const nomeStr = c ? c.nome.toLowerCase() : '';
-                    const osStr = o.osNumber ? o.osNumber.toLowerCase() : '';
-                    return nomeStr.includes(termoPesquisa) || osStr.includes(termoPesquisa);
-                }).slice(-15).reverse();
+            if(dashFat) dashFat.innerText = `R$ ${faturamento.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+            if(pLucro) pLucro.innerText = `R$ ${(faturamento - despesas).toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
 
-                const listaOsEl = document.getElementById('dash-lista-os');
-                if(listaOsEl) {
-                    listaOsEl.innerHTML = ultimosOS.length === 0 ? '<li class="p-4 text-gray-500 text-center text-xs">Nenhum registo encontrado.</li>' : ultimosOS.map(o => {
-                        const c = (clientes || []).find(cli => String(cli.id) === String(o.clienteId));
-                        const cNome = c && c.nome ? c.nome : 'Removido';
-                        const osNum = o.osNumber || 'S/N';
-                        
-                        const iconePago = o.pago ? '<span class="inline-flex items-center gap-1 ml-2 px-2 py-0.5 rounded-full bg-green-900/50 text-green-400 text-[10px] font-bold">💰 Pago</span>' : '';
-
-                        return `<li class="p-3 flex flex-col md:flex-row md:items-center hover:bg-zinc-800 transition gap-2 border-zinc-800 md:border-b">
-                            <div class="flex-1 min-w-0 md:w-1/4 flex flex-wrap items-center">
-                                <p class="font-bold text-gray-200 text-sm truncate w-full md:w-auto">${osNum}</p>
-                                <div class="flex mt-1 md:mt-0">${iconePago}</div>
-                                <p class="text-xs text-gray-400 truncate md:hidden w-full mt-1">${cNome}</p>
-                            </div>
-                            <div class="hidden md:block flex-1 min-w-0 md:w-1/4"><p class="text-sm text-gray-300 truncate">${cNome}</p></div>
-                            <div class="hidden md:block flex-1 min-w-0 md:w-1/4"><p class="text-sm font-bold text-green-500">R$ ${(parseFloat(o.valor)||0).toLocaleString('pt-BR', {minimumFractionDigits:2})}</p></div>
-                            
-                            <div class="flex justify-between items-center md:w-1/4 gap-3 border-t border-zinc-800/50 md:border-0 pt-2 md:pt-0">
-                                <select onchange="mudarStatusOS(${o.id}, this.value)" class="text-[10px] p-1.5 bg-zinc-800 border border-zinc-700 rounded text-white w-24 shrink-0 outline-none">
-                                    <option value="Pendente" ${o.status === 'Pendente' ? 'selected' : ''}>🟡 Pendente</option>
-                                    <option value="Aprovado" ${o.status === 'Aprovado' ? 'selected' : ''}>🟢 Aprovado</option>
-                                    <option value="Concluído" ${o.status === 'Concluído' ? 'selected' : ''}>🔵 Concluído</option>
-                                </select>
-                                <div class="flex gap-4">
-                                    <button onclick="clonarOS(${o.id})" class="text-sm text-yellow-500 hover:text-yellow-400 font-semibold" title="Clonar">👯</button>
-                                    <button onclick="editarOS(${o.id})" class="text-sm text-blue-400 hover:text-blue-300 font-semibold" title="Editar">✏️</button>
-                                    <button onclick="excluirOS(${o.id})" class="text-sm text-red-500 hover:text-red-400 font-semibold" title="Excluir">🗑️</button>
-                                </div>
-                            </div>
-                        </li>`;
+            const divFollow = document.getElementById('alerta-followup');
+            if(divFollow) {
+                if(followups.length > 0) {
+                    divFollow.classList.remove('hidden');
+                    document.getElementById('lista-followup').innerHTML = followups.slice(0, 5).map(item => {
+                        const c = clientes.find(cli => String(cli.id) === String(item.os.clienteId)); if(!c) return '';
+                        const txt = encodeURIComponent(`Olá ${c.nome}, tudo bem?\nEnviamos o orçamento da OS ${item.os.osNumber} há alguns dias. Ficou alguma dúvida técnica sobre o dimensionamento ou valores? Estou à disposição!`);
+                        return `<li class="p-3 flex justify-between items-center"><p class="text-orange-400 font-bold text-xs truncate">${c.nome} <span class="text-orange-600 font-normal ml-1">Há ${item.dias} d</span></p><a href="https://api.whatsapp.com/send?phone=55${c.tel.replace(/\D/g, '')}&text=${txt}" target="_blank" class="bg-orange-600 text-white text-[10px] px-2 py-1 rounded shrink-0">Cobrar</a></li>`;
                     }).join('');
-                }
+                } else divFollow.classList.add('hidden');
+            }
 
-                const alertas = [];
-                const garantias = [];
+            const divAlerta = document.getElementById('alerta-manutencao');
+            if(divAlerta) {
+                if(alertas.length > 0) {
+                    divAlerta.classList.remove('hidden');
+                    document.getElementById('lista-alertas').innerHTML = alertas.slice(0, 5).map(o => {
+                        const c = clientes.find(cli => String(cli.id) === String(o.clienteId)); if(!c) return '';
+                        const txt = encodeURIComponent(`Olá ${c.nome}! Aqui é o Wellington da BRvolts. Nosso sistema avisou que faz cerca de 1 ano desde a nossa última manutenção.\nGostaria de agendar uma revisão preventiva?`);
+                        return `<li class="p-3 flex justify-between items-center"><p class="text-yellow-500 font-bold text-xs truncate">${c.nome}</p><a href="https://api.whatsapp.com/send?phone=55${c.tel.replace(/\D/g, '')}&text=${txt}" target="_blank" class="bg-yellow-600 text-white text-[10px] px-2 py-1 rounded shrink-0">Chamar</a></li>`;
+                    }).join('');
+                } else divAlerta.classList.add('hidden');
+            }
+
+            const divGarantia = document.getElementById('alerta-garantia');
+            if(divGarantia) {
+                if(garantias.length > 0) {
+                    divGarantia.classList.remove('hidden');
+                    document.getElementById('lista-garantias').innerHTML = garantias.slice(0, 5).map(item => {
+                        const c = clientes.find(cli => String(cli.id) === String(item.os.clienteId)); if(!c) return '';
+                        const dias = 90 - item.dias;
+                        const txt = encodeURIComponent(`Olá *${c.nome}*, tudo bem?\nPassando pra lembrar que a garantia do serviço vence em ${dias} dia(s). Tudo operando nos conformes por aí?`);
+                        return `<li class="p-3 flex justify-between items-center"><p class="text-blue-400 font-bold text-xs truncate">${c.nome} <span class="text-blue-600 font-normal">(${dias}d)</span></p><a href="https://api.whatsapp.com/send?phone=55${c.tel.replace(/\D/g, '')}&text=${txt}" target="_blank" class="bg-blue-600 text-white text-[10px] px-2 py-1 rounded shrink-0">Chamar</a></li>`;
+                    }).join('');
+                } else divGarantia.classList.add('hidden');
+            }
+
+            const renderKanbanCard = (o) => {
+                const c = clientes.find(cli => String(cli.id) === String(o.clienteId)); const cNome = c ? c.nome : 'Desconhecido';
+                const total = parseFloat(o.valor || 0); const lucro = total - parseFloat(o.despesas || 0);
                 
-                (orcamentos || []).forEach(o => {
-                    const statusStr = o.status ? o.status.trim().toLowerCase() : '';
-                    if (statusStr === 'concluído' || statusStr === 'concluido') {
-                        const d = extrairData(o.data);
-                        if (d) {
-                            const dataOS = new Date(d.ano, parseInt(d.mes) - 1, d.dia);
-                            const diffDays = Math.ceil((new Date() - dataOS) / (1000 * 60 * 60 * 24));
-                            
-                            // Revisão Anual (entre 330 e 390 dias)
-                            if(diffDays >= 330 && diffDays <= 390) alertas.push(o);
-                            
-                            // Garantia (entre 80 e 90 dias)
-                            if(diffDays >= 80 && diffDays <= 90) garantias.push({os: o, dias: diffDays});
-                        }
-                    }
-                });
+                let badges = ''; if(o.pago) badges += `<span class="bg-green-900/50 text-green-400 text-[10px] px-2 py-0.5 rounded-full font-bold ml-1">Pago</span>`;
                 
-                // Render Alerta Anual
-                const divAlerta = document.getElementById('alerta-manutencao');
-                if(divAlerta) {
-                    if(alertas.length > 0) {
-                        divAlerta.classList.remove('hidden');
-                        const lAlertas = document.getElementById('lista-alertas');
-                        if(lAlertas) lAlertas.innerHTML = alertas.map(o => {
-                            const c = (clientes || []).find(cli => String(cli.id) === String(o.clienteId));
-                            if(!c) return '';
-                            const numRaw = c.tel ? c.tel.replace(/\D/g, '') : '';
-                            const txt = encodeURIComponent(`Olá ${c.nome}! Aqui é o Wellington da BRvolts. Nosso sistema avisou que faz cerca de 1 ano desde a nossa última manutenção.\n\nGostaria de agendar uma revisão preventiva?`);
-                            return `<li class="p-3 flex justify-between items-center"><p class="text-yellow-500 font-bold text-xs truncate">${c.nome} <span class="text-yellow-700 font-normal ml-1">${o.data}</span></p><a href="https://api.whatsapp.com/send?phone=55${numRaw}&text=${txt}" target="_blank" class="bg-green-600 text-white text-[10px] px-2 py-1 rounded shrink-0">Chamar</a></li>`;
-                        }).join('');
-                    } else { divAlerta.classList.add('hidden'); }
+                let trackerBtn = ''; let rentabilidadeHtml = '';
+                if(o.status === 'Aprovado') trackerBtn = `<button onclick="toggleTimer(${o.id})" class="w-full mt-3 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold py-2 rounded-lg flex items-center justify-center gap-1 transition">▶ Iniciar Serviço</button>`;
+                else if(o.status === 'Em Andamento') trackerBtn = `<button onclick="toggleTimer(${o.id})" class="w-full mt-3 bg-red-600 hover:bg-red-500 text-white text-xs font-bold py-2 rounded-lg flex items-center justify-center gap-1 transition animate-pulse">⏹ Finalizar e Salvar</button>`;
+
+                if(o.status === 'Concluído' && timeTrackerMeta[o.id] && timeTrackerMeta[o.id].totalMinutos > 0) {
+                    const horas = (timeTrackerMeta[o.id].totalMinutos / 60); const ganhoHora = (lucro / horas).toFixed(2);
+                    rentabilidadeHtml = `<div class="mt-2 bg-blue-900/20 border border-blue-900/50 p-2 rounded flex justify-between items-center text-[10px]"><span class="text-gray-400">Tempo: ${horas.toFixed(1)}h</span><span class="text-blue-400 font-bold">R$ ${ganhoHora}/h</span></div>`;
                 }
 
-                // Render Alerta Garantia
-                const divGarantia = document.getElementById('alerta-garantia');
-                if(divGarantia) {
-                    if(garantias.length > 0) {
-                        divGarantia.classList.remove('hidden');
-                        const lGarantias = document.getElementById('lista-garantias');
-                        if(lGarantias) lGarantias.innerHTML = garantias.map(item => {
-                            const o = item.os;
-                            const c = (clientes || []).find(cli => String(cli.id) === String(o.clienteId));
-                            if(!c) return '';
-                            const numRaw = c.tel ? c.tel.replace(/\D/g, '') : '';
-                            const diasRestantes = 90 - item.dias;
-                            const txt = encodeURIComponent(`Olá *${c.nome}*, tudo bem?\n\nAqui é o Wellington da BRvolts. Passando pra lembrar que a garantia de mão de obra do serviço feito no dia ${o.data} vence em ${diasRestantes} dia(s).\n\nTudo operando nos conformes por aí? Qualquer coisa é só chamar!`);
-                            return `<li class="p-3 flex justify-between items-center"><p class="text-blue-400 font-bold text-xs truncate">${c.nome} <span class="text-blue-600 font-normal ml-1">Vence em ${diasRestantes}d</span></p><a href="https://api.whatsapp.com/send?phone=55${numRaw}&text=${txt}" target="_blank" class="bg-blue-600 text-white text-[10px] px-2 py-1 rounded shrink-0">Chamar</a></li>`;
-                        }).join('');
-                    } else { divGarantia.classList.add('hidden'); }
-                }
+                return `
+                <div class="kanban-card">
+                    <div class="flex justify-between items-start mb-1"><span class="text-xs text-gray-500 font-bold">OS ${o.osNumber}</span><div class="flex">${badges}</div></div>
+                    <p class="font-bold text-gray-200 text-sm mb-1 truncate">${cNome}</p>
+                    <p class="text-xs text-gray-400 mb-2">📅 ${o.data}</p>
+                    <p class="text-green-500 font-bold text-sm border-t border-zinc-800 pt-2 flex justify-between">R$ ${total.toLocaleString('pt-BR', {minimumFractionDigits:2})} <span class="text-xs text-blue-500 font-normal mt-0.5" title="Lucro Bruto">(Lucro: R$ ${lucro.toLocaleString('pt-BR', {minimumFractionDigits:0})})</span></p>
+                    ${rentabilidadeHtml}${trackerBtn}
+                    <div class="flex justify-between mt-3 gap-2">
+                        <select onchange="mudarStatusOS(${o.id}, this.value)" class="text-[10px] p-1.5 bg-zinc-800 border border-zinc-700 rounded text-white flex-grow outline-none"><option value="Pendente" ${o.status === 'Pendente' ? 'selected' : ''}>Pendente</option><option value="Aprovado" ${o.status === 'Aprovado' ? 'selected' : ''}>Aprovado</option><option value="Em Andamento" ${o.status === 'Em Andamento' ? 'selected' : ''}>Andamento</option><option value="Concluído" ${o.status === 'Concluído' ? 'selected' : ''}>Concluído</option></select>
+                        <button onclick="editarOS(${o.id})" class="bg-zinc-800 hover:bg-zinc-700 p-1.5 rounded" title="Editar">✏️</button>
+                    </div>
+                </div>`;
+            };
 
-            } catch(e) { console.error("Erro atualizar dashboard", e); }
+            const sortFn = (a,b) => { const da = a.data ? a.data.split('/').reverse().join('-') : '0000'; const db = b.data ? b.data.split('/').reverse().join('-') : '0000'; return db.localeCompare(da); };
+            ['Pendente', 'Aprovado', 'Em Andamento', 'Concluído'].forEach(st => {
+                const el = document.getElementById(`kb-${st.toLowerCase().replace(' ','')}`); const cnt = document.getElementById(`kb-count-${st.toLowerCase().replace(' ','')}`);
+                if(el && cnt) { const list = kanbanLists[st].sort(sortFn); cnt.innerText = list.length; el.innerHTML = list.length > 0 ? list.map(renderKanbanCard).join('') : `<p class="text-xs text-gray-500 text-center mt-4">Vazio</p>`; }
+            });
         }
 
         async function mudarStatusOS(id, st) {
-            try {
-                const os = orcamentos.find(o => String(o.id) === String(id));
-                if(os) os.status = st;
-                atualizarTelas();
-                showToast("Status atualizado", "info");
-                if(supabaseClient) await supabaseClient.from('servicos').update({status: st}).eq('id', id);
-            } catch(e) {}
+            try { const os = orcamentos.find(o => String(o.id) === String(id)); if(os) os.status = st; atualizarTelas(); showToast("Movido no Funil!", "info"); if(supabaseClient) await supabaseClient.from('servicos').update({status: st}).eq('id', id); } catch(e) {}
+        }
+
+        function gerarRotaDoDia() {
+            const hojeStr = new Date().toLocaleDateString('pt-BR'); const osHoje = orcamentos.filter(o => o.data === hojeStr && o.status !== 'Concluído' && o.status !== 'Cancelado');
+            if(osHoje.length === 0) return showToast("Nenhum serviço agendado para hoje.", "error");
+            let waypoints = []; osHoje.forEach(o => { const c = clientes.find(cli => String(cli.id) === String(o.clienteId)); if(c && c.end) waypoints.push(encodeURIComponent(c.end)); });
+            if(waypoints.length === 0) return showToast("Os clientes de hoje não possuem endereço cadastrado.", "error");
+            const destination = waypoints.pop(); let url = `https://www.google.com/maps/dir/?api=1&destination=${destination}`; if(waypoints.length > 0) url += `&waypoints=${waypoints.join('|')}`;
+            window.open(url, '_blank');
         }
 
         function atualizarAgenda() {
             const calDiv = document.getElementById('calendario-dias');
             if(calDiv) {
-                const hoje = new Date();
-                const mes = hoje.getMonth();
-                const ano = hoje.getFullYear();
-                
+                const hoje = new Date(); const mes = hoje.getMonth(); const ano = hoje.getFullYear();
                 const mesesNomes = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
                 document.getElementById('mes-atual-agenda').innerText = `${mesesNomes[mes]} de ${ano}`;
-
-                const primeiroDia = new Date(ano, mes, 1).getDay();
-                const diasNoMes = new Date(ano, mes + 1, 0).getDate();
-                
-                let html = '';
-                const diasSemana = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
-                html += diasSemana.map(d => `<div class="text-center text-xs font-bold text-gray-500 py-1">${d}</div>`).join('');
-                
+                const primeiroDia = new Date(ano, mes, 1).getDay(); const diasNoMes = new Date(ano, mes + 1, 0).getDate();
+                let html = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'].map(d => `<div class="text-center text-xs font-bold text-gray-500 py-1">${d}</div>`).join('');
                 for(let i=0; i<primeiroDia; i++) html += `<div></div>`;
-                
                 for(let i=1; i<=diasNoMes; i++) {
                     const dataStr = `${i.toString().padStart(2,'0')}/${(mes+1).toString().padStart(2,'0')}/${ano}`;
-                    
                     const temServico = orcamentos.some(o => o.data === dataStr && o.status !== 'Concluído' && o.status !== 'Cancelado');
                     const isHoje = i === hoje.getDate();
-                    
                     let classes = "flex items-center justify-center h-8 w-8 rounded-full text-sm mx-auto cursor-default ";
-                    if(isHoje) classes += "bg-blue-600 text-white font-bold shadow-lg";
-                    else classes += "text-gray-300 hover:bg-zinc-800";
-                    
+                    classes += isHoje ? "bg-blue-600 text-white font-bold shadow-lg" : "text-gray-300 hover:bg-zinc-800";
                     let dot = temServico ? `<div class="w-1.5 h-1.5 bg-yellow-500 rounded-full mx-auto mt-0.5"></div>` : '<div class="w-1.5 h-1.5 mx-auto mt-0.5"></div>';
-                    
                     html += `<div><div class="${classes}">${i}</div>${dot}</div>`;
                 }
                 calDiv.innerHTML = html;
             }
 
-            const lista = document.getElementById('lista-agenda');
-            if(!lista) return;
-
-            const agendados = orcamentos.filter(o => o.status !== 'Concluído' && o.status !== 'Cancelado').sort((a,b) => {
-                const da = a.data ? a.data.split('/').reverse().join('-') : '0000-00-00';
-                const db = b.data ? b.data.split('/').reverse().join('-') : '0000-00-00';
-                return db.localeCompare(da); 
-            });
-
-            if(agendados.length === 0) {
-                lista.innerHTML = '<p class="text-gray-500 text-sm">Nenhum serviço pendente na agenda.</p>';
-                return;
-            }
-
+            const lista = document.getElementById('lista-agenda'); if(!lista) return;
+            const agendados = orcamentos.filter(o => o.status !== 'Concluído' && o.status !== 'Cancelado').sort((a,b) => { const da = a.data ? a.data.split('/').reverse().join('-') : '0000-00-00'; const db = b.data ? b.data.split('/').reverse().join('-') : '0000-00-00'; return db.localeCompare(da); });
+            if(agendados.length === 0) { lista.innerHTML = '<p class="text-gray-500 text-sm">Nenhum serviço pendente.</p>'; return; }
             lista.innerHTML = agendados.map(o => {
                 const c = clientes.find(cli => String(cli.id) === String(o.clienteId));
-                return `
-                <li class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 transition-colors hover:border-blue-900/50">
-                    <div class="flex justify-between items-start mb-2">
-                        <p class="text-xs bg-blue-900/30 text-blue-400 px-2 py-1 rounded-full font-bold">📅 ${o.data}</p>
-                        <span class="text-xs text-gray-500">OS: ${o.osNumber}</span>
-                    </div>
-                    <p class="font-bold text-white text-lg">${c ? c.nome : 'Cliente Desconhecido'}</p>
-                    <p class="text-sm text-gray-400 mt-1 line-clamp-2">${o.desc || 'Sem descrição'}</p>
-                    
-                    <div class="mt-4 flex gap-2">
-                        <button onclick="editarOS(${o.id})" class="flex-1 bg-zinc-700 hover:bg-zinc-600 text-white font-bold py-2 rounded-lg text-xs transition-colors">✏️ Editar</button>
-                        <select onchange="mudarStatusOS(${o.id}, this.value)" class="flex-1 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-xs font-bold px-2 py-2 outline-none">
-                            <option value="Pendente" ${o.status === 'Pendente' ? 'selected' : ''}>🟡 Pendente</option>
-                            <option value="Aprovado" ${o.status === 'Aprovado' ? 'selected' : ''}>🟢 Aprovado</option>
-                            <option value="Concluído" ${o.status === 'Concluído' ? 'selected' : ''}>🔵 Concluir!</option>
-                        </select>
-                    </div>
+                return `<li class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 transition-colors hover:border-blue-900/50">
+                    <div class="flex justify-between items-start mb-2"><p class="text-xs bg-blue-900/30 text-blue-400 px-2 py-1 rounded-full font-bold">📅 ${o.data}</p><span class="text-xs text-gray-500">OS: ${o.osNumber}</span></div>
+                    <p class="font-bold text-white text-lg">${c ? c.nome : 'Desconhecido'}</p><p class="text-sm text-gray-400 mt-1 line-clamp-2">${o.desc || 'Sem descrição'}</p><p class="text-sm text-gray-500 mt-1">📍 ${c && c.end ? c.end : 'Sem endereço'}</p>
                 </li>`;
             }).join('');
         }
 
         function atualizarTelas() {
-            try { atualizarDashboard(); } catch(e) {}
-            try { renderizarListaClientes(); } catch(e) {}
-            try { filtrarClientesDropdown(); } catch(e) {}
-            try { atualizarAgenda(); } catch(e) {}
-
+            try { atualizarDashboard(); } catch(e) {} try { renderizarListaClientes(); } catch(e) {} try { filtrarClientesDropdown(); } catch(e) {} try { atualizarAgenda(); } catch(e) {}
             try {
                 const selectOS = document.getElementById('os-orcamento');
                 if(selectOS) {
                     const optionsOrcamentos = (orcamentos || []).slice(-15).reverse().map(o => {
-                        const c = (clientes || []).find(cli => String(cli.id) === String(o.clienteId));
-                        const cNome = c && c.nome ? c.nome : 'Removido';
-                        const osNum = o.osNumber || 'S/N';
-                        const checkPago = o.pago ? '💰 ' : '';
-                        return `<option value="${o.id}">${checkPago}OS ${osNum} | ${cNome} - R$ ${(parseFloat(o.valor)||0).toLocaleString('pt-BR', {minimumFractionDigits:2})}</option>`;
+                        const c = (clientes || []).find(cli => String(cli.id) === String(o.clienteId)); const cNome = c && c.nome ? c.nome : 'Removido'; const checkPago = o.pago ? '💰 ' : '';
+                        return `<option value="${o.id}">${checkPago}OS ${o.osNumber || 'S/N'} | ${cNome}</option>`;
                     }).join('');
                     selectOS.innerHTML = '<option value="" disabled selected>Escolha o serviço salvo...</option>' + optionsOrcamentos;
                 }
             } catch(e) {}
         }
 
-        // --- GERAÇÃO DO PAYLOAD PIX EM JAVASCRIPT ---
         function formatPixStr(id, value) { return id + value.length.toString().padStart(2, '0') + value; }
-        
         function gerarPayloadPix(chave, nome, cidade, valor) {
-            const gui = formatPixStr('00', 'br.gov.bcb.pix');
-            const key = formatPixStr('01', chave);
-            const merchantAccount = formatPixStr('26', gui + key);
-            const merchantCateg = formatPixStr('52', '0000');
-            const currency = formatPixStr('53', '986');
-            let amount = '';
-            if (valor > 0) amount = formatPixStr('54', valor.toFixed(2));
-            const country = formatPixStr('58', 'BR');
-            const mName = formatPixStr('59', nome.substring(0,25).normalize("NFD").replace(/[\u0300-\u036f]/g, ""));
-            const mCity = formatPixStr('60', cidade.substring(0,15).normalize("NFD").replace(/[\u0300-\u036f]/g, ""));
+            const gui = formatPixStr('00', 'br.gov.bcb.pix'); const key = formatPixStr('01', chave); const merchantAccount = formatPixStr('26', gui + key); const merchantCateg = formatPixStr('52', '0000');
+            const currency = formatPixStr('53', '986'); let amount = ''; if (valor > 0) amount = formatPixStr('54', valor.toFixed(2));
+            const country = formatPixStr('58', 'BR'); const mName = formatPixStr('59', nome.substring(0,25).normalize("NFD").replace(/[\u0300-\u036f]/g, "")); const mCity = formatPixStr('60', cidade.substring(0,15).normalize("NFD").replace(/[\u0300-\u036f]/g, ""));
             const addDataField = formatPixStr('62', formatPixStr('05', '***'));
             let payload = '000201' + merchantAccount + merchantCateg + currency + amount + country + mName + mCity + addDataField + '6304';
-            
-            let crc = 0xFFFF;
-            for (let i = 0; i < payload.length; i++) {
-                crc ^= payload.charCodeAt(i) << 8;
-                for (let j = 0; j < 8; j++) {
-                    if ((crc & 0x8000) > 0) crc = (crc << 1) ^ 0x1021;
-                    else crc = crc << 1;
-                }
-            }
+            let crc = 0xFFFF; for (let i = 0; i < payload.length; i++) { crc ^= payload.charCodeAt(i) << 8; for (let j = 0; j < 8; j++) { if ((crc & 0x8000) > 0) crc = (crc << 1) ^ 0x1021; else crc = crc << 1; } }
             return payload + (crc & 0xFFFF).toString(16).toUpperCase().padStart(4, '0');
         }
 
         function imprimirEEnviar(tipo) {
             try {
-                const orcIdEl = document.getElementById('os-orcamento');
-                if(!orcIdEl || !orcIdEl.value) return showToast('Selecione um documento primeiro!', 'error');
-                
-                const orcamento = (orcamentos || []).find(o => String(o.id) === String(orcIdEl.value));
-                if(!orcamento) return showToast('Erro: OS não encontrada na memória.', 'error');
+                const orcIdEl = document.getElementById('os-orcamento'); if(!orcIdEl || !orcIdEl.value) return showToast('Selecione um documento!', 'error');
+                const orcamento = (orcamentos || []).find(o => String(o.id) === String(orcIdEl.value)); if(!orcamento) return showToast('Erro na memória.', 'error');
 
-                const cliente = (clientes || []).find(c => String(c.id) === String(orcamento.clienteId)) || { nome: 'Cliente Removido', end: '', tel: '' };
+                const cliente = (clientes || []).find(c => String(c.id) === String(orcamento.clienteId)) || { nome: 'Removido', end: '', tel: '' };
                 let tipoTitulo = tipo === 'Orçamento' ? 'Orçamento' : tipo === 'OS' ? 'Ordem de Serviço' : 'Recibo';
-                const estaPago = orcamento.pago || false;
-                const valorTotal = parseFloat(orcamento.valor || 0);
+                const estaPago = orcamento.pago || false; const valorTotal = parseFloat(orcamento.valor || 0);
 
                 const pInfo = document.getElementById('print-info');
                 pInfo.innerHTML = `<div><p><strong>${tipoTitulo === 'Recibo' ? 'Recibo de Pagamento' : tipoTitulo}:</strong> ${orcamento.osNumber || '001'}</p><p><strong>Cliente:</strong> ${cliente.nome}</p>${cliente.end ? `<p><strong>Endereço:</strong> ${cliente.end}</p>` : ''}</div><div style="text-align: right;"><p><strong>Data de Emissão:</strong> ${new Date().toLocaleDateString('pt-BR')}</p><p><strong>Data Prevista:</strong> ${orcamento.data || ''}</p><p><strong>Telefone:</strong> ${cliente.tel}</p></div>`;
                 
-                document.getElementById('print-servicos').innerText = orcamento.desc || '';
-                document.getElementById('print-obs').innerText = orcamento.obs || "Sem observações adicionais.";
+                document.getElementById('print-servicos').innerText = orcamento.desc || ''; document.getElementById('print-obs').innerText = orcamento.obs || "Sem observações adicionais.";
+                let htmlMateriais = `<strong>Fornecimento:</strong> ${orcamento.materiaisStatus || ''}`; if (orcamento.materiaisLista && String(orcamento.materiaisLista).trim() !== '') htmlMateriais += `<br><br><strong>Lista detalhada:</strong><br>${orcamento.materiaisLista}`;
+                document.getElementById('print-materiais').innerHTML = htmlMateriais; document.getElementById('print-valor-total').innerText = valorTotal.toLocaleString('pt-BR', {minimumFractionDigits: 2}); document.getElementById('print-rodape-data').innerText = `Maricá, ${new Date().toLocaleDateString('pt-BR')}`;
                 
-                let htmlMateriais = `<strong>Fornecimento:</strong> ${orcamento.materiaisStatus || ''}`;
-                if (orcamento.materiaisLista && String(orcamento.materiaisLista).trim() !== '') htmlMateriais += `<br><br><strong>Lista detalhada:</strong><br>${orcamento.materiaisLista}`;
-                document.getElementById('print-materiais').innerHTML = htmlMateriais;
+                let validadeStr = ''; const dEmissao = extrairData(new Date().toLocaleDateString('pt-BR'));
+                if(tipo === 'Orçamento' && dEmissao) { const dataObj = new Date(dEmissao.ano, parseInt(dEmissao.mes) - 1, dEmissao.dia); dataObj.setDate(dataObj.getDate() + 10); validadeStr = dataObj.toLocaleDateString('pt-BR'); }
+                document.getElementById('print-validade').innerHTML = validadeStr ? `Válido até <strong>${validadeStr}</strong>.` : '';
 
-                document.getElementById('print-valor-total').innerText = valorTotal.toLocaleString('pt-BR', {minimumFractionDigits: 2});
-                
-                document.getElementById('print-rodape-data').innerText = `Maricá, ${new Date().toLocaleDateString('pt-BR')}`;
-                
-                let validadeStr = '';
-                const dEmissao = extrairData(new Date().toLocaleDateString('pt-BR'));
-                if(tipo === 'Orçamento' && dEmissao) {
-                    const dataObj = new Date(dEmissao.ano, parseInt(dEmissao.mes) - 1, dEmissao.dia);
-                    dataObj.setDate(dataObj.getDate() + 10);
-                    validadeStr = dataObj.toLocaleDateString('pt-BR');
-                }
-                document.getElementById('print-validade').innerHTML = validadeStr ? `Documento válido até <strong>${validadeStr}</strong>.` : '';
+                // SEPARAR FOTOS ANTES E DEPOIS
+                let fAntes = []; let fDepois = [];
+                (orcamento.fotos || []).forEach(f => {
+                    if(f.startsWith('antes|||')) fAntes.push(f.replace('antes|||',''));
+                    else if(f.startsWith('depois|||')) fDepois.push(f.replace('depois|||',''));
+                    else fDepois.push(f); // Legado
+                });
 
-                const incluirFotos = document.getElementById('chk-incluir-fotos').checked;
-                const sf = document.getElementById('print-section-fotos');
-                if(sf) {
-                    if(incluirFotos && orcamento.fotos && Array.isArray(orcamento.fotos) && orcamento.fotos.length > 0) { 
-                        sf.style.display = 'block'; 
-                        const pFotos = document.getElementById('print-fotos-container');
-                        if(pFotos) pFotos.innerHTML = orcamento.fotos.map(src => `<img src="${src}">`).join(''); 
-                    } else { sf.style.display = 'none'; }
-                }
+                const secFotos = document.getElementById('print-section-fotos');
+                const colAntes = document.getElementById('print-col-antes');
+                const colDepois = document.getElementById('print-col-depois');
+                const fullContainer = document.getElementById('print-fotos-full-container');
+                const wrapper = document.getElementById('print-fotos-wrapper');
+                const chkFotos = document.getElementById('chk-incluir-fotos').checked;
 
-                const pixBox = document.getElementById('print-pix-box');
-                const carimboPago = document.getElementById('carimbo-pago-print');
-                const condicoesContainer = document.querySelector('.payment-conditions');
+                if (chkFotos && (fAntes.length > 0 || fDepois.length > 0)) {
+                    secFotos.style.display = 'block';
 
-                if (estaPago && (tipo === 'OS' || tipo === 'Recibo')) {
-                    if (pixBox) pixBox.style.display = 'none';
-                    if (carimboPago) carimboPago.classList.add('ativo');
-                } else {
-                    if (pixBox) {
-                        pixBox.style.display = 'flex';
-                        const pixPayload = gerarPayloadPix('16562195730', 'Wellington Nunes Bonifacio', 'Marica', valorTotal);
-                        document.getElementById('print-qrcode-pix').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(pixPayload)}`;
+                    if (fAntes.length > 0 && fDepois.length > 0) {
+                        wrapper.style.display = 'flex'; fullContainer.style.display = 'none';
+                        colAntes.style.display = 'block'; colDepois.style.display = 'block';
+                        document.getElementById('print-fotos-antes-container').innerHTML = fAntes.map(src => `<img src="${src}">`).join('');
+                        document.getElementById('print-fotos-depois-container').innerHTML = fDepois.map(src => `<img src="${src}">`).join('');
+                    } else {
+                        wrapper.style.display = 'none'; fullContainer.style.display = 'flex';
+                        const lista = fAntes.length > 0 ? fAntes : fDepois;
+                        fullContainer.innerHTML = lista.map(src => `<img src="${src}">`).join('');
                     }
+                } else {
+                    secFotos.style.display = 'none';
+                }
+
+                const sLaudo = document.getElementById('print-section-laudo'); const lLaudo = document.getElementById('print-laudo-lista'); let itensLaudo = [];
+                if(orcamento.laudoAterramento) itensLaudo.push('<li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Verificação de Aterramento (TT/TN-S) conferida</li>');
+                if(orcamento.laudoBornes) itensLaudo.push('<li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Reaperto de bornes e terminais executado</li>');
+                if(orcamento.laudoIsolacao) itensLaudo.push('<li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Testes de isolação e tensão operacionais aprovados</li>');
+                if(orcamento.laudoInstrucao) itensLaudo.push('<li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Cliente instruído sobre parâmetros de uso e garantia</li>');
+                if(itensLaudo.length > 0) { sLaudo.style.display = 'block'; lLaudo.innerHTML = itensLaudo.join(''); } else { sLaudo.style.display = 'none'; }
+
+                const pixBox = document.getElementById('print-pix-box'); const carimboPago = document.getElementById('carimbo-pago-print'); const condicoesContainer = document.querySelector('.payment-conditions');
+                if (estaPago && (tipo === 'OS' || tipo === 'Recibo')) {
+                    if (pixBox) pixBox.style.display = 'none'; if (carimboPago) carimboPago.classList.add('ativo');
+                } else {
+                    if (pixBox) { pixBox.style.display = 'flex'; document.getElementById('print-qrcode-pix').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(gerarPayloadPix('16562195730', 'Wellington Nunes Bonifacio', 'Marica', valorTotal))}`; }
                     if (carimboPago) carimboPago.classList.remove('ativo');
                 }
 
-                const textoFormas = `
-                    <p><strong>Formas aceitas:</strong></p>
-                    <p>• PIX Escaneável (Ao lado)</p>
-                    <p>• Dinheiro em espécie</p>
-                    <p>• Cartões (Aproximação)</p>
-                    <p>• Crédito parcelado (juros do cliente)</p>
-                `;
+                const textoFormas = `<p><strong>Formas aceitas:</strong></p><p>• PIX Escaneável (Ao lado)</p><p>• Dinheiro / Cartões / Crédito</p>`;
+                const textoPago = `<p><strong>Situação:</strong> <span style="color: #16a34a; font-weight: bold;">SERVIÇO PAGO</span></p><p>Obrigado pela preferência e confiança na BRvolts!</p>`;
 
-                const textoPago = `
-                    <p><strong>Situação:</strong> <span style="color: #16a34a; font-weight: bold;">SERVIÇO PAGO</span></p>
-                    <p>Obrigado pela preferência e confiança na BRvolts!</p>
-                `;
-
-                if (tipo === 'Orçamento') {
-                    condicoesContainer.innerHTML = `<h3>Pagamento</h3>` + textoFormas;
-                } else if (tipo === 'Recibo') {
-                    condicoesContainer.innerHTML = `<h3>Pagamento</h3>` + (estaPago ? textoPago + '<br>' : '') + textoFormas;
-                } else if (tipo === 'OS') {
-                    if (estaPago) {
-                        condicoesContainer.innerHTML = `<h3>Pagamento</h3>` + textoPago;
-                    } else {
-                        condicoesContainer.innerHTML = `<h3>Pagamento</h3>` + textoFormas;
-                    }
-                }
+                if (tipo === 'Orçamento') condicoesContainer.innerHTML = `<h3>Pagamento</h3>` + textoFormas;
+                else if (tipo === 'Recibo') condicoesContainer.innerHTML = `<h3>Pagamento</h3>` + (estaPago ? textoPago + '<br>' : '') + textoFormas;
+                else if (tipo === 'OS') condicoesContainer.innerHTML = `<h3>Pagamento</h3>` + (estaPago ? textoPago : textoFormas);
 
                 let linkWhatsApp = null;
                 if(cliente.tel) {
-                    let telRaw = String(cliente.tel).replace(/\D/g, '');
-                    if(telRaw.length === 10 || telRaw.length === 11) telRaw = "55" + telRaw;
-                    const txt = `Olá *${cliente.nome}*, tudo bem?\n\nAqui é o Wellington da *BRvolts*.\nReferente ao serviço, geramos o seu documento (OS: ${orcamento.osNumber || '001'}).\n\n*Valor Total:* R$ ${valorTotal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}\n\nSe puder nos dar uma força, avalie nosso atendimento no Google clicando no link abaixo:\nhttps://g.page/r/CbiafVBOu7JAEBM/review\n\nA BRvolts agradece a preferência!`;
-                    linkWhatsApp = `https://api.whatsapp.com/send?phone=${telRaw}&text=${encodeURIComponent(txt)}`;
+                    let telRaw = String(cliente.tel).replace(/\D/g, ''); if(telRaw.length === 10 || telRaw.length === 11) telRaw = "55" + telRaw;
+                    linkWhatsApp = `https://api.whatsapp.com/send?phone=${telRaw}&text=${encodeURIComponent(`Olá *${cliente.nome}*, tudo bem?\n\nAqui é o Wellington da *BRvolts*.\nReferente ao serviço, geramos o seu documento (OS: ${orcamento.osNumber || '001'}).\n\n*Valor Total:* R$ ${valorTotal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}\n\nSe puder nos dar uma força, avalie nosso atendimento no Google clicando no link abaixo:\nhttps://g.page/r/CbiafVBOu7JAEBM/review\n\nA BRvolts agradece a preferência!`)}`;
                 }
 
-                const tituloOriginal = document.title;
-                document.title = `${tipoTitulo}_${orcamento.osNumber || '001'}_${cliente.nome || 'Cliente'}`;
-                
+                const tituloOriginal = document.title; document.title = `${tipoTitulo}_${orcamento.osNumber || '001'}_${cliente.nome || 'Cliente'}`;
                 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-                
                 if (isMobile) {
-                    const overlay = document.getElementById('mobile-print-overlay');
-                    if(overlay) overlay.style.display = 'flex';
-                    setTimeout(() => {
-                        try { window.print(); } catch(e) {}
-                        if(overlay) overlay.style.display = 'none';
-                        document.title = tituloOriginal;
-                        abrirZapAposPrint(linkWhatsApp);
-                    }, 1500);
-                } else {
-                    try { window.print(); } catch(e) {}
-                    document.title = tituloOriginal;
-                    abrirZapAposPrint(linkWhatsApp);
-                }
+                    const overlay = document.getElementById('mobile-print-overlay'); if(overlay) overlay.style.display = 'flex';
+                    setTimeout(() => { try { window.print(); } catch(e) {} if(overlay) overlay.style.display = 'none'; document.title = tituloOriginal; abrirZapAposPrint(linkWhatsApp); }, 1500);
+                } else { try { window.print(); } catch(e) {} document.title = tituloOriginal; abrirZapAposPrint(linkWhatsApp); }
 
             } catch(e) { showToast("Falha ao gerar o documento.", "error"); }
         }
 
         function abrirZapAposPrint(linkWhatsApp) {
-            if(linkWhatsApp) {
-                setTimeout(() => {
-                    document.getElementById('btn-whatsapp-link').href = linkWhatsApp;
-                    document.getElementById('whatsapp-modal').style.display = 'flex';
-                }, 1000);
-            }
+            if(linkWhatsApp) { setTimeout(() => { document.getElementById('btn-whatsapp-link').href = linkWhatsApp; document.getElementById('whatsapp-modal').style.display = 'flex'; }, 1000); }
         }
-        
-        function fecharModalWhatsapp() {
-            document.getElementById('whatsapp-modal').style.display = 'none';
-        }
+        function fecharModalWhatsapp() { document.getElementById('whatsapp-modal').style.display = 'none'; }
 
     </script>
 </body>
