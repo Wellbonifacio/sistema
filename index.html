@@ -9,8 +9,6 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     
-    <link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22BRvolts%20Gest%C3%A3o%22%2C%22short_name%22%3A%22BRvolts%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23000000%22%2C%22theme_color%22%3A%22%23000000%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22https%3A%2F%2Fwww.brvolts.site%2Flogo1.png%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D">
-    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -55,7 +53,7 @@
         .file-upload-btn:hover { background: #3f3f46; }
         
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 100; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
-        .modal-content { background: #18181b; border: 1px solid #27272a; border-radius: 12px; padding: 20px; width: 100%; max-width: 500px; max-height: 80vh; overflow-y: auto; }
+        .modal-content { background: #18181b; border: 1px solid #27272a; border-radius: 12px; padding: 20px; width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; }
 
         .toggle-checkbox:checked { right: 0; border-color: #3b82f6; }
         .toggle-checkbox:checked + .toggle-label { background-color: #3b82f6; }
@@ -93,6 +91,9 @@
         #login-screen { position: fixed; inset: 0; background: #000; z-index: 99999; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; transition: opacity 0.5s; }
         .pin-input { font-size: 2rem; text-align: center; letter-spacing: 0.5em; font-weight: bold; }
 
+        /* Calendário Customizado */
+        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+
         /* ESTILOS DE IMPRESSÃO */
         #print-area { display: none; position: relative; }
         @media print {
@@ -116,12 +117,16 @@
             .doc-section p { margin: 0; font-size: 10pt; line-height: 1.4; text-align: justify; white-space: pre-wrap; }
             .print-fotos-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
             .print-fotos-grid img { width: 48%; height: 200px; object-fit: cover; border: 1px solid #cbd5e1; border-radius: 6px; page-break-inside: avoid; }
-            .payment-grid { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px; }
-            .payment-conditions { width: 55%; font-size: 9pt; }
+            
+            .payment-grid { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+            .payment-conditions { width: 50%; font-size: 9pt; }
             .payment-conditions p { margin: 3px 0; }
-            .pix-box { width: 40%; background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 10px; font-size: 9pt; }
-            .pix-box h4 { margin: 0 0 5px 0; color: #166534; font-size: 10pt; display: flex; align-items: center; gap: 4px; }
-            .pix-box p { margin: 2px 0; line-height: 1.3; }
+            .pix-box { width: 45%; background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 10px; font-size: 9pt; display: flex; align-items: center; gap: 10px; }
+            .pix-box-info { flex: 1; }
+            .pix-box-info h4 { margin: 0 0 5px 0; color: #166534; font-size: 10pt; display: flex; align-items: center; gap: 4px; }
+            .pix-box-info p { margin: 2px 0; line-height: 1.3; }
+            .pix-qr { width: 80px; height: 80px; }
+
             .doc-total { text-align: right; font-size: 12pt; font-weight: bold; margin-top: 5px; margin-bottom: 20px; background: #f8fafc; padding: 12px; border: 1px solid #cbd5e1; display: inline-block; float: right; border-radius: 6px; min-width: 250px; }
             .doc-total span { font-size: 16pt; color: #000; }
             .clearfix { clear: both; }
@@ -129,33 +134,9 @@
             .doc-termos p { margin: 3px 0; text-align: justify; line-height: 1.3; }
             .doc-footer { margin-top: 25px; text-align: center; font-size: 8pt; color: #555; border-top: 1px solid #cbd5e1; padding-top: 15px; page-break-inside: avoid; }
             .doc-footer p { margin: 4px 0; }
-            .btn-avaliacao { display: inline-flex; align-items: center; justify-content: center; background-color: #ffffff; border: 1px solid #e2e8f0; color: #0f172a; text-decoration: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 10pt; margin-top: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-            .btn-avaliacao svg { width: 18px; height: 18px; margin-right: 8px; }
-            .stars { display: flex; margin-left: 8px; gap: 2px; }
-            .stars svg { width: 14px; height: 14px; fill: #FBBC05; margin: 0; }
             
-            /* CARIMBO PAGO */
-            .carimbo-pago-css {
-                display: none;
-                position: absolute;
-                top: 55%;
-                left: 50%;
-                transform: translate(-50%, -50%) rotate(-25deg);
-                font-size: 65pt;
-                font-weight: 900;
-                color: #16a34a;
-                border: 8px solid #16a34a;
-                border-radius: 15px;
-                padding: 10px 40px;
-                text-transform: uppercase;
-                letter-spacing: 10px;
-                opacity: 0.3;
-                pointer-events: none;
-                z-index: 9999;
-            }
-            .carimbo-pago-css.ativo {
-                display: block !important;
-            }
+            .carimbo-pago-css { display: none; position: absolute; top: 55%; left: 50%; transform: translate(-50%, -50%) rotate(-25deg); font-size: 65pt; font-weight: 900; color: #16a34a; border: 8px solid #16a34a; border-radius: 15px; padding: 10px 40px; text-transform: uppercase; letter-spacing: 10px; opacity: 0.3; pointer-events: none; z-index: 9999; }
+            .carimbo-pago-css.ativo { display: block !important; }
         }
 
         #mobile-print-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; }
@@ -276,7 +257,7 @@
                 </div>
             </div>
 
-            <!-- AGENDA (NOVO) -->
+            <!-- AGENDA (COM CALENDÁRIO VISUAL) -->
             <div id="agenda" class="section">
                 <div class="flex items-center gap-3 mb-6">
                     <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-900/30 text-blue-500">
@@ -284,23 +265,41 @@
                     </div>
                     <div>
                         <h2 class="text-xl font-bold text-white">Agenda de Serviços</h2>
-                        <p class="text-sm text-gray-400">Serviços Pendentes ou Aprovados</p>
+                        <p class="text-sm text-gray-400" id="mes-atual-agenda">Mês Atual</p>
                     </div>
                 </div>
 
+                <!-- Visão de Calendário -->
+                <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 mb-6 transition-colors max-w-md mx-auto">
+                    <div class="cal-grid" id="calendario-dias">
+                        <!-- Gerado via JS -->
+                    </div>
+                </div>
+
+                <h3 class="text-sm font-bold text-gray-400 mb-3 uppercase tracking-wider">Próximos Agendamentos</h3>
                 <ul id="lista-agenda" class="space-y-4 max-w-2xl"></ul>
             </div>
 
-            <!-- CLIENTES -->
+            <!-- CLIENTES (COM EDIÇÃO E MÁSCARAS) -->
             <div id="clientes" class="section">
                 <h2 class="text-xl font-bold text-white mb-4">Novo Cliente</h2>
                 <div class="space-y-4 max-w-xl">
                     <div><label>Nome do Cliente</label><input type="text" id="cli-nome" spellcheck="false" placeholder="Ex: Rafael Silva"></div>
-                    <div><label>Telefone / WhatsApp</label><input type="tel" id="cli-tel" placeholder="21900000000"></div>
+                    <div><label>Telefone / WhatsApp</label><input type="tel" id="cli-tel" placeholder="(21) 90000-0000" oninput="maskPhone(event)" maxlength="15"></div>
+                    
                     <div class="grid grid-cols-3 gap-2">
-                        <div class="col-span-1"><label>CEP</label><input type="tel" id="cli-cep" placeholder="Números" maxlength="8"></div>
-                        <div class="col-span-2"><label>Endereço Completo</label><input type="text" id="cli-end" spellcheck="true" lang="pt-BR" placeholder="Rua, Número, Bairro"></div>
+                        <div class="col-span-1"><label>CEP</label><input type="tel" id="cli-cep" placeholder="00000-000" oninput="maskCEP(event)" maxlength="9"></div>
+                        <div class="col-span-2"><label>Rua/Av</label><input type="text" id="cli-rua" placeholder="Logradouro"></div>
                     </div>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div class="col-span-1"><label>Número</label><input type="text" id="cli-num" placeholder="123"></div>
+                        <div class="col-span-2"><label>Complemento</label><input type="text" id="cli-comp" placeholder="Apto 101, Casa A (Opcional)"></div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div><label>Bairro</label><input type="text" id="cli-bairro" placeholder="Bairro"></div>
+                        <div><label>Cidade/UF</label><input type="text" id="cli-cidade_uf" placeholder="Cidade/UF"></div>
+                    </div>
+                    
                     <button onclick="salvarCliente()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow-lg">Cadastrar Cliente</button>
                 </div>
 
@@ -314,7 +313,7 @@
                 </div>
             </div>
 
-            <!-- SERVIÇO (ORÇAMENTOS) -->
+            <!-- SERVIÇO (ORÇAMENTOS - MOEDA AUTOMÁTICA) -->
             <div id="orcamentos" class="section">
                 <h2 class="text-xl font-bold text-white mb-4" id="titulo-aba-servico">Descrever Serviço</h2>
                 <div class="space-y-4 max-w-2xl">
@@ -348,10 +347,14 @@
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div><label>Valor Total do Serviço (R$)</label><input type="text" id="orc-valor" placeholder="1100,00" inputmode="decimal"></div>
+                        <div>
+                            <label>Valor Total do Serviço (R$)</label>
+                            <!-- Adicionado oninput maskCurrency -->
+                            <input type="tel" id="orc-valor" placeholder="R$ 0,00" oninput="maskCurrency(event)">
+                        </div>
                         <div>
                             <label class="text-red-500">Suas Despesas Internas (R$)</label>
-                            <input type="text" id="orc-despesas" placeholder="0,00" class="border-red-900/50 bg-red-900/10 focus:border-red-500 text-red-500 font-bold" inputmode="decimal">
+                            <input type="tel" id="orc-despesas" placeholder="R$ 0,00" oninput="maskCurrency(event)" class="border-red-900/50 bg-red-900/10 focus:border-red-500 text-red-500 font-bold">
                         </div>
                         
                         <!-- TOGGLE DE PAGAMENTO -->
@@ -403,6 +406,25 @@
         </div>
     </div>
 
+    <!-- MODAIS -->
+
+    <!-- MODAL DE EDIÇÃO DE CLIENTE -->
+    <div id="modal-editar-cliente" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="text-white font-bold text-lg mb-4">Editar Cliente</h3>
+            <div class="space-y-4">
+                <input type="hidden" id="edit-cli-id">
+                <div><label>Nome do Cliente</label><input type="text" id="edit-cli-nome"></div>
+                <div><label>Telefone / WhatsApp</label><input type="tel" id="edit-cli-tel" oninput="maskPhone(event)" maxlength="15"></div>
+                <div><label>Endereço Completo</label><input type="text" id="edit-cli-end" placeholder="Rua, Número - Bairro..."></div>
+            </div>
+            <div class="flex gap-3 mt-6">
+                <button onclick="fecharModalEdicaoCliente()" class="flex-1 bg-zinc-700 hover:bg-zinc-600 text-white py-3 rounded-lg font-bold transition">Cancelar</button>
+                <button onclick="salvarEdicaoCliente()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-bold shadow-lg transition">Salvar</button>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL PÓS IMPRESSÃO (WHATSAPP) -->
     <div id="whatsapp-modal" class="modal-overlay">
         <div class="modal-content text-center">
@@ -428,8 +450,8 @@
         </div>
     </div>
 
+    <!-- ÁREA DE IMPRESSÃO (PDF) -->
     <div id="print-area">
-        <!-- CARIMBO PAGO -->
         <div id="carimbo-pago-print" class="carimbo-pago-css">PAGO</div>
         
         <div class="doc-header">
@@ -449,14 +471,14 @@
         
         <div class="doc-section">
             <div class="payment-grid">
-                <div class="payment-conditions">
-                    <!-- Dinâmico via JS -->
-                </div>
-                <div class="pix-box">
-                    <h4><img src="Pix_logo.png" alt="Pix" style="height: 18px; width: auto; margin-right: 6px;">Pague com PIX</h4>
-                    <p>Chave (CPF): <strong>16562195730</strong></p>
-                    <p>Banco: Caixa Econômica Federal</p>
-                    <p>Titular: Wellington Nunes Bonifácio Correa</p>
+                <div class="payment-conditions"></div>
+                <div class="pix-box" id="print-pix-box">
+                    <div class="pix-box-info">
+                        <h4><img src="Pix_logo.png" alt="Pix" style="height: 18px; width: auto; margin-right: 6px;">Pague com PIX</h4>
+                        <p>Chave (CPF): <strong>16562195730</strong></p>
+                        <p>Titular: Wellington Nunes Bonifácio Correa</p>
+                    </div>
+                    <img id="print-qrcode-pix" class="pix-qr" src="">
                 </div>
             </div>
         </div>
@@ -481,15 +503,41 @@
     </div>
 
     <script>
+        // MÁSCARAS DE INPUT
+        function maskPhone(e) {
+            let v = e.target.value.replace(/\D/g, "");
+            if (v.length > 11) v = v.slice(0, 11);
+            if (v.length > 10) v = v.replace(/^(\d\d)(\d{5})(\d{4}).*/, "($1) $2-$3");
+            else if (v.length > 5) v = v.replace(/^(\d\d)(\d{4})(\d{0,4}).*/, "($1) $2-$3");
+            else if (v.length > 2) v = v.replace(/^(\d\d)(\d{0,5})/, "($1) $2");
+            e.target.value = v;
+        }
+
+        function maskCEP(e) {
+            let v = e.target.value.replace(/\D/g, "");
+            if (v.length > 8) v = v.slice(0, 8);
+            if (v.length > 5) v = v.replace(/^(\d{5})(\d{1,3}).*/, "$1-$2");
+            e.target.value = v;
+        }
+
+        function maskCurrency(e) {
+            let value = e.target.value.replace(/\D/g, "");
+            if(!value) { e.target.value = ""; return; }
+            value = (parseInt(value) / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            e.target.value = value;
+        }
+
+        // PARSER DE DINHEIRO ATUALIZADO (Lida com o R$ real-time)
         function parseDinheiro(val) {
             if (!val) return 0;
-            const str = String(val).replace(/[R$\s]/g, '').replace(/\./g, '').replace(',', '.');
+            if (typeof val === 'number') return val;
+            const str = String(val).replace(/[R$\s\.]/g, '').replace(',', '.');
             return parseFloat(str) || 0;
         }
 
         function formatarDinheiroInput(val) {
             if (!val) return '';
-            return parseFloat(val).toFixed(2).replace('.', ',');
+            return parseFloat(val).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
         }
 
         function extrairData(dataString) {
@@ -626,6 +674,7 @@
             if (e.key === 'Escape') {
                 fecharHistorico();
                 fecharModalWhatsapp();
+                fecharModalEdicaoCliente();
             }
         });
 
@@ -676,8 +725,10 @@
                         let res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
                         let data = await res.json();
                         if(!data.erro) {
-                            document.getElementById('cli-end').value = `${data.logradouro}, Número - ${data.bairro}, ${data.localidade}/${data.uf}`;
-                            document.getElementById('cli-end').focus();
+                            document.getElementById('cli-rua').value = data.logradouro;
+                            document.getElementById('cli-bairro').value = data.bairro;
+                            document.getElementById('cli-cidade_uf').value = `${data.localidade}/${data.uf}`;
+                            document.getElementById('cli-num').focus();
                         }
                     } catch(err) {}
                 }
@@ -688,7 +739,19 @@
             try {
                 const nome = document.getElementById('cli-nome').value;
                 const tel = document.getElementById('cli-tel').value;
-                const end = document.getElementById('cli-end').value;
+                
+                // Montagem Inteligente do Endereço
+                const rua = document.getElementById('cli-rua').value;
+                const num = document.getElementById('cli-num').value;
+                const comp = document.getElementById('cli-comp').value;
+                const bairro = document.getElementById('cli-bairro').value;
+                const cidUf = document.getElementById('cli-cidade_uf').value;
+                
+                let end = '';
+                if(rua) {
+                    end = `${rua}, ${num || 'S/N'}${comp ? ' - ' + comp : ''} - ${bairro}, ${cidUf}`;
+                }
+
                 if(!nome) return showToast('Preencha o nome do cliente!', 'error');
                 
                 const tempId = Date.now();
@@ -705,8 +768,9 @@
                 }
 
                 document.getElementById('cli-nome').value = ''; document.getElementById('cli-tel').value = ''; 
-                const cepE = document.getElementById('cli-cep'); if(cepE) cepE.value = ''; 
-                document.getElementById('cli-end').value = '';
+                ['cli-cep', 'cli-rua', 'cli-num', 'cli-comp', 'cli-bairro', 'cli-cidade_uf'].forEach(id => {
+                    const el = document.getElementById(id); if(el) el.value = '';
+                });
                 showToast('Cliente cadastrado com sucesso!');
             } catch(e) { showToast("Erro salvar cliente", "error"); }
         }
@@ -729,12 +793,62 @@
                         <p class="font-bold text-gray-200 truncate">${c.nome}</p>
                         <p class="text-xs text-gray-500">${c.tel || 'Sem telefone'}</p>
                     </div>
-                    <div class="flex gap-2 shrink-0">
+                    <div class="flex flex-wrap gap-2 shrink-0">
+                        <button onclick="abrirModalEdicaoCliente(${c.id})" class="text-xs font-bold text-blue-400 p-2" title="Editar">✏️</button>
+                        <button onclick="excluirCliente(${c.id})" class="text-xs font-bold text-red-500 p-2" title="Excluir">🗑️</button>
                         <button onclick="verHistoricoCliente(${c.id})" class="text-xs font-bold bg-zinc-700 hover:bg-zinc-600 px-3 py-2 rounded text-white transition">Histórico</button>
                         <button onclick="iniciarOS(${c.id})" class="text-xs font-bold bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded text-white transition">+ Nova OS</button>
                     </div>
                 </li>
             `).join('');
+        }
+
+        // EDIÇÃO E EXCLUSÃO DE CLIENTES
+        function abrirModalEdicaoCliente(id) {
+            const cliente = clientes.find(c => String(c.id) === String(id));
+            if(!cliente) return;
+            document.getElementById('edit-cli-id').value = cliente.id;
+            document.getElementById('edit-cli-nome').value = cliente.nome || '';
+            document.getElementById('edit-cli-tel').value = cliente.tel || '';
+            document.getElementById('edit-cli-end').value = cliente.end || '';
+            document.getElementById('modal-editar-cliente').style.display = 'flex';
+        }
+
+        function fecharModalEdicaoCliente() {
+            document.getElementById('modal-editar-cliente').style.display = 'none';
+        }
+
+        async function salvarEdicaoCliente() {
+            const id = document.getElementById('edit-cli-id').value;
+            const nome = document.getElementById('edit-cli-nome').value;
+            const tel = document.getElementById('edit-cli-tel').value;
+            const end = document.getElementById('edit-cli-end').value;
+
+            if(!nome) return showToast("Nome é obrigatório", "error");
+
+            const cliente = clientes.find(c => String(c.id) === String(id));
+            if(cliente) {
+                cliente.nome = nome; cliente.tel = tel; cliente.end = end;
+                atualizarTelas();
+                showToast("Cliente atualizado!");
+                fecharModalEdicaoCliente();
+                
+                if(supabaseClient) {
+                    await supabaseClient.from('clientes').update({ nome, telefone: tel, endereco: end }).eq('id', id);
+                }
+            }
+        }
+
+        async function excluirCliente(id) {
+            if(!confirm("Deseja realmente EXCLUIR este cliente? As OS vinculadas a ele ficarão sem nome.")) return;
+            
+            clientes = clientes.filter(c => String(c.id) !== String(id));
+            atualizarTelas();
+            showToast("Cliente excluído.", "info");
+
+            if(supabaseClient) {
+                try { await supabaseClient.from('clientes').delete().eq('id', id); } catch(e) {}
+            }
         }
 
         function iniciarOS(clienteId) {
@@ -769,7 +883,7 @@
             
             const historicoHtml = osCliente.length === 0 ? '<li class="p-3 text-gray-500 text-xs">Nenhum serviço realizado ainda.</li>' : osCliente.map(o => {
                 if(o.status === 'Concluído') totalGasto += parseFloat(o.valor || 0);
-                return `<li class="py-3 flex justify-between items-center"><div class="min-w-0"><p class="text-sm font-bold text-gray-200">OS ${o.osNumber}</p><p class="text-xs text-gray-500">${o.data} | Status: ${o.status}</p></div><p class="text-sm font-bold text-green-500">R$ ${(o.valor||0).toLocaleString('pt-BR', {minimumFractionDigits:2})}</p></li>`;
+                return `<li class="py-3 flex justify-between items-center"><div class="min-w-0"><p class="text-sm font-bold text-gray-200">OS ${o.osNumber}</p><p class="text-xs text-gray-500">${o.data} | Status: ${o.status}</p></div><p class="text-sm font-bold text-green-500">R$ ${(parseFloat(o.valor)||0).toLocaleString('pt-BR', {minimumFractionDigits:2})}</p></li>`;
             }).reverse().join('');
 
             document.getElementById('hist-nome').innerText = `Histórico: ${cliente.nome}`;
@@ -1197,6 +1311,44 @@
         }
 
         function atualizarAgenda() {
+            // Renderiza Mini-Calendário Visual
+            const calDiv = document.getElementById('calendario-dias');
+            if(calDiv) {
+                const hoje = new Date();
+                const mes = hoje.getMonth();
+                const ano = hoje.getFullYear();
+                
+                const mesesNomes = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+                document.getElementById('mes-atual-agenda').innerText = `${mesesNomes[mes]} de ${ano}`;
+
+                const primeiroDia = new Date(ano, mes, 1).getDay();
+                const diasNoMes = new Date(ano, mes + 1, 0).getDate();
+                
+                let html = '';
+                const diasSemana = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
+                html += diasSemana.map(d => `<div class="text-center text-xs font-bold text-gray-500 py-1">${d}</div>`).join('');
+                
+                for(let i=0; i<primeiroDia; i++) html += `<div></div>`; // Empty slots
+                
+                for(let i=1; i<=diasNoMes; i++) {
+                    const dataStr = `${i.toString().padStart(2,'0')}/${(mes+1).toString().padStart(2,'0')}/${ano}`;
+                    
+                    // Verifica se tem OS pra hoje
+                    const temServico = orcamentos.some(o => o.data === dataStr && o.status !== 'Concluído' && o.status !== 'Cancelado');
+                    const isHoje = i === hoje.getDate();
+                    
+                    let classes = "flex items-center justify-center h-8 w-8 rounded-full text-sm mx-auto cursor-default ";
+                    if(isHoje) classes += "bg-blue-600 text-white font-bold shadow-lg";
+                    else classes += "text-gray-300 hover:bg-zinc-800";
+                    
+                    let dot = temServico ? `<div class="w-1.5 h-1.5 bg-yellow-500 rounded-full mx-auto mt-0.5"></div>` : '<div class="w-1.5 h-1.5 mx-auto mt-0.5"></div>';
+                    
+                    html += `<div><div class="${classes}">${i}</div>${dot}</div>`;
+                }
+                calDiv.innerHTML = html;
+            }
+
+            // Renderiza Lista
             const lista = document.getElementById('lista-agenda');
             if(!lista) return;
 
@@ -1223,7 +1375,7 @@
                     <p class="text-sm text-gray-400 mt-1 line-clamp-2">${o.desc || 'Sem descrição'}</p>
                     
                     <div class="mt-4 flex gap-2">
-                        <button onclick="editarOS(${o.id})" class="flex-1 bg-zinc-700 hover:bg-zinc-600 text-white font-bold py-2 rounded-lg text-xs transition-colors">✏️ Editar Serviço</button>
+                        <button onclick="editarOS(${o.id})" class="flex-1 bg-zinc-700 hover:bg-zinc-600 text-white font-bold py-2 rounded-lg text-xs transition-colors">✏️ Editar</button>
                         <select onchange="mudarStatusOS(${o.id}, this.value)" class="flex-1 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-xs font-bold px-2 py-2 outline-none">
                             <option value="Pendente" ${o.status === 'Pendente' ? 'selected' : ''}>🟡 Pendente</option>
                             <option value="Aprovado" ${o.status === 'Aprovado' ? 'selected' : ''}>🟢 Aprovado</option>
@@ -1255,6 +1407,36 @@
             } catch(e) {}
         }
 
+        // --- GERAÇÃO DO PAYLOAD PIX EM JAVASCRIPT ---
+        function formatPixStr(id, value) { return id + value.length.toString().padStart(2, '0') + value; }
+        
+        function gerarPayloadPix(chave, nome, cidade, valor) {
+            const gui = formatPixStr('00', 'br.gov.bcb.pix');
+            const key = formatPixStr('01', chave);
+            const merchantAccount = formatPixStr('26', gui + key);
+            const merchantCateg = formatPixStr('52', '0000');
+            const currency = formatPixStr('53', '986');
+            let amount = '';
+            if (valor > 0) amount = formatPixStr('54', valor.toFixed(2));
+            const country = formatPixStr('58', 'BR');
+            const mName = formatPixStr('59', nome.substring(0,25).normalize("NFD").replace(/[\u0300-\u036f]/g, ""));
+            const mCity = formatPixStr('60', cidade.substring(0,15).normalize("NFD").replace(/[\u0300-\u036f]/g, ""));
+            const addDataField = formatPixStr('62', formatPixStr('05', '***'));
+            let payload = '000201' + merchantAccount + merchantCateg + currency + amount + country + mName + mCity + addDataField + '6304';
+            
+            // Calculo CRC16-CCITT-FALSE
+            let crc = 0xFFFF;
+            for (let i = 0; i < payload.length; i++) {
+                crc ^= payload.charCodeAt(i) << 8;
+                for (let j = 0; j < 8; j++) {
+                    if ((crc & 0x8000) > 0) crc = (crc << 1) ^ 0x1021;
+                    else crc = crc << 1;
+                }
+            }
+            return payload + (crc & 0xFFFF).toString(16).toUpperCase().padStart(4, '0');
+        }
+
+
         function imprimirEEnviar(tipo) {
             try {
                 const orcIdEl = document.getElementById('os-orcamento');
@@ -1266,6 +1448,7 @@
                 const cliente = (clientes || []).find(c => String(c.id) === String(orcamento.clienteId)) || { nome: 'Cliente Removido', end: '', tel: '' };
                 let tipoTitulo = tipo === 'Orçamento' ? 'Orçamento' : tipo === 'OS' ? 'Ordem de Serviço' : 'Recibo';
                 const estaPago = orcamento.pago || false;
+                const valorTotal = parseFloat(orcamento.valor || 0);
 
                 const pInfo = document.getElementById('print-info');
                 pInfo.innerHTML = `<div><p><strong>${tipoTitulo === 'Recibo' ? 'Recibo de Pagamento' : tipoTitulo}:</strong> ${orcamento.osNumber || '001'}</p><p><strong>Cliente:</strong> ${cliente.nome}</p>${cliente.end ? `<p><strong>Endereço:</strong> ${cliente.end}</p>` : ''}</div><div style="text-align: right;"><p><strong>Data de Emissão:</strong> ${new Date().toLocaleDateString('pt-BR')}</p><p><strong>Data Prevista:</strong> ${orcamento.data || ''}</p><p><strong>Telefone:</strong> ${cliente.tel}</p></div>`;
@@ -1277,10 +1460,8 @@
                 if (orcamento.materiaisLista && String(orcamento.materiaisLista).trim() !== '') htmlMateriais += `<br><br><strong>Lista detalhada:</strong><br>${orcamento.materiaisLista}`;
                 document.getElementById('print-materiais').innerHTML = htmlMateriais;
 
-                const valorTotal = parseFloat(orcamento.valor || 0);
                 document.getElementById('print-valor-total').innerText = valorTotal.toLocaleString('pt-BR', {minimumFractionDigits: 2});
                 
-                // Rodapé = Maricá, [Data em que foi gerado]
                 document.getElementById('print-rodape-data').innerText = `Maricá, ${new Date().toLocaleDateString('pt-BR')}`;
                 
                 let validadeStr = '';
@@ -1304,7 +1485,7 @@
                 }
 
                 // CONTROLE DE CONDIÇÕES DE PAGAMENTO, PIX E CARIMBO
-                const pixBox = document.querySelector('.pix-box');
+                const pixBox = document.getElementById('print-pix-box');
                 const carimboPago = document.getElementById('carimbo-pago-print');
                 const condicoesContainer = document.querySelector('.payment-conditions');
 
@@ -1312,17 +1493,21 @@
                     if (pixBox) pixBox.style.display = 'none';
                     if (carimboPago) carimboPago.classList.add('ativo');
                 } else {
-                    if (pixBox) pixBox.style.display = 'block';
+                    if (pixBox) {
+                        pixBox.style.display = 'flex';
+                        // Geração Automática do PIX Payload e QRCode
+                        const pixPayload = gerarPayloadPix('16562195730', 'Wellington Nunes Bonifacio', 'Marica', valorTotal);
+                        document.getElementById('print-qrcode-pix').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(pixPayload)}`;
+                    }
                     if (carimboPago) carimboPago.classList.remove('ativo');
                 }
 
                 const textoFormas = `
                     <p><strong>Formas aceitas:</strong></p>
-                    <p>• PIX, Dinheiro em espécie</p>
+                    <p>• PIX Escaneável (Ao lado)</p>
+                    <p>• Dinheiro em espécie</p>
                     <p>• Cartões (Aproximação)</p>
-                    <p>• Crédito à vista</p>
-                    <p>• Crédito parcelado (juros por parte do cliente)</p>
-                    <p>• Débito</p>
+                    <p>• Crédito parcelado (juros do cliente)</p>
                 `;
 
                 const textoPago = `
@@ -1374,7 +1559,6 @@
             } catch(e) { showToast("Falha ao gerar o documento.", "error"); }
         }
 
-        // Nova mecânica do WhatsApp pra burlar o bloqueador de pop-ups
         function abrirZapAposPrint(linkWhatsApp) {
             if(linkWhatsApp) {
                 setTimeout(() => {
