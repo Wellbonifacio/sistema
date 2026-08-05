@@ -257,7 +257,7 @@
                 </div>
             </div>
 
-            <!-- AGENDA (COM CALENDÁRIO VISUAL) -->
+            <!-- AGENDA -->
             <div id="agenda" class="section">
                 <div class="flex items-center gap-3 mb-6">
                     <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-900/30 text-blue-500">
@@ -280,7 +280,7 @@
                 <ul id="lista-agenda" class="space-y-4 max-w-2xl"></ul>
             </div>
 
-            <!-- CLIENTES (COM EDIÇÃO E MÁSCARAS) -->
+            <!-- CLIENTES -->
             <div id="clientes" class="section">
                 <h2 class="text-xl font-bold text-white mb-4">Novo Cliente</h2>
                 <div class="space-y-4 max-w-xl">
@@ -313,7 +313,7 @@
                 </div>
             </div>
 
-            <!-- SERVIÇO (ORÇAMENTOS - MOEDA AUTOMÁTICA) -->
+            <!-- SERVIÇO (ORÇAMENTOS) -->
             <div id="orcamentos" class="section">
                 <h2 class="text-xl font-bold text-white mb-4" id="titulo-aba-servico">Descrever Serviço</h2>
                 <div class="space-y-4 max-w-2xl">
@@ -349,7 +349,6 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label>Valor Total do Serviço (R$)</label>
-                            <!-- Adicionado oninput maskCurrency -->
                             <input type="tel" id="orc-valor" placeholder="R$ 0,00" oninput="maskCurrency(event)">
                         </div>
                         <div>
@@ -491,13 +490,20 @@
             <p><strong>Garantia de Qualidade:</strong> Garantia de 90 dias para a mão de obra prestada, conforme art. 26 do Código de Defesa do Consumidor (CDC).</p>
         </div>
 
+        <!-- BOTÃO DE AVALIAÇÃO COM INLINE STYLES PARA EVITAR BUGS NO PDF -->
         <div class="doc-footer">
             <p id="print-rodape-data" style="font-size: 11pt; font-weight: 600; margin-bottom: 12px;"></p>
             <p id="print-validade" style="margin-bottom: 15px; color: #dc2626;"></p>
-            <a href="https://g.page/r/CbiafVBOu7JAEBM/review" target="_blank" class="btn-avaliacao">
-                <svg viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+            <a href="https://g.page/r/CbiafVBOu7JAEBM/review" target="_blank" style="display: inline-flex; align-items: center; justify-content: center; background-color: #ffffff; border: 1px solid #e2e8f0; color: #0f172a; text-decoration: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 10pt; margin-top: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                <svg viewBox="0 0 48 48" style="width: 18px; height: 18px; margin-right: 8px;"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
                 Avalie-nos no Google
-                <div class="stars"><svg viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg><svg viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg><svg viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg><svg viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg><svg viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg></div>
+                <div style="display: flex; margin-left: 8px; gap: 2px;">
+                    <svg viewBox="0 0 20 20" style="width: 14px; height: 14px; fill: #FBBC05; margin: 0;"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                    <svg viewBox="0 0 20 20" style="width: 14px; height: 14px; fill: #FBBC05; margin: 0;"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                    <svg viewBox="0 0 20 20" style="width: 14px; height: 14px; fill: #FBBC05; margin: 0;"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                    <svg viewBox="0 0 20 20" style="width: 14px; height: 14px; fill: #FBBC05; margin: 0;"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                    <svg viewBox="0 0 20 20" style="width: 14px; height: 14px; fill: #FBBC05; margin: 0;"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                </div>
             </a>
         </div>
     </div>
@@ -527,7 +533,6 @@
             e.target.value = value;
         }
 
-        // PARSER DE DINHEIRO ATUALIZADO (Lida com o R$ real-time)
         function parseDinheiro(val) {
             if (!val) return 0;
             if (typeof val === 'number') return val;
@@ -803,7 +808,6 @@
             `).join('');
         }
 
-        // EDIÇÃO E EXCLUSÃO DE CLIENTES
         function abrirModalEdicaoCliente(id) {
             const cliente = clientes.find(c => String(c.id) === String(id));
             if(!cliente) return;
@@ -1311,7 +1315,6 @@
         }
 
         function atualizarAgenda() {
-            // Renderiza Mini-Calendário Visual
             const calDiv = document.getElementById('calendario-dias');
             if(calDiv) {
                 const hoje = new Date();
@@ -1328,12 +1331,11 @@
                 const diasSemana = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
                 html += diasSemana.map(d => `<div class="text-center text-xs font-bold text-gray-500 py-1">${d}</div>`).join('');
                 
-                for(let i=0; i<primeiroDia; i++) html += `<div></div>`; // Empty slots
+                for(let i=0; i<primeiroDia; i++) html += `<div></div>`;
                 
                 for(let i=1; i<=diasNoMes; i++) {
                     const dataStr = `${i.toString().padStart(2,'0')}/${(mes+1).toString().padStart(2,'0')}/${ano}`;
                     
-                    // Verifica se tem OS pra hoje
                     const temServico = orcamentos.some(o => o.data === dataStr && o.status !== 'Concluído' && o.status !== 'Cancelado');
                     const isHoje = i === hoje.getDate();
                     
@@ -1348,14 +1350,14 @@
                 calDiv.innerHTML = html;
             }
 
-            // Renderiza Lista
             const lista = document.getElementById('lista-agenda');
             if(!lista) return;
 
+            // ORDENAÇÃO CORRIGIDA: Datas futuras/recentes no topo (Ordem Decrescente)
             const agendados = orcamentos.filter(o => o.status !== 'Concluído' && o.status !== 'Cancelado').sort((a,b) => {
-                const da = a.data ? a.data.split('/').reverse().join('-') : '9999-12-31';
-                const db = b.data ? b.data.split('/').reverse().join('-') : '9999-12-31';
-                return da.localeCompare(db);
+                const da = a.data ? a.data.split('/').reverse().join('-') : '0000-00-00';
+                const db = b.data ? b.data.split('/').reverse().join('-') : '0000-00-00';
+                return db.localeCompare(da); 
             });
 
             if(agendados.length === 0) {
@@ -1424,7 +1426,6 @@
             const addDataField = formatPixStr('62', formatPixStr('05', '***'));
             let payload = '000201' + merchantAccount + merchantCateg + currency + amount + country + mName + mCity + addDataField + '6304';
             
-            // Calculo CRC16-CCITT-FALSE
             let crc = 0xFFFF;
             for (let i = 0; i < payload.length; i++) {
                 crc ^= payload.charCodeAt(i) << 8;
@@ -1435,7 +1436,6 @@
             }
             return payload + (crc & 0xFFFF).toString(16).toUpperCase().padStart(4, '0');
         }
-
 
         function imprimirEEnviar(tipo) {
             try {
@@ -1495,7 +1495,6 @@
                 } else {
                     if (pixBox) {
                         pixBox.style.display = 'flex';
-                        // Geração Automática do PIX Payload e QRCode
                         const pixPayload = gerarPayloadPix('16562195730', 'Wellington Nunes Bonifacio', 'Marica', valorTotal);
                         document.getElementById('print-qrcode-pix').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(pixPayload)}`;
                     }
