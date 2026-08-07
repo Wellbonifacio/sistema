@@ -531,7 +531,7 @@
                 const tel = '5521976493932';
 
                 const msgAprovar = encodeURIComponent(`✅ Olá Wellington! Estou com o documento aberto aqui (OS: ${osDisplay} - ${nomeCliente}) e gostaria de *APROVAR* o serviço!`);
-                const msgDuvida = encodeURIComponent(`🤔 Olá Wellington! Estou com a OS: ${osDisplay} - ${nomeCliente} aberta aqui e gostaria de tirar uma dúvida.`);
+                const msgDuvida = encodeURIComponent(`Olá Wellington! Estou com a OS: ${osDisplay} - ${nomeCliente} aberta aqui e gostaria de tirar uma dúvida.`);
 
                 document.getElementById('btn-aprovar').href = `https://api.whatsapp.com/send?phone=${tel}&text=${msgAprovar}`;
                 document.getElementById('btn-duvida').href = `https://api.whatsapp.com/send?phone=${tel}&text=${msgDuvida}`;
