@@ -140,15 +140,10 @@
             <div class="bg-[#f0fdf4] dark:bg-emerald-900/20 p-6 rounded-3xl mb-6 border border-green-300 dark:border-emerald-800 text-center shadow-md relative overflow-hidden">
                 <div class="absolute top-0 left-0 w-full h-1.5 bg-green-500 dark:bg-emerald-500"></div>
 
-                <!-- Logo oficial do PIX (SVG embutido, não depende de arquivo externo) -->
-                <div class="inline-flex items-center gap-2 mb-4">
-                    <svg class="h-7" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" aria-label="Pix" role="img">
-                        <path fill="#32BCAD" d="M242.4 92.5c14.9-14.9 39.1-14.9 54 0l55.2 55.2c8.3 8.3 21.8 8.3 30.1 0l17.7-17.7c8.3-8.3 8.3-21.8 0-30.1L286.3 6.8c-16.7-16.7-43.8-16.7-60.5 0L112.7 119.9c-8.3 8.3-8.3 21.8 0 30.1l17.7 17.7c8.3 8.3 21.8 8.3 30.1 0l82-75.2Z"/>
-                        <path fill="#32BCAD" d="M92.5 269.6c-14.9-14.9-14.9-39.1 0-54l55.2-55.2c8.3-8.3 8.3-21.8 0-30.1l-17.7-17.7c-8.3-8.3-21.8-8.3-30.1 0L6.8 225.7c-16.7 16.7-16.7 43.8 0 60.5L119.9 399.3c8.3 8.3 21.8 8.3 30.1 0l17.7-17.7c8.3-8.3 8.3-21.8 0-30.1l-75.2-82Z"/>
-                        <path fill="#32BCAD" d="M269.6 419.5c-14.9 14.9-39.1 14.9-54 0l-55.2-55.2c-8.3-8.3-21.8-8.3-30.1 0l-17.7 17.7c-8.3 8.3-8.3 21.8 0 30.1l112.9 112.9c16.7 16.7 43.8 16.7 60.5 0l112.9-112.9c8.3-8.3 8.3-21.8 0-30.1l-17.7-17.7c-8.3-8.3-21.8-8.3-30.1 0l-82 75.2Z"/>
-                        <path fill="#32BCAD" d="M419.5 242.4c14.9 14.9 14.9 39.1 0 54l-55.2 55.2c-8.3 8.3-8.3 21.8 0 30.1l17.7 17.7c8.3 8.3 21.8 8.3 30.1 0l112.9-112.9c16.7-16.7 16.7-43.8 0-60.5L392.1 112.7c-8.3-8.3-21.8-8.3-30.1 0l-17.7 17.7c-8.3 8.3-8.3 21.8 0 30.1l75.2 82Z"/>
-                        <path fill="#32BCAD" d="M328.9 218.6c-19.9-19.9-52.2-19.9-72.1 0l-38.2 38.2c-3.9 3.9-3.9 10.2 0 14.1l38.2 38.2c19.9 19.9 52.2 19.9 72.1 0l38.2-38.2c3.9-3.9 3.9-10.2 0-14.1l-38.2-38.2Z"/>
-                    </svg>
+                <!-- Logo oficial do PIX (arquivo do site, com caminho absoluto corrigido) -->
+                <div class="inline-flex items-center gap-2 mb-4" id="pix-logo-wrap">
+                    <img src="https://www.brvolts.site/pix-bc-logo-2048x726.png" alt="Pix" class="h-7 object-contain" id="pix-logo-img" onerror="this.remove(); document.getElementById('pix-logo-fallback').classList.remove('hidden');">
+                    <span id="pix-logo-fallback" class="hidden bg-[#32BCAD] text-white text-xs font-black px-2.5 py-1 rounded-md uppercase tracking-wider shadow-sm">Pix</span>
                     <span class="text-sm font-black text-green-800 dark:text-emerald-400 uppercase tracking-wider">Pagamento instantâneo</span>
                 </div>
 
