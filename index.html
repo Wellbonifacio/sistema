@@ -11,11 +11,14 @@
 
     <div class="max-w-2xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
         <div class="bg-blue-600 p-6 text-center">
-            <img src="https://www.brvolts.site/logo1.png" alt="BRvolts" class="h-12 mx-auto mb-2 filter brightness-0 invert">
+            <img src="https://www.brvolts.site/logo1.png" alt="BRvolts" class="h-12 mx-auto mb-2 filter brightness-0 invert" onerror="this.style.display='none'">
             <h1 class="text-white text-2xl font-bold">Proposta de Serviço</h1>
         </div>
 
-        <div id="loading" class="p-8 text-center text-gray-500">Buscando detalhes do serviço...</div>
+        <div id="loading" class="p-8 text-center text-gray-500 flex flex-col items-center">
+            <svg class="animate-spin h-8 w-8 text-blue-600 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+            <span id="loading-text">Buscando detalhes do serviço...</span>
+        </div>
         
         <div id="conteudo-proposta" class="p-6 hidden">
             <div class="flex justify-between border-b pb-4 mb-4">
@@ -34,56 +37,121 @@
                 <p class="text-gray-700 whitespace-pre-wrap" id="prop-desc"></p>
             </div>
 
-            <div class="bg-gray-50 p-4 rounded-lg flex justify-between items-center mb-6 border">
-                <span class="font-bold text-gray-600">Investimento Total:</span>
-                <span class="text-2xl font-bold text-green-600" id="prop-valor">R$ 0,00</span>
+            <div class="mb-6 border border-gray-200 rounded-lg p-4 bg-gray-50">
+                <h3 class="text-sm font-bold text-gray-600 mb-1">Fornecimento de Materiais:</h3>
+                <p class="text-gray-800 text-sm" id="prop-materiais"></p>
             </div>
 
-            <a id="btn-whatsapp" href="#" target="_blank" class="block w-full bg-green-500 hover:bg-green-600 text-white text-center font-bold py-4 rounded-lg transition shadow-lg">
-                Falar com o Técnico no WhatsApp
+            <div class="bg-blue-50 p-4 rounded-lg flex justify-between items-center mb-6 border border-blue-100">
+                <span class="font-bold text-blue-900">Investimento Total:</span>
+                <span class="text-2xl font-black text-blue-700" id="prop-valor">R$ 0,00</span>
+            </div>
+
+            <!-- PIX -->
+            <div class="bg-green-50 p-4 rounded-lg mb-6 border border-green-200 text-center">
+                <p class="text-sm font-bold text-green-800 mb-2">Pague com segurança via PIX</p>
+                <p class="text-xs text-green-700 mb-1">Chave (CPF): <strong>165.621.957-30</strong></p>
+                <p class="text-xs text-green-700 mb-3">Titular: Wellington Nunes Bonifácio Correa</p>
+                <button onclick="copiarPix()" id="btn-pix" class="bg-green-600 hover:bg-green-700 text-white text-sm font-bold py-2 px-4 rounded transition w-full">
+                    Copiar Código Pix Copia e Cola
+                </button>
+            </div>
+
+            <a id="btn-whatsapp" href="#" target="_blank" class="block w-full bg-[#25D366] hover:bg-[#1DA851] text-white text-center font-bold py-4 rounded-lg transition shadow-lg flex items-center justify-center gap-2">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12.012 2C6.48 2 2 6.48 2 12.012c0 1.765.457 3.483 1.328 5L2 22l5.166-1.312c1.47.828 3.14 1.265 4.846 1.265 5.53 0 10.012-4.482 10.012-10.012S17.542 2 12.012 2zm0 16.347c-1.464 0-2.903-.393-4.163-1.137l-.298-.176-3.093.785.802-3.013-.194-.31C4.195 13.064 3.75 11.558 3.75 10.012 3.75 5.45 7.463 1.74 12.012 1.74s8.262 3.71 8.262 8.272-3.712 8.335-8.262 8.335zm4.53-6.082c-.248-.124-1.468-.724-1.696-.807-.228-.083-.394-.124-.56.124-.165.248-.64 .807-.785.972-.144.165-.29.186-.538.062-1.077-.54-2.197-1.127-3.078-2.155-.24-.28-.026-.43.097-.552.11-.11.247-.288.372-.432.124-.144.165-.248.248-.412.083-.165.04-.31-.02-.433-.062-.124-.56-1.348-.767-1.844-.2-.482-.404-.417-.56-.425-.144-.008-.31-.008-.475-.008s-.433.062-.66.31c-.227.248-.867.846-.867 2.062s.888 2.39 1.012 2.555c.124.165 1.745 2.66 4.227 3.722 1.558.67 2.14.73 2.91.61.85-.133 1.468-.598 1.674-1.176.206-.578.206-1.074.145-1.176-.062-.102-.227-.164-.475-.288z"/></svg>
+                Aprovar / Falar com o Técnico
             </a>
         </div>
     </div>
 
     <script>
-        // 1. Conectar ao seu Supabase (Use suas mesmas chaves do painel admin)
-        const supabaseUrl = 'https://mflvwscgghdvtxasgmdd.supabase.co';
-        const supabaseKey = 'SUA_CHAVE_ANON_AQUI_IGUAL_DO_PAINEL';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-
-        // 2. Pegar o ID na URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const idOS = urlParams.get('id');
-
-        async function carregarProposta() {
-            if(!idOS) {
-                document.getElementById('loading').innerText = 'Link inválido. Nenhuma OS encontrada.';
-                return;
-            }
-
-            // 3. Buscar os dados no Supabase
-            const { data, error } = await supabase.from('servicos').select('*, clientes(nome)').eq('id', idOS).single();
-            
-            if (error || !data) {
-                document.getElementById('loading').innerText = 'Proposta não encontrada ou indisponível.';
-                return;
-            }
-
-            // 4. Preencher os dados na tela
-            document.getElementById('loading').style.display = 'none';
-            document.getElementById('conteudo-proposta').classList.remove('hidden');
-
-            document.getElementById('prop-cliente').innerText = data.clientes?.nome || 'Cliente';
-            document.getElementById('prop-os').innerText = data.os_number;
-            document.getElementById('prop-desc').innerText = data.descricao;
-            document.getElementById('prop-valor').innerText = parseFloat(data.valor_servico).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
-            
-            // Botão do Zap
-            const msg = encodeURIComponent(`Olá Wellington, estou com a proposta da OS ${data.os_number} aberta aqui e gostaria de...`);
-            document.getElementById('btn-whatsapp').href = `https://api.whatsapp.com/send?phone=5521976493932&text=${msg}`;
+        let payloadPix = "";
+        function formatPixStr(id, value) { return id + value.length.toString().padStart(2, '0') + value; }
+        function gerarPayloadPix(chave, nome, cidade, valor) {
+            const gui = formatPixStr('00', 'br.gov.bcb.pix'); const key = formatPixStr('01', chave); const merchantAccount = formatPixStr('26', gui + key); const merchantCateg = formatPixStr('52', '0000');
+            const currency = formatPixStr('53', '986'); let amount = ''; if (valor > 0) amount = formatPixStr('54', valor.toFixed(2));
+            const country = formatPixStr('58', 'BR'); const mName = formatPixStr('59', nome.substring(0,25).normalize("NFD").replace(/[\u0300-\u036f]/g, "")); const mCity = formatPixStr('60', cidade.substring(0,15).normalize("NFD").replace(/[\u0300-\u036f]/g, ""));
+            const addDataField = formatPixStr('62', formatPixStr('05', '***'));
+            let payload = '000201' + merchantAccount + merchantCateg + currency + amount + country + mName + mCity + addDataField + '6304';
+            let crc = 0xFFFF; for (let i = 0; i < payload.length; i++) { crc ^= payload.charCodeAt(i) << 8; for (let j = 0; j < 8; j++) { if ((crc & 0x8000) > 0) crc = (crc << 1) ^ 0x1021; else crc = crc << 1; } }
+            return payload + (crc & 0xFFFF).toString(16).toUpperCase().padStart(4, '0');
         }
 
-        carregarProposta();
+        function copiarPix() {
+            if(!payloadPix) return;
+            navigator.clipboard.writeText(payloadPix);
+            const btn = document.getElementById('btn-pix');
+            btn.innerText = "Copiado! Cole no app do seu Banco.";
+            btn.classList.replace('bg-green-600', 'bg-gray-600');
+            setTimeout(() => { 
+                btn.innerText = "Copiar Código Pix Copia e Cola"; 
+                btn.classList.replace('bg-gray-600', 'bg-green-600');
+            }, 4000);
+        }
+
+        async function iniciar() {
+            try {
+                // 1. As chaves corretas do seu sistema já embutidas!
+                const supabaseUrl = 'https://mflvwscgghdvtxasgmdd.supabase.co';
+                const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1mbHZ3c2NnZ2hkdnR4YXNnbWRkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0ODgyNjQsImV4cCI6MjA5ODA2NDI2NH0.tB34mGuyV-Y4xGwnF-1UANJl-p534yEmvsPPcDUA4sk';
+                
+                if(!window.supabase) throw new Error("Erro na biblioteca Supabase. Desative o bloqueador de anúncios se estiver usando.");
+                
+                const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+                // 2. Pegar ID da URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const idOS = urlParams.get('id');
+
+                if(!idOS) {
+                    document.getElementById('loading-text').innerText = 'Link inválido. O link que você recebeu está faltando o número de identificação da OS.';
+                    document.querySelector('#loading svg').style.display = 'none';
+                    return;
+                }
+
+                // 3. Buscar OS
+                const { data: osData, error: osError } = await supabase.from('servicos').select('*').eq('id', idOS).single();
+                
+                if (osError || !osData) {
+                    document.getElementById('loading-text').innerHTML = `Proposta indisponível.<br><br><span style="font-size: 12px; color: #f87171;">(Erro do Banco: ${osError?.message || 'OS não encontrada'})</span>`;
+                    document.querySelector('#loading svg').style.display = 'none';
+                    return;
+                }
+
+                // 4. Buscar Nome do Cliente (Tratando erro de RLS de forma independente)
+                let nomeCliente = 'Prezado Cliente';
+                try {
+                    const { data: cliData, error: cliError } = await supabase.from('clientes').select('nome').eq('id', osData.cliente_id).single();
+                    if(cliData && !cliError) nomeCliente = cliData.nome;
+                } catch(e) {}
+
+                // 5. Preencher a Tela
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('conteudo-proposta').classList.remove('hidden');
+
+                document.getElementById('prop-cliente').innerText = nomeCliente;
+                document.getElementById('prop-os').innerText = osData.os_number || '---';
+                document.getElementById('prop-desc').innerText = osData.descricao || '';
+                document.getElementById('prop-materiais').innerText = osData.materiais_status || 'Não especificado';
+                
+                const valor = parseFloat(osData.valor_servico || 0);
+                document.getElementById('prop-valor').innerText = valor.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
+                
+                payloadPix = gerarPayloadPix('16562195730', 'Wellington Nunes Bonifacio', 'Marica', valor);
+
+                // Botão WhatsApp
+                const tel = '5521976493932';
+                const msg = encodeURIComponent(`Olá Wellington, estou com a proposta da OS ${osData.os_number} aberta aqui e gostaria de aprovar / tirar uma dúvida.`);
+                document.getElementById('btn-whatsapp').href = `https://api.whatsapp.com/send?phone=${tel}&text=${msg}`;
+
+            } catch (error) {
+                document.getElementById('loading-text').innerHTML = `<b>Erro técnico:</b> ${error.message}`;
+                document.querySelector('#loading svg').style.display = 'none';
+            }
+        }
+
+        // Inicia quando a página carrega
+        document.addEventListener('DOMContentLoaded', iniciar);
     </script>
 </body>
 </html>
