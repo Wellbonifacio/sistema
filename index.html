@@ -40,6 +40,16 @@
 
         @media (prefers-reduced-motion: reduce) { .fade-in, .scale-active:active, .animate-float { animation: none !important; transform: none !important; } }
         a:focus-visible, button:focus-visible { outline: 3px solid #2563eb; outline-offset: 2px; }
+
+        /* Configurações para impressão/PDF do Cliente */
+        @media print {
+            body { background: white !important; padding: 0 !important; color: black !important; }
+            .max-w-2xl { box-shadow: none !important; border: none !important; max-width: 100% !important; margin: 0 !important; }
+            #sticky-footer, #sticky-footer-avaliacao, button, .bg-black\/20, #botoes-desktop { display: none !important; }
+            .bg-slate-50, .dark\:bg-slate-700\/50, .bg-\[\#0f172a\] { background-color: transparent !important; color: black !important; border-bottom-color: #000 !important; }
+            * { color: black !important; }
+            img { page-break-inside: avoid; }
+        }
     </style>
 </head>
 <body class="bg-slate-100 dark:bg-slate-900 text-slate-900 dark:text-slate-100 p-0 md:p-8 min-h-screen flex items-start md:items-center justify-center pb-32 md:pb-8 transition-colors duration-300">
@@ -51,6 +61,11 @@
     </div>
 
     <div class="max-w-2xl w-full mx-auto bg-white dark:bg-slate-800 md:rounded-3xl shadow-2xl overflow-hidden md:border border-slate-200 dark:border-slate-700 relative transition-colors duration-300">
+
+        <!-- Botão Baixar PDF -->
+        <button onclick="window.print()" aria-label="Baixar como PDF" class="absolute top-6 right-[72px] bg-black/20 hover:bg-black/30 text-white p-2.5 rounded-full backdrop-blur-md transition z-10 shadow scale-active">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+        </button>
 
         <!-- Botão Compartilhar Nativo -->
         <button onclick="acionarVibracao(30); compartilharProposta();" aria-label="Compartilhar proposta" class="absolute top-6 right-6 bg-black/20 hover:bg-black/30 text-white p-2.5 rounded-full backdrop-blur-md transition z-10 shadow scale-active">
@@ -112,7 +127,7 @@
                 </div>
             </div>
 
-            <!-- TRACKER DE STATUS (Linha do Tempo - CORRIGIDA NO MOBILE) -->
+            <!-- TRACKER DE STATUS (Linha do Tempo) -->
             <div id="tracker-container" class="mb-8 pb-6 border-b border-slate-200 dark:border-slate-700">
                 <p class="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-5 text-center">Progresso do Serviço</p>
                 <div class="relative max-w-sm mx-auto px-2">
@@ -442,12 +457,24 @@
         }
 
         function criarCardFoto(url, rotulo, corBadge) {
-            const wrap = document.createElement('div'); wrap.className = 'relative group cursor-pointer scale-active'; wrap.addEventListener('click', () => abrirLightbox(url));
-            const badge = document.createElement('span'); badge.className = `absolute top-3 left-3 ${corBadge} backdrop-blur text-white text-[10px] font-black px-2 py-1 rounded shadow pointer-events-none`; badge.textContent = rotulo;
+            const wrap = document.createElement('div'); 
+            wrap.className = 'relative group cursor-pointer scale-active overflow-hidden rounded-xl bg-slate-100 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 shadow-sm'; 
+            wrap.addEventListener('click', () => abrirLightbox(url));
+            
+            const badge = document.createElement('span'); 
+            badge.className = `absolute top-3 left-3 ${corBadge} backdrop-blur text-white text-[10px] font-black px-2 py-1 rounded shadow pointer-events-none z-10`; 
+            badge.textContent = rotulo;
+            
+            // Ícone de Lupa e Overlay Escuro
+            const lupaWrap = document.createElement('div');
+            lupaWrap.className = 'absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-300 z-0 flex items-center justify-center pointer-events-none';
+            lupaWrap.innerHTML = '<svg class="w-10 h-10 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 drop-shadow-md scale-75 group-hover:scale-100" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>';
+            
             const img = document.createElement('img'); img.src = url; img.alt = `Foto ${rotulo.toLowerCase()} do serviço`; img.loading = 'lazy';
-            img.className = 'w-full h-48 object-cover rounded-xl border border-slate-200 dark:border-slate-600 shadow-sm transition transform group-hover:scale-105 bg-slate-100 dark:bg-slate-700';
+            img.className = 'w-full h-48 object-cover transition transform group-hover:scale-110 relative z-[-1]';
             img.onerror = function () { wrap.remove(); };
-            wrap.appendChild(badge); wrap.appendChild(img); return wrap;
+            
+            wrap.appendChild(img); wrap.appendChild(lupaWrap); wrap.appendChild(badge); return wrap;
         }
 
         // BARRA DO STATUS TRACKER
