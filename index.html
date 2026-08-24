@@ -104,26 +104,26 @@
                     </div>
                 </div>
                 <div class="sm:text-right flex flex-col sm:items-end w-full sm:w-auto bg-slate-50 dark:bg-slate-700/50 p-4 rounded-xl border border-slate-100 dark:border-slate-600 shadow-inner">
-                    <p class="text-[11px] text-slate-500 dark:text-slate-400 font-bold uppercase mb-1">Documento OS <span id="prop-os" class="text-blue-600 dark:text-blue-400"></span></p>
-                    <div class="w-full text-left sm:text-right border-t border-slate-200 dark:border-slate-600 pt-2 mt-1">
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 font-bold uppercase mb-1">Documento OS <span id="prop-os" class="text-blue-600 dark:text-blue-400 font-black"></span></p>
+                    <div id="bloco-validade" class="w-full text-left sm:text-right border-t border-slate-200 dark:border-slate-600 pt-2 mt-1 transition-all">
                         <p class="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Válido até:</p>
                         <p class="text-xs font-black text-orange-600 dark:text-orange-400 uppercase" id="prop-validade">...</p>
                     </div>
                 </div>
             </div>
 
-            <!-- TRACKER DE STATUS (Linha do Tempo - CORRIGIDO) -->
+            <!-- TRACKER DE STATUS (Linha do Tempo - CORRIGIDA NO MOBILE) -->
             <div id="tracker-container" class="mb-8 pb-6 border-b border-slate-200 dark:border-slate-700">
                 <p class="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-5 text-center">Progresso do Serviço</p>
                 <div class="relative max-w-sm mx-auto px-2">
                     
-                    <!-- Linha de fundo cinza (Vai exatamente de 12.5% até 87.5% da largura total) -->
-                    <div class="absolute left-[12.5%] right-[12.5%] top-[14px] h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full z-0"></div>
-                    
-                    <!-- Linha de preenchimento dinâmica (Azul/Verde) -->
-                    <div id="tracker-bar" class="absolute left-[12.5%] top-[14px] h-1.5 bg-blue-500 rounded-full z-0 transition-all duration-1000" style="width: 0%;"></div>
+                    <!-- Container da linha cinza de fundo com overflow-hidden para bloquear a linha colorida de vazar -->
+                    <div class="absolute left-[12.5%] right-[12.5%] top-[14px] h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full z-0 overflow-hidden">
+                        <!-- Linha de preenchimento dinâmica (Azul/Verde) - Começa no left-0 do container -->
+                        <div id="tracker-bar" class="absolute left-0 top-0 h-full bg-blue-500 rounded-full z-0 transition-all duration-1000" style="width: 0%;"></div>
+                    </div>
 
-                    <!-- Passos -->
+                    <!-- Passos (Círculos) -->
                     <div class="relative z-10 flex justify-between w-full">
                         <div class="flex flex-col items-center w-1/4">
                             <div id="icon-step-1" class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400 flex items-center justify-center text-sm font-black transition-colors shadow-sm ring-[6px] ring-white dark:ring-slate-800">1</div>
@@ -198,8 +198,8 @@
                     </div>
                     <img id="prop-qrcode-pix" src="" class="w-48 h-48 mx-auto mb-5 p-2 bg-white rounded-2xl border-4 border-green-100 dark:border-emerald-800 shadow-sm hidden">
                     <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-green-100 dark:border-emerald-800 mb-4 text-left inline-block w-full max-w-sm shadow-sm">
-                        <p class="text-xs text-slate-500 dark:text-slate-400 mb-1 font-semibold">Chave (CPF):</p>
-                        <p class="text-xl text-slate-800 dark:text-white font-black mb-2 tracking-wider select-all">165.621.957-30</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mb-1 font-semibold">Chave (CNPJ):</p>
+                        <p class="text-xl text-slate-800 dark:text-white font-black mb-2 tracking-wider select-all">68.694.956/0001-74</p>
                         <p class="text-xs text-slate-500 dark:text-slate-400 mb-1 font-semibold">Titular:</p>
                         <p class="text-sm text-slate-800 dark:text-white font-bold uppercase">Wellington Nunes Bonifácio Correa</p>
                     </div>
@@ -241,7 +241,7 @@
 
             <!-- Footer Informativo -->
             <div class="mt-4 pt-6 border-t border-slate-200 dark:border-slate-700 text-center text-xs text-slate-400 pb-4 flex flex-col items-center">
-                <p class="font-bold text-slate-500 dark:text-slate-400 mb-2">BRvolts - Soluções em Eletricidade</p>
+                <p class="font-bold text-slate-500 dark:text-slate-400 mb-2">BRvolts - Soluções em Eletricidade<br><span class="font-normal text-[10px]">CNPJ: 68.694.956/0001-74</span></p>
                 <p class="mb-3">Maricá/RJ • Contato: (21) 97649-3932</p>
                 <div class="flex justify-center gap-4 mb-5 text-sm font-bold">
                     <a href="https://www.brvolts.site" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline">🌐 brvolts.site</a>
@@ -325,7 +325,7 @@
         // VIBRAÇÃO NATIVA
         function acionarVibracao(ms = 35) { if ("vibrate" in navigator) navigator.vibrate(ms); }
 
-        // MUDANÇA 2: SAUDAÇÃO PERSONALIZADA (Bom dia / Boa tarde / Boa noite)
+        // SAUDAÇÃO PERSONALIZADA
         function definirSaudacao() {
             const hora = new Date().getHours();
             let saudacao = 'Boa noite';
@@ -334,7 +334,7 @@
             document.getElementById('prop-saudacao').innerText = saudacao + ',';
         }
 
-        // MUDANÇA 5: BOTÃO SALVAR CONTATO (vCard)
+        // BOTÃO SALVAR CONTATO (vCard)
         function baixarContato() {
             acionarVibracao(30);
             const vcard = `BEGIN:VCARD\nVERSION:3.0\nFN:Wellington - BRvolts\nORG:BRvolts Soluções em Eletricidade\nTITLE:Especialista Eletrotécnico\nTEL;TYPE=WORK,VOICE:+5521976493932\nURL:https://www.brvolts.site\nNOTE:Atendimento Maricá/RJ e região. Instalações elétricas padrão NBR 5410.\nEND:VCARD`;
@@ -349,7 +349,7 @@
             URL.revokeObjectURL(url);
         }
 
-        // MUDANÇA 4: COPIAR PIX COM ANIMAÇÃO E TOAST
+        // COPIAR PIX COM ANIMAÇÃO
         function copiarPixEnhanced() {
             if(!payloadPix) return;
             copiarTexto(payloadPix, () => {
@@ -450,7 +450,7 @@
             wrap.appendChild(badge); wrap.appendChild(img); return wrap;
         }
 
-        // MUDANÇA 3: ATUALIZA A BARRA DO STATUS TRACKER
+        // BARRA DO STATUS TRACKER
         function atualizarTracker(statusText, isPago) {
             let step = 1;
             if (statusText === 'Aprovado') step = 2;
@@ -472,7 +472,7 @@
                 
                 if (i <= step) {
                     icon.classList.replace('bg-slate-200', 'bg-blue-600');
-                    icon.classList.replace('dark:bg-slate-700', 'dark:bg-blue-600');
+                    icon.classList.replace('dark:bg-slate-700', 'bg-blue-600');
                     icon.classList.replace('text-slate-500', 'text-white');
                     icon.classList.replace('dark:text-slate-400', 'text-white');
                 }
@@ -483,7 +483,6 @@
                 else if(i === 4 && step === 4) {
                     icon.innerHTML = '<svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>';
                     icon.classList.replace('bg-blue-600', 'bg-green-500');
-                    icon.classList.replace('dark:bg-blue-600', 'dark:bg-green-500');
                     document.getElementById('tracker-bar').classList.replace('bg-blue-500', 'bg-green-500');
                 }
             }
@@ -520,25 +519,37 @@
 
                 osDisplayNumber = osData.os_number || '---';
                 document.title = `Proposta (OS #${osDisplayNumber}) - ${nomeCliente}`;
+                document.getElementById('prop-os').innerText = '#' + osDisplayNumber;
 
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('conteudo-proposta').classList.remove('hidden');
                 document.getElementById('prop-cliente').innerText = nomeCliente;
                 document.getElementById('prop-desc').innerText = osData.descricao || 'Nenhuma descrição detalhada fornecida.';
 
-                let dataValidade = null;
-                if(osData.data_servico) {
-                    const parts = osData.data_servico.split('/');
-                    if(parts.length === 3) {
-                        const dataObj = new Date(parts[2], parts[1] - 1, parts[0]);
-                        dataObj.setDate(dataObj.getDate() + 10);
-                        dataValidade = dataObj;
-                        document.getElementById('prop-validade').innerText = dataObj.toLocaleDateString('pt-BR') + " (10 Dias)";
-                    } else { document.getElementById('prop-validade').innerText = "10 dias da emissão"; }
-                } else { document.getElementById('prop-validade').innerText = "10 dias da emissão"; }
+                const statusOS = osData.status || 'Pendente';
+                const servicoPago = (osData.pago === true || statusOS === 'Concluído');
 
-                if (dataValidade && new Date().setHours(0,0,0,0) > dataValidade) {
-                    document.getElementById('banner-vencida').classList.remove('hidden');
+                // Lógica da data de validade 
+                if (statusOS === 'Aprovado' || statusOS === 'Em Andamento' || statusOS === 'Concluído' || servicoPago) {
+                    // Esconde a data se já foi aprovado pra frente
+                    document.getElementById('bloco-validade').style.display = 'none';
+                    document.getElementById('banner-vencida').classList.add('hidden');
+                } else {
+                    let dataValidade = null;
+                    if(osData.data_servico) {
+                        const parts = osData.data_servico.split('/');
+                        if(parts.length === 3) {
+                            const dataObj = new Date(parts[2], parts[1] - 1, parts[0]);
+                            dataObj.setDate(dataObj.getDate() + 10);
+                            dataValidade = dataObj;
+                            document.getElementById('prop-validade').innerText = dataObj.toLocaleDateString('pt-BR');
+                        } else { document.getElementById('prop-validade').innerText = "10 dias"; }
+                    } else { document.getElementById('prop-validade').innerText = "10 dias"; }
+
+                    // Mostra o banner de aviso apenas se a proposta passou do prazo e ainda está pendente
+                    if (dataValidade && new Date().setHours(0,0,0,0) > dataValidade) {
+                        document.getElementById('banner-vencida').classList.remove('hidden');
+                    }
                 }
 
                 let estaAprovadoDigitalmente = !!osData.aceite_nome;
@@ -591,10 +602,9 @@
                 document.getElementById('sticky-valor').innerText = valorFormatado;
 
                 // INICIA O TRACKER
-                const servicoPago = (osData.pago === true || osData.status === 'Concluído');
-                atualizarTracker(osData.status || 'Pendente', servicoPago);
+                atualizarTracker(statusOS, servicoPago);
 
-                // MUDANÇA 1: CHUVA DE CONFETES SE ESTIVER PAGO
+                // CHUVA DE CONFETES SE ESTIVER PAGO
                 if (servicoPago && window.confetti) {
                     setTimeout(() => {
                         confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 }, colors: ['#22c55e', '#3b82f6', '#eab308', '#a855f7'] });
@@ -613,7 +623,7 @@
                     footerAvaliacao.classList.remove('hidden');
                     footerAvaliacao.classList.add('flex');
                 } else {
-                    payloadPix = gerarPayloadPix('16562195730', 'Wellington Nunes Bonifacio', 'Marica', valor);
+                    payloadPix = gerarPayloadPix('68694956000174', 'Wellington Nunes Bonifacio', 'Marica', valor);
                     const imgQrCode = document.getElementById('prop-qrcode-pix');
                     imgQrCode.src = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=10&data=" + encodeURIComponent(payloadPix);
                     imgQrCode.classList.remove('hidden');
