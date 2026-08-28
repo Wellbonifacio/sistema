@@ -12,10 +12,11 @@
     <meta property="og:type" content="website">
     <link rel="icon" href="https://www.brvolts.site/logo1.png" type="image/png">
 
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Adicionado 'defer' para não bloquear a renderização inicial da tela -->
+    <script src="https://cdn.tailwindcss.com" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
     <!-- Biblioteca Leve de Confetes -->
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js" defer></script>
     
     <link rel="preconnect" href="https://mflvwscgghdvtxasgmdd.supabase.co">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -211,7 +212,7 @@
                         <span id="pix-logo-fallback" class="hidden bg-[#32BCAD] text-white text-xs font-black px-2.5 py-1 rounded-md uppercase tracking-wider shadow-sm">Pix</span>
                         <span class="text-sm font-black text-green-800 dark:text-emerald-400 uppercase tracking-wider">Pague com PIX:</span>
                     </div>
-                    <img id="prop-qrcode-pix" src="" class="w-48 h-48 mx-auto mb-5 p-2 bg-white rounded-2xl border-4 border-green-100 dark:border-emerald-800 shadow-sm hidden">
+                    <img id="prop-qrcode-pix" src="" alt="QR Code Pix" class="w-48 h-48 mx-auto mb-5 p-2 bg-white rounded-2xl border-4 border-green-100 dark:border-emerald-800 shadow-sm hidden">
                     <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-green-100 dark:border-emerald-800 mb-4 text-left inline-block w-full max-w-sm shadow-sm">
                         <p class="text-xs text-slate-500 dark:text-slate-400 mb-1 font-semibold">Chave (CNPJ):</p>
                         <p class="text-xl text-slate-800 dark:text-white font-black mb-2 tracking-wider select-all">68.694.956/0001-74</p>
@@ -274,15 +275,15 @@
     </div>
 
     <!-- MODAL DE ACEITE DIGITAL -->
-    <div id="modal-aceite" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[110] hidden flex-col items-center justify-center p-4 fade-in" aria-modal="true">
+    <div id="modal-aceite" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[110] hidden flex-col items-center justify-center p-4 fade-in" role="dialog" aria-modal="true" aria-labelledby="modal-titulo">
         <div class="bg-white dark:bg-slate-800 w-full max-w-sm rounded-3xl p-6 shadow-2xl relative border border-slate-200 dark:border-slate-700">
-            <button onclick="fecharModalAceite()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-white transition">
+            <button onclick="fecharModalAceite()" aria-label="Fechar" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-white transition">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
-            <h3 class="text-xl font-black text-slate-800 dark:text-white mb-2 pr-6">Assinatura Digital</h3>
+            <h3 id="modal-titulo" class="text-xl font-black text-slate-800 dark:text-white mb-2 pr-6">Assinatura Digital</h3>
             <p class="text-sm text-slate-600 dark:text-slate-400 mb-5">Para aprovar oficialmente esta proposta, digite seu nome completo abaixo para fins de registro.</p>
             
-            <input type="text" id="input-nome-aceite" placeholder="Seu Nome Completo" class="w-full bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-3 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium">
+            <input type="text" id="input-nome-aceite" aria-label="Seu Nome Completo" placeholder="Seu Nome Completo" class="w-full bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-3 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium">
             
             <button id="btn-confirmar-aceite" onclick="confirmarAceiteBD()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-xl transition shadow-lg scale-active uppercase tracking-wide flex items-center justify-center gap-2">
                 Confirmar Aceite
@@ -292,9 +293,9 @@
     </div>
 
     <!-- Modal Lightbox (Fotos) -->
-    <div id="lightbox" class="fixed inset-0 bg-black/95 z-[100] hidden flex-col items-center justify-center p-4 fade-in" onclick="fecharLightbox()" role="dialog">
-        <button onclick="fecharLightbox()" class="absolute top-6 right-6 text-white text-5xl font-normal hover:text-red-500 transition">&times;</button>
-        <img id="lightbox-img" src="" class="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl" onclick="event.stopPropagation()">
+    <div id="lightbox" class="fixed inset-0 bg-black/95 z-[100] hidden flex-col items-center justify-center p-4 fade-in" onclick="fecharLightbox()" role="dialog" aria-modal="true">
+        <button onclick="fecharLightbox()" aria-label="Fechar galeria" class="absolute top-6 right-6 text-white text-5xl font-normal hover:text-red-500 transition">&times;</button>
+        <img id="lightbox-img" src="" alt="Imagem ampliada" class="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl" onclick="event.stopPropagation()">
     </div>
 
     <!-- Sticky Footer Mobile (PADRÃO - Para propostas pendentes) -->
@@ -456,25 +457,37 @@
             return payload + (crc & 0xFFFF).toString(16).toUpperCase().padStart(4, '0');
         }
 
+        // MELHORIA APLICADA: z-index ajustados e uso de esqueleto animado bg-slate-200, além do aspect-square para formato padronizado
         function criarCardFoto(url, rotulo, corBadge) {
             const wrap = document.createElement('div'); 
-            wrap.className = 'relative group cursor-pointer scale-active overflow-hidden rounded-xl bg-slate-100 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 shadow-sm'; 
+            // Adicionado 'aspect-square' e 'bg-slate-200 animate-pulse' para estado de carregamento
+            wrap.className = 'relative group cursor-pointer scale-active overflow-hidden rounded-xl bg-slate-200 dark:bg-slate-700 animate-pulse border border-slate-200 dark:border-slate-600 shadow-sm aspect-square'; 
             wrap.addEventListener('click', () => abrirLightbox(url));
             
             const badge = document.createElement('span'); 
-            badge.className = `absolute top-3 left-3 ${corBadge} backdrop-blur text-white text-[10px] font-black px-2 py-1 rounded shadow pointer-events-none z-10`; 
+            badge.className = `absolute top-3 left-3 ${corBadge} backdrop-blur text-white text-[10px] font-black px-2 py-1 rounded shadow pointer-events-none z-20`; 
             badge.textContent = rotulo;
             
-            // Ícone de Lupa e Overlay Escuro
             const lupaWrap = document.createElement('div');
-            lupaWrap.className = 'absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-300 z-0 flex items-center justify-center pointer-events-none';
+            lupaWrap.className = 'absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-300 z-10 flex items-center justify-center pointer-events-none';
             lupaWrap.innerHTML = '<svg class="w-10 h-10 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 drop-shadow-md scale-75 group-hover:scale-100" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>';
             
-            const img = document.createElement('img'); img.src = url; img.alt = `Foto ${rotulo.toLowerCase()} do serviço`; img.loading = 'lazy';
-            img.className = 'w-full h-48 object-cover transition transform group-hover:scale-110 relative z-[-1]';
+            const img = document.createElement('img'); 
+            img.src = url; 
+            img.alt = `Foto ${rotulo.toLowerCase()} do serviço`; 
+            img.loading = 'lazy';
+            // Removido o z-[-1] e ajustado para z-0. Adicionado listener de load para remover o pulse.
+            img.className = 'w-full h-full object-cover transition transform group-hover:scale-110 relative z-0 opacity-0 duration-300';
+            img.onload = function() { 
+                img.classList.remove('opacity-0'); 
+                wrap.classList.remove('animate-pulse', 'bg-slate-200'); 
+            };
             img.onerror = function () { wrap.remove(); };
             
-            wrap.appendChild(img); wrap.appendChild(lupaWrap); wrap.appendChild(badge); return wrap;
+            wrap.appendChild(img); 
+            wrap.appendChild(lupaWrap); 
+            wrap.appendChild(badge); 
+            return wrap;
         }
 
         // BARRA DO STATUS TRACKER
@@ -521,6 +534,12 @@
             try {
                 const supabaseUrl = 'https://mflvwscgghdvtxasgmdd.supabase.co';
                 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1mbHZ3c2NnZ2hkdnR4YXNnbWRkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0ODgyNjQsImV4cCI6MjA5ODA2NDI2NH0.tB34mGuyV-Y4xGwnF-1UANJl-p534yEmvsPPcDUA4sk';
+                
+                // Aguarda o script do Supabase carregar (caso use defer e o link resolva rápido)
+                if(!window.supabase) {
+                    await new Promise(r => setTimeout(r, 200));
+                }
+                
                 supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
                 const urlParams = new URLSearchParams(window.location.search);
@@ -558,7 +577,6 @@
 
                 // Lógica da data de validade 
                 if (statusOS === 'Aprovado' || statusOS === 'Em Andamento' || statusOS === 'Concluído' || servicoPago) {
-                    // Esconde a data se já foi aprovado pra frente
                     document.getElementById('bloco-validade').style.display = 'none';
                     document.getElementById('banner-vencida').classList.add('hidden');
                 } else {
@@ -573,7 +591,6 @@
                         } else { document.getElementById('prop-validade').innerText = "10 dias"; }
                     } else { document.getElementById('prop-validade').innerText = "10 dias"; }
 
-                    // Mostra o banner de aviso apenas se a proposta passou do prazo e ainda está pendente
                     if (dataValidade && new Date().setHours(0,0,0,0) > dataValidade) {
                         document.getElementById('banner-vencida').classList.remove('hidden');
                     }
@@ -591,6 +608,7 @@
                 const propMatStatus = document.getElementById('prop-materiais-status');
                 const boxMatContainer = document.getElementById('box-materiais-container');
                 propMatStatus.innerText = matStatus;
+                
                 if (matStatus.toLowerCase().includes('cliente')) {
                     boxMatContainer.className = "border-2 border-amber-300 dark:border-amber-700/50 rounded-2xl p-5 bg-amber-50 dark:bg-amber-900/20 shadow-sm relative";
                     propMatStatus.className = "font-black text-amber-800 dark:text-amber-400 text-lg uppercase tracking-wide";
@@ -598,6 +616,7 @@
                     boxMatContainer.className = "border-2 border-blue-300 dark:border-blue-800/50 rounded-2xl p-5 bg-blue-50 dark:bg-blue-900/20 shadow-sm relative";
                     propMatStatus.className = "font-black text-blue-800 dark:text-blue-400 text-lg uppercase tracking-wide";
                 }
+                
                 if(osData.materiais_lista && osData.materiais_lista.trim() !== '') {
                     document.getElementById('prop-materiais-lista').innerText = osData.materiais_lista;
                     document.getElementById('btn-toggle-materiais').classList.replace('hidden', 'flex');
