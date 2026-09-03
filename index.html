@@ -238,14 +238,13 @@
                 </div>
             </div>
 
-            <!-- BLOCO DE ACEITE DIGITAL CONFIRMADO -->
+            <!-- BLOCO DE STATUS APROVADO -->
             <div id="box-aprovado-destaque" class="hidden mb-6 p-5 rounded-2xl carimbo-aprovado text-center relative overflow-hidden transition-all">
-                <div class="flex items-center justify-center gap-2 mb-1.5">
+                <div class="flex items-center justify-center gap-2 mb-1">
                     <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    <p class="text-blue-400 font-extrabold text-sm sm:text-base uppercase tracking-wider">Aceite Digital Confirmado</p>
+                    <p class="text-blue-400 font-extrabold text-sm sm:text-base uppercase tracking-wider">Orçamento Aprovado</p>
                 </div>
-                <p class="text-xs sm:text-sm text-zinc-300">Aprovado por: <span id="lbl-assinatura-nome" class="font-bold text-white uppercase">...</span></p>
-                <p class="text-[10px] text-zinc-500 mt-1 uppercase font-semibold tracking-wider" id="lbl-assinatura-data">...</p>
+                <p class="text-xs text-zinc-300">Este orçamento já foi confirmado pelo cliente via WhatsApp.</p>
             </div>
 
             <!-- ESCOPO DO SERVIÇO -->
@@ -310,7 +309,7 @@
                     </div>
                     
                     <button onclick="acionarVibracao(40); copiarPixEnhanced();" id="btn-pix" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 px-5 rounded-xl transition-all duration-300 w-full shadow-lg shadow-emerald-950/40 scale-active uppercase text-xs tracking-wider flex justify-center items-center gap-2">
-                        <svg id="icon-pix-copy" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                        <svg id="icon-pix-copy" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 002 2z"></path></svg>
                         <span id="txt-pix">Copiar Código Pix</span>
                     </button>
                 </div>
@@ -346,9 +345,9 @@
 
             <!-- BOTÕES DESKTOP -->
             <div class="flex flex-col sm:flex-row gap-3 mb-6 hidden" id="botoes-desktop">
-                <button onclick="acionarVibracao(30); abrirModalAceite();" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white text-center font-bold py-3.5 px-4 rounded-xl transition shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2 scale-active text-sm uppercase tracking-wider">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-                    Aprovar e Assinar
+                <button onclick="acionarVibracao(30); aprovarDiretoWhatsapp();" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white text-center font-bold py-3.5 px-4 rounded-xl transition shadow-lg shadow-emerald-900/40 flex items-center justify-center gap-2 scale-active text-sm uppercase tracking-wider">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                    Aprovar Orçamento
                 </button>
                 <a id="btn-duvida-desktop" href="#" target="_blank" onclick="acionarVibracao(30)" class="flex-1 bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-zinc-200 text-center font-bold py-3.5 px-4 rounded-xl transition shadow scale-active flex items-center justify-center gap-2 text-sm uppercase tracking-wider">
                     Tirar Dúvida Técnica
@@ -373,24 +372,6 @@
         </div>
     </div>
 
-    <!-- MODAL DE ACEITE DIGITAL -->
-    <div id="modal-aceite" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[110] hidden flex-col items-center justify-center p-4 fade-in" role="dialog" aria-modal="true" aria-labelledby="modal-titulo">
-        <div class="glass-panel p-6 sm:p-7 max-w-sm w-full relative border-white/10 shadow-2xl">
-            <button onclick="fecharModalAceite()" aria-label="Fechar" class="absolute top-4 right-4 text-zinc-400 hover:text-white transition">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
-            <h3 id="modal-titulo" class="text-lg font-extrabold text-white mb-1.5 pr-6 tracking-tight">Assinatura Digital</h3>
-            <p class="text-xs text-zinc-400 mb-5 leading-relaxed">Digite seu nome completo abaixo para registrar o aceite formal desta proposta técnica.</p>
-            
-            <input type="text" id="input-nome-aceite" aria-label="Seu Nome Completo" placeholder="Seu Nome e Sobrenome" class="w-full bg-zinc-900 border border-white/10 text-white rounded-xl px-4 py-3 mb-4 focus:outline-none focus:border-blue-500 font-medium text-xs sm:text-sm">
-            
-            <button id="btn-confirmar-aceite" onclick="confirmarAceiteBD()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-blue-600/30 scale-active uppercase tracking-wider text-xs flex items-center justify-center gap-2">
-                Confirmar Aceite
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-            </button>
-        </div>
-    </div>
-
     <!-- MODAL LIGHTBOX (FOTOS) -->
     <div id="lightbox" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[100] hidden flex-col items-center justify-center p-4 fade-in" onclick="fecharLightbox()" role="dialog" aria-modal="true">
         <button onclick="fecharLightbox()" aria-label="Fechar galeria" class="absolute top-6 right-6 text-zinc-400 hover:text-white text-3xl transition">&times;</button>
@@ -407,7 +388,7 @@
             <a id="sticky-btn-duvida" href="#" target="_blank" onclick="acionarVibracao(30)" aria-label="Tirar dúvida no WhatsApp" class="bg-white/[0.06] hover:bg-white/[0.12] text-zinc-300 p-3 rounded-xl border border-white/10 scale-active shadow-sm flex items-center justify-center">
                 <svg class="w-5 h-5 text-emerald-400" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
             </a>
-            <button onclick="acionarVibracao(40); abrirModalAceite();" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-5 rounded-xl shadow-lg shadow-blue-600/30 flex items-center gap-1.5 text-xs uppercase tracking-wider scale-active">
+            <button onclick="acionarVibracao(40); aprovarDiretoWhatsapp();" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-5 rounded-xl shadow-lg shadow-emerald-900/40 flex items-center gap-1.5 text-xs uppercase tracking-wider scale-active">
                 Aprovar
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
             </button>
@@ -453,6 +434,7 @@
         let campoBuscaBD = 'id';
         let supabaseClient = null;
         let osDisplayNumber = "001";
+        let nomeClienteGlobal = "Cliente";
         let timeoutCarregamento = null;
 
         function acionarVibracao(ms = 35) { if ("vibrate" in navigator) navigator.vibrate(ms); }
@@ -494,7 +476,7 @@
                     btn.classList.replace('bg-zinc-800', 'bg-emerald-600');
                     btn.classList.replace('hover:bg-zinc-700', 'hover:bg-emerald-500');
                     txt.innerText = "Copiar Código Pix";
-                    icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>';
+                    icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 002 2z"></path>';
                     toast.classList.add('opacity-0', '-translate-y-10');
                     toast.classList.remove('opacity-100', 'translate-y-0');
                 }, 4000);
@@ -522,66 +504,20 @@
             try { document.execCommand('copy'); if (onSuccess) onSuccess(); } catch (e) { alert('Copie manualmente.'); } document.body.removeChild(el);
         }
 
-        function armadilhaDeFoco(e) {
-            const modal = document.getElementById('modal-aceite');
-            if (e.key === 'Tab') {
-                const focusable = modal.querySelectorAll('button, input');
-                const first = focusable[0], last = focusable[focusable.length - 1];
-                if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
-                else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
-            }
-            if (e.key === 'Escape') fecharModalAceite();
-        }
-
-        function abrirModalAceite() { 
-            acionarVibracao(30); 
-            const modal = document.getElementById('modal-aceite');
-            modal.classList.remove('hidden'); modal.classList.add('flex'); 
-            setTimeout(() => document.getElementById('input-nome-aceite').focus(), 100); 
-            document.addEventListener('keydown', armadilhaDeFoco);
-        }
-        
-        function fecharModalAceite() { 
-            const modal = document.getElementById('modal-aceite');
-            modal.classList.add('hidden'); modal.classList.remove('flex'); 
-            document.removeEventListener('keydown', armadilhaDeFoco);
-        }
-
-        async function confirmarAceiteBD() {
-            const nomeDigitado = document.getElementById('input-nome-aceite').value.trim();
-            const padraoNomeValido = /^[a-zA-ZÀ-ÿ]+\s+[a-zA-ZÀ-ÿ]+/.test(nomeDigitado);
-            if(!padraoNomeValido) { 
-                alert("Por favor, digite seu nome e sobrenome completo para registro da aprovação."); 
-                return; 
-            }
-
-            const btn = document.getElementById('btn-confirmar-aceite');
-            const conteudoOriginal = btn.innerHTML;
-            
-            btn.innerHTML = `<svg class="animate-spin h-4 w-4 mr-2 text-white" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Assinando...`;
-            btn.disabled = true;
-            btn.classList.add('opacity-50', 'cursor-not-allowed');
-
+        /* APROVAÇÃO DIRETA SEM FORMULÁRIO DE ASSINATURA */
+        async function aprovarDiretoWhatsapp() {
             try {
-                const { error } = await supabaseClient.from('servicos').update({ 
-                    status: 'Aprovado', 
-                    aceite_nome: nomeDigitado, 
-                    aceite_data: new Date().toISOString() 
-                }).eq(campoBuscaBD, idDocumentoAtivo);
-                
-                if (error) throw error;
-                
-                fecharModalAceite();
-                const msg = encodeURIComponent(`✅ Olá Wellington! Li a proposta e assinei digitalmente aprovando o serviço (OS: #${osDisplayNumber}). Meu nome é: ${nomeDigitado}.`);
-                window.location.href = `https://api.whatsapp.com/send?phone=${CONFIG.whatsapp}&text=${msg}`;
-            
+                if(supabaseClient && idDocumentoAtivo) {
+                    await supabaseClient.from('servicos').update({ 
+                        status: 'Aprovado'
+                    }).eq(campoBuscaBD, idDocumentoAtivo);
+                }
             } catch (err) {
-                console.error("Falha Supabase:", err);
-                alert("Erro ao registrar assinatura no servidor. Por favor, mande mensagem diretamente no WhatsApp informando sua aprovação.");
-                btn.innerHTML = conteudoOriginal;
-                btn.disabled = false;
-                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                console.warn("Status local sincronizado:", err);
             }
+
+            const msgAprovacao = encodeURIComponent(`Olá Wellington! Analisei a proposta comercial da OS #${osDisplayNumber} (${nomeClienteGlobal}) e o orçamento está APROVADO! Podemos combinar os próximos passos?`);
+            window.location.href = `https://api.whatsapp.com/send?phone=${CONFIG.whatsapp}&text=${msgAprovacao}`;
         }
 
         function toggleMateriais() {
@@ -697,9 +633,10 @@
                 let nomeCliente = 'Prezado Cliente';
                 try {
                     const { data: cliData } = await supabaseClient.from('clientes').select('nome').eq('id', osData.cliente_id).single();
-                    if(cliData) nomeCliente = cliData.nome;
+                    if(cliData && cliData.nome) nomeCliente = cliData.nome;
                 } catch(e) {}
 
+                nomeClienteGlobal = nomeCliente;
                 osDisplayNumber = osData.os_number || '---';
                 document.title = `Proposta (OS #${osDisplayNumber}) - ${nomeCliente}`;
                 document.getElementById('prop-os').innerText = '#' + osDisplayNumber;
@@ -727,12 +664,8 @@
                     if (dataValidade && new Date().setHours(0,0,0,0) > dataValidade) document.getElementById('banner-vencida').classList.remove('hidden');
                 }
 
-                const estaAprovadoDigitalmente = !!osData.aceite_nome;
-                if (estaAprovadoDigitalmente) {
+                if (statusOS === 'Aprovado' || statusOS === 'Em Andamento') {
                     document.getElementById('box-aprovado-destaque').classList.remove('hidden');
-                    document.getElementById('lbl-assinatura-nome').innerText = osData.aceite_nome;
-                    const dataAss = new Date(osData.aceite_data);
-                    document.getElementById('lbl-assinatura-data').innerText = dataAss.toLocaleDateString('pt-BR') + ' às ' + dataAss.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
                 }
 
                 const matStatus = osData.materiais_status || 'Fornecimento não especificado';
@@ -799,7 +732,7 @@
                     imgQrCode.src = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=10&data=" + encodeURIComponent(payloadPix);
                     imgQrCode.classList.remove('hidden');
                     
-                    if(!estaAprovadoDigitalmente) { 
+                    if(statusOS === 'Pendente') { 
                         footerPendente.classList.remove('hidden'); 
                         botoesDesktop.classList.remove('hidden'); 
                     } else { 
