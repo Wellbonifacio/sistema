@@ -145,23 +145,21 @@
     <!-- CABEÇALHO FIXO SUPERIOR (NO-PRINT) -->
     <header class="no-print bg-[#0b0d13] border-b border-[#22293d] p-3.5 sticky top-0 z-40">
         <div class="max-w-4xl mx-auto px-2 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <a href="index.html" class="flex items-center gap-2 text-xs font-semibold text-zinc-400 hover:text-white transition">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-                    Painel BRvolts
-                </a>
-                <span class="text-zinc-700">•</span>
-                <span class="text-xs text-blue-400 font-bold">Proposta Digital Oficial</span>
+            <div class="flex items-center gap-2.5">
+                <img src="brvolts-logo.png" alt="BRvolts" class="h-6 w-auto object-contain">
+                <span class="text-xs text-white font-bold hidden sm:inline">BRvolts</span>
+                <span class="text-zinc-600 hidden sm:inline">•</span>
+                <span class="text-xs text-blue-400 font-bold truncate max-w-[150px] sm:max-w-none">Proposta Digital Oficial</span>
             </div>
 
             <div class="flex items-center gap-2">
-                <button onclick="window.print()" class="px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-xs font-semibold text-zinc-200 flex items-center gap-1.5 transition">
+                <button onclick="window.print()" class="px-2.5 sm:px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-xs font-semibold text-zinc-200 flex items-center gap-1.5 transition" title="Salvar em PDF ou Imprimir">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
-                    Imprimir / PDF
+                    <span class="hidden sm:inline">Imprimir / </span>PDF
                 </button>
-                <button onclick="compartilharProposta()" class="px-3 py-1.5 rounded-lg bg-blue-600/20 hover:bg-blue-600/40 text-xs font-semibold text-blue-300 border border-blue-500/30 flex items-center gap-1.5 transition">
+                <button onclick="compartilharProposta()" class="px-2.5 sm:px-3 py-1.5 rounded-lg bg-blue-600/20 hover:bg-blue-600/40 text-xs font-semibold text-blue-300 border border-blue-500/30 flex items-center gap-1.5 transition">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
-                    Compartilhar
+                    <span>Compartilhar</span>
                 </button>
             </div>
         </div>
@@ -180,8 +178,10 @@
         <div id="prop-error" class="hidden doc-panel p-8 text-center space-y-3 max-w-md mx-auto my-12 border-rose-500/40">
             <div class="w-12 h-12 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center mx-auto text-xl font-bold">✕</div>
             <h3 class="text-base font-bold text-white">Proposta não encontrada</h3>
-            <p id="prop-error-msg" class="text-xs text-zinc-400 leading-relaxed">Não foi possível carregar os dados desta ordem de serviço.</p>
-            <a href="index.html" class="inline-block mt-3 px-4 py-2 rounded-xl bg-blue-600 text-white font-bold text-xs">Voltar ao Painel BRvolts</a>
+            <p id="prop-error-msg" class="text-xs text-zinc-400 leading-relaxed">Não foi possível carregar os dados desta ordem de serviço. Por favor, verifique o link recebido.</p>
+            <a href="https://api.whatsapp.com/send?phone=5521976493932&text=Ol%C3%A1%2C%20gostaria%20de%20consultar%20minha%20proposta%20BRvolts." target="_blank" class="inline-flex items-center gap-2 mt-3 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md transition">
+                <span>💬 Falar com a BRvolts no WhatsApp</span>
+            </a>
         </div>
 
         <!-- CONTEÚDO PRINCIPAL DA PROPOSTA OFICIAL BRVOLTS -->
@@ -345,8 +345,8 @@
                 </div>
             </div>
 
-            <!-- ÁREA DE PAGAMENTO PIX OFICIAL BRVOLTS -->
-            <div class="grid sm:grid-cols-3 gap-6 items-center pt-2">
+            <!-- ÁREA DE PAGAMENTO PIX OFICIAL BRVOLTS (OCULTADA SE ESTIVER PAGA) -->
+            <div id="prop-area-cobranca-pix" class="grid sm:grid-cols-3 gap-6 items-center pt-2">
                 <div class="sm:col-span-2 space-y-3">
                     <h3 class="text-sm font-bold text-white print-text-dark flex items-center gap-2">
                         <img src="Pix_logo.png" alt="Pix" class="h-4 w-auto inline">
@@ -387,44 +387,91 @@
                 </div>
             </div>
 
-            <!-- BANNER DE AVALIAÇÃO GOOGLE PREMIUM COM LOGO OFICIAL E ANIMAÇÕES -->
-            <div id="prop-google-review-banner" class="hidden no-print p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-zinc-900 via-zinc-900/95 to-zinc-950 border border-amber-500/40 shadow-xl shadow-amber-500/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left transition-all relative overflow-hidden">
-                <!-- Luz ambiente de fundo -->
-                <div class="absolute -right-10 -top-10 w-36 h-36 bg-amber-500/10 rounded-full blur-2xl pointer-events-none"></div>
-
-                <div class="flex items-center gap-3.5 relative z-10">
-                    <!-- LOGO OFICIAL DO GOOGLE EM ALTA DEFINIÇÃO -->
-                    <div class="w-12 h-12 rounded-2xl bg-white p-2.5 shadow-md flex items-center justify-center shrink-0 transform transition-transform hover:scale-105">
-                        <svg class="w-7 h-7" viewBox="0 0 24 24">
-                            <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
-                            <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/>
-                            <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/>
-                            <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
-                        </svg>
-                    </div>
-
-                    <div class="space-y-1">
-                        <div class="flex items-center justify-center sm:justify-start gap-2 flex-wrap">
-                            <h4 class="text-sm font-black text-white">Avaliação 5 Estrelas no Google</h4>
-                            <!-- ESTRELAS DOURADAS COM ANIMAÇÃO -->
-                            <div class="flex items-center gap-0.5 text-amber-400 text-sm tracking-wider animate-pulse">
-                                <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
-                                <span class="ml-1 px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 font-mono text-[10px] font-bold border border-amber-500/30">5.0</span>
-                            </div>
+            <!-- COMPROVANTE OFICIAL DE QUITAÇÃO (EXIBIDO APENAS SE A OS ESTIVER PAGA) -->
+            <div id="prop-area-quitado" class="hidden p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-emerald-950/50 via-zinc-900 to-zinc-950 border-2 border-emerald-500/40 shadow-xl space-y-4 print-border">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-emerald-500/20 pb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center text-2xl font-black shrink-0">
+                            ✓
                         </div>
-                        <p class="text-[11px] text-zinc-300 max-w-md leading-relaxed">
-                            Sua avaliação de 5 estrelas certifica a qualidade técnica e segurança da instalação entregue pela BRvolts!
-                        </p>
+                        <div>
+                            <span class="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Comprovante de Quitação</span>
+                            <h3 class="text-base sm:text-lg font-black text-white">Serviço Quitado & Integralmente Pago</h3>
+                            <p class="text-xs text-zinc-400">Todos os valores referentes a esta Ordem de Serviço foram liquidados.</p>
+                        </div>
+                    </div>
+                    <div class="text-left sm:text-right">
+                        <span class="text-[11px] text-zinc-400 block">Valor Total Quitado:</span>
+                        <span id="prop-quitado-valor" class="text-xl sm:text-2xl font-black font-mono text-emerald-400">R$ 0,00</span>
                     </div>
                 </div>
 
-                <!-- BOTÃO DE AVALIAÇÃO COM ANIMAÇÃO DE SHINE E HOVER -->
-                <a href="https://g.page/r/CbiafVBOu7JAEBM/review" target="_blank" rel="noopener noreferrer" class="relative group overflow-hidden px-5 py-3 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:from-amber-400 hover:to-yellow-300 text-zinc-950 font-black text-xs shadow-lg shadow-amber-500/25 transition-all transform hover:scale-105 active:scale-95 flex items-center gap-2 shrink-0 no-underline">
-                    <!-- Efeito de brilho deslizante (shimmer) -->
-                    <span class="absolute inset-0 w-full h-full bg-white/30 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></span>
-                    <span class="text-base leading-none">⭐</span>
-                    <span>Avaliar no Google</span>
-                    <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                <div class="grid sm:grid-cols-3 gap-3 text-xs">
+                    <div class="p-3 rounded-xl bg-black/40 border border-white/5 space-y-1">
+                        <strong class="text-zinc-400 block text-[10px] uppercase tracking-wider">Situação Financeira</strong>
+                        <span class="text-emerald-400 font-bold flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                            100% Pago / Saldo R$ 0,00
+                        </span>
+                    </div>
+                    <div class="p-3 rounded-xl bg-black/40 border border-white/5 space-y-1">
+                        <strong class="text-zinc-400 block text-[10px] uppercase tracking-wider">Garantia Técnica</strong>
+                        <span class="text-zinc-200 font-semibold">90 Dias de Mão de Obra (CDC)</span>
+                    </div>
+                    <div class="p-3 rounded-xl bg-black/40 border border-white/5 space-y-1">
+                        <strong class="text-zinc-400 block text-[10px] uppercase tracking-wider">Responsável Técnico</strong>
+                        <span class="text-zinc-200 font-semibold">Wellington Bonifácio (CFT/RJ)</span>
+                    </div>
+                </div>
+
+                <p class="text-[11px] text-emerald-300/80 leading-relaxed pt-1">
+                    ⚡ <strong>Agradecemos pela preferência e confiança na BRvolts Soluções Elétricas!</strong> Seu projeto foi entregue em estrita conformidade com as normas ABNT NBR 5410 e NBR 17019.
+                </p>
+            </div>
+
+            <!-- BANNER DE AVALIAÇÃO GOOGLE PREMIUM COM LOGO OFICIAL E ANIMAÇÕES -->
+            <div id="prop-google-review-banner" class="hidden no-print p-4 sm:p-5 rounded-2xl bg-[#131722] border border-amber-500/40 shadow-xl shadow-amber-500/10 transition-all relative overflow-hidden space-y-3">
+                <!-- Luz ambiente dourada suave -->
+                <div class="absolute -right-8 -top-8 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl pointer-events-none"></div>
+
+                <div class="flex items-center justify-between gap-3 relative z-10">
+                    <div class="flex items-center gap-3">
+                        <!-- LOGO OFICIAL DO GOOGLE EM ALTA DEFINIÇÃO -->
+                        <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-white p-2 shadow-md flex items-center justify-center shrink-0">
+                            <svg class="w-6 h-6" viewBox="0 0 24 24">
+                                <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
+                                <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/>
+                                <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/>
+                                <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+                            </svg>
+                        </div>
+
+                        <div>
+                            <h4 class="text-xs sm:text-sm font-black text-white leading-tight">Avaliação 5 Estrelas no Google</h4>
+                            <div class="flex items-center gap-1.5 mt-0.5">
+                                <div class="flex items-center text-amber-400 text-xs">
+                                    <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+                                </div>
+                                <span class="px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 font-mono text-[10px] font-bold border border-amber-500/30">5.0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Botão desktop -->
+                    <a href="https://g.page/r/CbiafVBOu7JAEBM/review" target="_blank" rel="noopener noreferrer" class="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-zinc-950 font-black text-xs shadow-md shadow-amber-500/20 transition-all transform hover:scale-105 active:scale-95 no-underline shrink-0">
+                        <span>⭐ Avaliar no Google</span>
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                    </a>
+                </div>
+
+                <p class="text-xs text-zinc-300 leading-relaxed relative z-10">
+                    Sua avaliação de 5 estrelas certifica a qualidade técnica e segurança da instalação entregue pela BRvolts!
+                </p>
+
+                <!-- Botão mobile de largura total -->
+                <a href="https://g.page/r/CbiafVBOu7JAEBM/review" target="_blank" rel="noopener noreferrer" class="sm:hidden w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-400 text-zinc-950 font-black text-xs shadow-md shadow-amber-500/20 flex items-center justify-center gap-2 transition active:scale-95 no-underline relative z-10">
+                    <span>⭐ Avaliar no Google</span>
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                 </a>
             </div>
 
@@ -670,65 +717,91 @@
 
             document.getElementById('prop-subtotal-mao-obra').innerText = formatarMoeda(valServ);
             document.getElementById('prop-subtotal-materiais').innerText = formatarMoeda(valMat);
-            document.getElementById('prop-valor-total-destaque').innerText = formatarMoeda(total);
             document.getElementById('prop-bar-valor').innerText = formatarMoeda(total);
 
-            // REGRA: SOMENTE PEDIR 50% DE ENTRADA SE FOR INSTALAÇÃO DE WALLBOX
-            const elWallboxLinha = document.getElementById('prop-linha-wallbox-condicao');
-            const condicaoBox = document.getElementById('prop-condicao-pagamento-box');
+            // Identifica se a OS já está paga ou concluída (regra: Concluído = Pago)
+            const isPago = !!(dadosServico.pago || dadosServico.status === 'Concluído' || dadosServico.status === 'Paga');
 
-            if (isWallbox) {
-                const metade = total * 0.5;
-                if (elWallboxLinha) {
-                    elWallboxLinha.classList.remove('hidden');
-                    document.getElementById('prop-resumo-entrada').innerText = formatarMoeda(metade);
-                    document.getElementById('prop-resumo-saldo').innerText = formatarMoeda(metade);
-                }
-
-                if (condicaoBox) {
-                    condicaoBox.innerHTML = `
-                        <p class="text-xs text-zinc-300 print-text-dark leading-relaxed">
-                            • <strong class="text-white print-text-dark font-bold">Titular:</strong> Wellington Nunes Bonifácio Correa (BRvolts)<br>
-                            • <strong class="text-emerald-400 print-text-dark font-bold">Condição Padrão Wallbox:</strong> 50% de entrada no início dos serviços (${formatarMoeda(metade)}) e 50% após entrega técnica e testes operacionais (${formatarMoeda(metade)}).<br>
-                            • <strong class="text-white print-text-dark font-bold">Cartão de Crédito:</strong> Possibilidade de parcelamento com taxa da operadora sob consulta.
-                        </p>
-                    `;
-                }
-            } else {
-                if (elWallboxLinha) {
-                    elWallboxLinha.classList.add('hidden');
-                }
-
-                if (condicaoBox) {
-                    condicaoBox.innerHTML = `
-                        <p class="text-xs text-zinc-300 print-text-dark leading-relaxed">
-                            • <strong class="text-white print-text-dark font-bold">Titular:</strong> Wellington Nunes Bonifácio Correa (BRvolts)<br>
-                            • <strong class="text-blue-400 print-text-dark font-bold">Condição de Pagamento:</strong> Pagamento integral (${formatarMoeda(total)}) após a conclusão dos serviços, testes operacionais e entrega técnica.<br>
-                            • <strong class="text-white print-text-dark font-bold">Cartão de Crédito:</strong> Possibilidade de parcelamento com taxa da operadora sob consulta.
-                        </p>
-                    `;
+            const elTotalDestaque = document.getElementById('prop-valor-total-destaque');
+            if (elTotalDestaque) {
+                if (isPago) {
+                    elTotalDestaque.innerHTML = `${formatarMoeda(total)} <span class="ml-1.5 px-2 py-0.5 rounded text-[10px] font-black tracking-wide bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 align-middle inline-block">✓ QUITADO</span>`;
+                } else {
+                    elTotalDestaque.innerText = formatarMoeda(total);
                 }
             }
 
-            // PIX DINÂMICO EXCLUSIVO DESTA PROPOSTA (EMV BR CODE)
-            const chavePix = '21976493932';
-            const valorPix = isWallbox ? (total * 0.5) : total;
-            const txidPix = (dadosServico.os_number || 'OS' + dadosServico.id).replace(/[^a-zA-Z0-9]/g, '');
+            // REGRA: SOMENTE PEDIR 50% DE ENTRADA SE FOR INSTALAÇÃO DE WALLBOX E NÃO ESTIVER PAGO
+            const elWallboxLinha = document.getElementById('prop-linha-wallbox-condicao');
+            const condicaoBox = document.getElementById('prop-condicao-pagamento-box');
+            const cobrancaPixArea = document.getElementById('prop-area-cobranca-pix');
+            const quitadoArea = document.getElementById('prop-area-quitado');
+            const quitadoValor = document.getElementById('prop-quitado-valor');
+            if (quitadoValor) quitadoValor.innerText = formatarMoeda(total);
 
-            pixPayloadGlobal = gerarPayloadPixEMV({
-                chave: chavePix,
-                nome: 'WELLINGTON BONIFACIO',
-                cidade: 'MARICA',
-                valor: valorPix,
-                txid: txidPix
-            });
+            if (isPago) {
+                // REGRA DJ: NÃO cobrar o cliente caso o serviço estiver como pago
+                if (cobrancaPixArea) cobrancaPixArea.classList.add('hidden');
+                if (quitadoArea) quitadoArea.classList.remove('hidden');
+                if (elWallboxLinha) elWallboxLinha.classList.add('hidden');
+            } else {
+                // Serviço pendente de pagamento: exibe opções de cobrança PIX
+                if (cobrancaPixArea) cobrancaPixArea.classList.remove('hidden');
+                if (quitadoArea) quitadoArea.classList.add('hidden');
 
-            document.getElementById('prop-pix-chave-texto').innerText = '(21) 97649-3932';
-            const elValLegenda = document.getElementById('prop-pix-valor-legenda');
-            const elTipoLegenda = document.getElementById('prop-pix-tipo-legenda');
-            if (elValLegenda) elValLegenda.innerText = formatarMoeda(valorPix);
-            if (elTipoLegenda) elTipoLegenda.innerText = isWallbox ? '⚡ Entrada 50% Wallbox' : '⚡ Valor Integral da Obra';
-            document.getElementById('prop-pix-qrcode-img').src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(pixPayloadGlobal)}`;
+                if (isWallbox) {
+                    const metade = total * 0.5;
+                    if (elWallboxLinha) {
+                        elWallboxLinha.classList.remove('hidden');
+                        document.getElementById('prop-resumo-entrada').innerText = formatarMoeda(metade);
+                        document.getElementById('prop-resumo-saldo').innerText = formatarMoeda(metade);
+                    }
+
+                    if (condicaoBox) {
+                        condicaoBox.innerHTML = `
+                            <p class="text-xs text-zinc-300 print-text-dark leading-relaxed">
+                                • <strong class="text-white print-text-dark font-bold">Titular:</strong> Wellington Nunes Bonifácio Correa (BRvolts)<br>
+                                • <strong class="text-emerald-400 print-text-dark font-bold">Condição Padrão Wallbox:</strong> 50% de entrada no início dos serviços (${formatarMoeda(metade)}) e 50% após entrega técnica e testes operacionais (${formatarMoeda(metade)}).<br>
+                                • <strong class="text-white print-text-dark font-bold">Cartão de Crédito:</strong> Possibilidade de parcelamento com taxa da operadora sob consulta.
+                            </p>
+                        `;
+                    }
+                } else {
+                    if (elWallboxLinha) {
+                        elWallboxLinha.classList.add('hidden');
+                    }
+
+                    if (condicaoBox) {
+                        condicaoBox.innerHTML = `
+                            <p class="text-xs text-zinc-300 print-text-dark leading-relaxed">
+                                • <strong class="text-white print-text-dark font-bold">Titular:</strong> Wellington Nunes Bonifácio Correa (BRvolts)<br>
+                                • <strong class="text-blue-400 print-text-dark font-bold">Condição de Pagamento:</strong> Pagamento integral (${formatarMoeda(total)}) após a conclusão dos serviços, testes operacionais e entrega técnica.<br>
+                                • <strong class="text-white print-text-dark font-bold">Cartão de Crédito:</strong> Possibilidade de parcelamento com taxa da operadora sob consulta.
+                            </p>
+                        `;
+                    }
+                }
+
+                // PIX DINÂMICO EXCLUSIVO DESTA PROPOSTA (EMV BR CODE)
+                const chavePix = '21976493932';
+                const valorPix = isWallbox ? (total * 0.5) : total;
+                const txidPix = (dadosServico.os_number || 'OS' + dadosServico.id).replace(/[^a-zA-Z0-9]/g, '');
+
+                pixPayloadGlobal = gerarPayloadPixEMV({
+                    chave: chavePix,
+                    nome: 'WELLINGTON BONIFACIO',
+                    cidade: 'MARICA',
+                    valor: valorPix,
+                    txid: txidPix
+                });
+
+                document.getElementById('prop-pix-chave-texto').innerText = '(21) 97649-3932';
+                const elValLegenda = document.getElementById('prop-pix-valor-legenda');
+                const elTipoLegenda = document.getElementById('prop-pix-tipo-legenda');
+                if (elValLegenda) elValLegenda.innerText = formatarMoeda(valorPix);
+                if (elTipoLegenda) elTipoLegenda.innerText = isWallbox ? '⚡ Entrada 50% Wallbox' : '⚡ Valor Integral da Obra';
+                document.getElementById('prop-pix-qrcode-img').src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(pixPayloadGlobal)}`;
+            }
 
             // Status Badge
             atualizarBadgeStatus(dadosServico.status, dadosServico.pago);
@@ -803,7 +876,8 @@
             const btn = document.getElementById('btn-aprovar-proposta');
             const bannerGoogle = document.getElementById('prop-google-review-banner');
 
-            const isAprovado = pago || status === 'Aprovado' || status === 'Concluído';
+            const isPago = !!(pago || status === 'Concluído' || status === 'Paga');
+            const isAprovado = isPago || status === 'Aprovado';
 
             if (bannerGoogle) {
                 if (isAprovado) {
@@ -813,17 +887,21 @@
                 }
             }
 
-            if (pago) {
+            if (isPago) {
                 badge.className = 'inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 text-xs font-bold print-bg-gray print-border';
-                txt.innerText = '✓ Ordem Paga & Finalizada';
+                txt.innerText = '✓ Serviço Concluído & Quitado';
                 if (btn) {
                     btn.disabled = true;
-                    btn.className = 'flex-1 sm:flex-none px-6 py-3 rounded-xl bg-zinc-800 text-emerald-400 font-bold text-xs uppercase cursor-default';
-                    btn.innerHTML = '✓ Orçamento Pago & Finalizado';
+                    btn.className = 'flex-1 sm:flex-none px-6 py-3 rounded-xl bg-emerald-600/20 border border-emerald-500/30 text-emerald-300 font-bold text-xs uppercase cursor-default flex items-center justify-center gap-1.5';
+                    btn.innerHTML = '✓ Serviço Quitado & Entregue';
                 }
-            } else if (status === 'Aprovado' || status === 'Concluído') {
-                badge.className = 'inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 text-xs font-bold print-bg-gray print-border';
-                txt.innerText = `✓ Orçamento ${status}`;
+                const barValor = document.getElementById('prop-bar-valor');
+                if (barValor) {
+                    barValor.innerHTML = `<span class="text-sm sm:text-base text-emerald-400 font-mono font-black">✓ 100% Quitado</span>`;
+                }
+            } else if (status === 'Aprovado') {
+                badge.className = 'inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/15 text-blue-400 border border-blue-500/30 text-xs font-bold print-bg-gray print-border';
+                txt.innerText = '✓ Orçamento Aprovado';
                 if (btn) {
                     btn.disabled = true;
                     btn.className = 'flex-1 sm:flex-none px-6 py-3 rounded-xl bg-zinc-800 text-emerald-400 font-bold text-xs uppercase cursor-default';
