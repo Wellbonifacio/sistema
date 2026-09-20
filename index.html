@@ -882,6 +882,14 @@
             // Status Badge
             atualizarBadgeStatus(dadosServico.status, dadosServico.pago);
 
+            // REGISTRO DE VISUALIZAÇÃO EM TEMPO REAL NO SUPABASE
+            if (dadosServico && dadosServico.id && dadosServico.status !== 'Concluído') {
+                const agoraIso = new Date().toISOString();
+                BRvoltsDB.update('servicos', dadosServico.id, {
+                    visualizado_em: agoraIso
+                }).catch(e => console.warn('Tracking ping notice:', e));
+            }
+
             // Exibe conteúdo
             document.getElementById('prop-loading').classList.add('hidden');
             document.getElementById('prop-content').classList.remove('hidden');
