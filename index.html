@@ -429,6 +429,102 @@
                 </p>
             </div>
 
+            <!-- SIMULADOR INTERATIVO DE ECONOMIA & PAYBACK DE RECARGA EV (CONVERSÃO MÁXIMA) -->
+            <div id="prop-simulador-payback-ev" class="no-print p-4 sm:p-5 rounded-2xl bg-[#121624] border border-emerald-500/30 shadow-xl shadow-emerald-500/5 transition-all space-y-4">
+                <div class="flex items-center justify-between flex-wrap gap-2 border-b border-[#22293d] pb-3">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-lg">⚡</div>
+                        <div>
+                            <h4 class="text-xs sm:text-sm font-black text-white flex items-center gap-2">
+                                Simulador de Economia & Payback EV
+                                <span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">Tarifa Enel RJ</span>
+                            </h4>
+                            <p class="text-[10px] text-zinc-400">Calcule em quanto tempo a instalação se paga com a economia de combustível</p>
+                        </div>
+                    </div>
+                    <button type="button" onclick="toggleDetalhesSimulador()" id="btn-toggle-detalhes-simulador" class="text-[11px] font-bold text-cyan-400 hover:text-cyan-300 transition">
+                        ⚙️ Ajustar Tarifas
+                    </button>
+                </div>
+
+                <!-- Controles do Simulador -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div class="space-y-1.5">
+                        <label class="text-[11px] font-bold text-zinc-300 flex items-center justify-between">
+                            <span>Quilometragem Mensal Estimada:</span>
+                            <span id="payback-km-label" class="text-emerald-400 font-mono font-bold">1.500 km/mês</span>
+                        </label>
+                        <input type="range" id="payback-km-slider" min="400" max="4000" step="100" value="1500" oninput="atualizarSimuladorPaybackEV()"
+                            class="w-full accent-emerald-500 cursor-pointer h-2 bg-zinc-800 rounded-lg">
+                        <div class="flex justify-between text-[9px] text-zinc-500 font-mono">
+                            <span>400 km</span>
+                            <span>1.500 km</span>
+                            <span>4.000 km</span>
+                        </div>
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <label class="text-[11px] font-bold text-zinc-300 block">Modelo do Veículo Elétrico:</label>
+                        <select id="payback-veiculo-select" onchange="atualizarSimuladorPaybackEV()"
+                            class="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-[#22293d] text-white text-xs font-medium focus:border-emerald-500 focus:outline-none">
+                            <option value="6.8" selected>BYD Dolphin / Dolphin Mini (6,8 km/kWh)</option>
+                            <option value="6.4">GWM Ora 03 Skin / GT (6,4 km/kWh)</option>
+                            <option value="5.8">Volvo EX30 / XC40 Recharge (5,8 km/kWh)</option>
+                            <option value="6.2">BYD Song Plus / King DM-i Híbrido (6,2 km/kWh)</option>
+                            <option value="6.0">Outro Veículo Elétrico / Híbrido Médio (6,0 km/kWh)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Painel de Tarifas Avançadas (Opcional colapsável) -->
+                <div id="payback-painel-tarifas" class="hidden grid grid-cols-2 gap-3 p-3 rounded-xl bg-black/40 border border-white/5 text-xs">
+                    <div>
+                        <span class="text-[10px] text-zinc-400 block font-bold">Gasolina Comum (R$/L):</span>
+                        <input type="number" id="payback-preco-gasolina" value="6.20" step="0.10" oninput="atualizarSimuladorPaybackEV()"
+                            class="w-full mt-1 px-2.5 py-1.5 rounded-lg bg-zinc-900 border border-white/10 text-white font-mono text-xs">
+                    </div>
+                    <div>
+                        <span class="text-[10px] text-zinc-400 block font-bold">Tarifa Residencial Enel RJ (R$/kWh):</span>
+                        <input type="number" id="payback-tarifa-energia" value="0.98" step="0.02" oninput="atualizarSimuladorPaybackEV()"
+                            class="w-full mt-1 px-2.5 py-1.5 rounded-lg bg-zinc-900 border border-white/10 text-white font-mono text-xs">
+                    </div>
+                </div>
+
+                <!-- Resultados Comparativos em Tempo Real -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
+                    <div class="p-2.5 rounded-xl bg-white/5 border border-white/5 text-center">
+                        <span class="text-[9px] uppercase font-bold text-zinc-400 block">Gasto Gasolina</span>
+                        <span id="payback-gasto-gasolina" class="text-xs sm:text-sm font-black text-rose-400 font-mono mt-0.5 block">R$ 0,00</span>
+                        <span class="text-[8px] text-zinc-500 block mt-0.5">méd. 10 km/L</span>
+                    </div>
+                    <div class="p-2.5 rounded-xl bg-white/5 border border-white/5 text-center">
+                        <span class="text-[9px] uppercase font-bold text-zinc-400 block">Gasto Elétrico</span>
+                        <span id="payback-gasto-eletrico" class="text-xs sm:text-sm font-black text-cyan-300 font-mono mt-0.5 block">R$ 0,00</span>
+                        <span class="text-[8px] text-zinc-500 block mt-0.5">recarga em casa</span>
+                    </div>
+                    <div class="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-center">
+                        <span class="text-[9px] uppercase font-bold text-emerald-400 block">Economia Mensal</span>
+                        <span id="payback-economia-mensal" class="text-xs sm:text-sm font-black text-emerald-400 font-mono mt-0.5 block">R$ 0,00</span>
+                        <span class="text-[8px] text-emerald-300/80 block mt-0.5">no seu bolso</span>
+                    </div>
+                    <div class="p-2.5 rounded-xl bg-gradient-to-br from-emerald-500/20 to-blue-600/20 border border-emerald-400/40 text-center">
+                        <span class="text-[9px] uppercase font-bold text-white block">Economia Anual</span>
+                        <span id="payback-economia-anual" class="text-xs sm:text-sm font-black text-white font-mono mt-0.5 block">R$ 0,00</span>
+                        <span class="text-[8px] text-emerald-300 block mt-0.5">acumulado 12 meses</span>
+                    </div>
+                </div>
+
+                <!-- Banner de Payback da Instalação -->
+                <div id="payback-banner-retorno" class="p-3 rounded-xl bg-emerald-950/40 border border-emerald-500/40 flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-2">
+                        <span class="text-base">🚀</span>
+                        <div class="text-xs text-zinc-200">
+                            <strong>Retorno do Investimento:</strong> Sua instalação técnica de <span id="payback-total-obra-txt" class="font-bold text-white font-mono">R$ 0,00</span> se paga integralmente em aproximadamente <strong id="payback-meses-retorno" class="text-emerald-400 font-mono text-sm underline decoration-emerald-500/60">0 meses</strong> de uso!
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- BANNER DE AVALIAÇÃO GOOGLE PREMIUM COM LOGO OFICIAL E ANIMAÇÕES -->
             <div id="prop-google-review-banner" class="hidden no-print p-4 sm:p-5 rounded-2xl bg-[#131722] border border-amber-500/40 shadow-xl shadow-amber-500/10 transition-all relative overflow-hidden space-y-3">
                 <!-- Luz ambiente dourada suave -->
@@ -890,10 +986,65 @@
                 }).catch(e => console.warn('Tracking ping notice:', e));
             }
 
+            // Inicia o cálculo do Simulador de Payback EV
+            atualizarSimuladorPaybackEV();
+
             // Exibe conteúdo
             document.getElementById('prop-loading').classList.add('hidden');
             document.getElementById('prop-content').classList.remove('hidden');
             document.getElementById('prop-action-bar').classList.remove('hidden');
+        }
+
+        // ==================== SIMULADOR DE ECONOMIA & PAYBACK EV ====================
+        function toggleDetalhesSimulador() {
+            const painel = document.getElementById('payback-painel-tarifas');
+            if (painel) painel.classList.toggle('hidden');
+        }
+
+        function atualizarSimuladorPaybackEV() {
+            const slider = document.getElementById('payback-km-slider');
+            const kmLabel = document.getElementById('payback-km-label');
+            const veiculoSelect = document.getElementById('payback-veiculo-select');
+            const precoGasInput = document.getElementById('payback-preco-gasolina');
+            const tarifaEnergiaInput = document.getElementById('payback-tarifa-energia');
+
+            const kmMes = slider ? parseFloat(slider.value) || 1500 : 1500;
+            if (kmLabel) kmLabel.innerText = `${kmMes.toLocaleString('pt-BR')} km/mês`;
+
+            const kmPorKwh = veiculoSelect ? parseFloat(veiculoSelect.value) || 6.5 : 6.5;
+            const precoGas = precoGasInput ? parseFloat(precoGasInput.value) || 6.20 : 6.20;
+            const tarifaKwh = tarifaEnergiaInput ? parseFloat(tarifaEnergiaInput.value) || 0.98 : 0.98;
+
+            // Gasolina: consumo médio 10 km/L
+            const consumoLitrosMes = kmMes / 10.0;
+            const custoGasolinaMes = consumoLitrosMes * precoGas;
+
+            // Elétrico: consumo médio kmPorKwh
+            const consumoKwhMes = kmMes / kmPorKwh;
+            const custoEletricoMes = consumoKwhMes * tarifaKwh;
+
+            const economiaMes = Math.max(0, custoGasolinaMes - custoEletricoMes);
+            const economiaAno = economiaMes * 12;
+
+            const totalObra = dadosServico 
+                ? (parseFloat(dadosServico.valor_servico) || 0) + (parseFloat(dadosServico.valor_materiais) || 0)
+                : 0;
+
+            const mesesPayback = (economiaMes > 0 && totalObra > 0) ? (totalObra / economiaMes).toFixed(1) : '1.0';
+
+            const elGas = document.getElementById('payback-gasto-gasolina');
+            const elElec = document.getElementById('payback-gasto-eletrico');
+            const elEconMes = document.getElementById('payback-economia-mensal');
+            const elEconAno = document.getElementById('payback-economia-anual');
+            const elMeses = document.getElementById('payback-meses-retorno');
+            const elTotalTxt = document.getElementById('payback-total-obra-txt');
+
+            if (elGas) elGas.innerText = formatarMoeda(custoGasolinaMes);
+            if (elElec) elElec.innerText = formatarMoeda(custoEletricoMes);
+            if (elEconMes) elEconMes.innerText = formatarMoeda(economiaMes);
+            if (elEconAno) elEconAno.innerText = formatarMoeda(economiaAno);
+            if (elMeses) elMeses.innerText = `${mesesPayback} meses`;
+            if (elTotalTxt) elTotalTxt.innerText = formatarMoeda(totalObra);
         }
 
         let pixPayloadGlobal = '';
@@ -921,9 +1072,11 @@
             return `${id}${len}${v}`;
         }
 
-        function gerarPayloadPixEMV({ chave, nome, cidade, valor, txid }) {
+        function gerarPayloadPixEMV(params) {
+            const { chave, chavePix, nome, beneficiario, cidade, valor, txid, txId } = params || {};
+            const chaveFinal = chave || chavePix || '21976493932';
             const gui = formatarTLV('00', 'br.gov.bcb.pix');
-            const chaveTlv = formatarTLV('01', chave);
+            const chaveTlv = formatarTLV('01', chaveFinal);
             const merchantAccount = formatarTLV('26', gui + chaveTlv);
 
             const mcc = formatarTLV('52', '0000');
@@ -931,11 +1084,13 @@
             const valorStr = Number(valor).toFixed(2);
             const valorTlv = formatarTLV('54', valorStr);
             const pais = formatarTLV('58', 'BR');
-            const nomeLimpo = (nome || 'WELLINGTON BONIFACIO').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().substring(0, 25);
+            const nomeFinal = nome || beneficiario || 'WELLINGTON BONIFACIO';
+            const nomeLimpo = nomeFinal.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().substring(0, 25);
             const nomeTlv = formatarTLV('59', nomeLimpo);
             const cidadeLimpa = (cidade || 'MARICA').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().substring(0, 15);
             const cidadeTlv = formatarTLV('60', cidadeLimpa);
-            const txidLimpo = (txid || '***').replace(/[^a-zA-Z0-9]/g, '').substring(0, 25) || '***';
+            const txidRaw = txid || txId || '***';
+            const txidLimpo = txidRaw.replace(/[^a-zA-Z0-9]/g, '').substring(0, 25) || '***';
             const txidTlv = formatarTLV('05', txidLimpo);
             const additionalData = formatarTLV('62', txidTlv);
 
