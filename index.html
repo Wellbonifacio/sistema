@@ -161,6 +161,32 @@
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
                     <span>Compartilhar</span>
                 </button>
+                <div class="relative">
+                    <button onclick="toggleMenuOpcoesProposta(event)" id="btn-opcoes-proposta" class="px-2.5 sm:px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-xs font-bold text-zinc-200 border border-white/10 flex items-center gap-1 transition active:scale-95 shadow-sm" title="Mais Opções da Proposta">
+                        <span>⋮ Opções</span>
+                    </button>
+                    <!-- DROPDOWN DE OPÇÕES DA PROPOSTA -->
+                    <div id="menu-dropdown-opcoes-proposta" class="hidden absolute right-0 mt-2 w-56 bg-[#0c1324] border border-slate-700/80 rounded-2xl shadow-2xl py-1.5 z-50 text-xs backdrop-blur-xl">
+                        <button onclick="tirarDuvidasWhatsApp(); fecharMenuOpcoesProposta();" class="w-full text-left px-3.5 py-2 hover:bg-emerald-600/20 text-slate-200 hover:text-emerald-300 font-medium flex items-center gap-2 transition">
+                            <span>💬</span> Falar no WhatsApp
+                        </button>
+                        <button onclick="copiarPixCopiaECola(); fecharMenuOpcoesProposta();" class="w-full text-left px-3.5 py-2 hover:bg-emerald-600/20 text-slate-200 hover:text-emerald-300 font-medium flex items-center gap-2 transition">
+                            <span>💳</span> Copiar Código PIX
+                        </button>
+                        <button onclick="copiarChavePixBRvolts(); fecharMenuOpcoesProposta();" class="w-full text-left px-3.5 py-2 hover:bg-emerald-600/20 text-slate-200 hover:text-emerald-300 font-medium flex items-center gap-2 transition">
+                            <span>🔑</span> Copiar Chave Celular PIX
+                        </button>
+                        <button onclick="window.print(); fecharMenuOpcoesProposta();" class="w-full text-left px-3.5 py-2 hover:bg-blue-600/20 text-slate-200 hover:text-blue-300 font-medium flex items-center gap-2 transition">
+                            <span>🖨️</span> Salvar em PDF / Imprimir
+                        </button>
+                        <button onclick="document.getElementById('prop-simulador-payback-ev')?.scrollIntoView({behavior:'smooth'}); fecharMenuOpcoesProposta();" class="w-full text-left px-3.5 py-2 hover:bg-cyan-600/20 text-slate-200 hover:text-cyan-300 font-medium flex items-center gap-2 transition">
+                            <span>⚡</span> Ver Economia EV
+                        </button>
+                        <a href="https://g.page/r/CbiafVBOu7JAEBM/review" target="_blank" onclick="fecharMenuOpcoesProposta();" class="w-full text-left px-3.5 py-2 hover:bg-amber-500/20 text-amber-300 font-medium flex items-center gap-2 transition block no-underline">
+                            <span>⭐</span> Avaliar no Google 5★
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </header>
@@ -1471,6 +1497,25 @@
             const msg = encodeURIComponent(`Olá Wellington (BRvolts)! Acabei de aprovar formalmente a proposta da OS ${os} no valor de ${val}${detalheCondicao}. Gostaria de alinhar a data de início.`);
             window.open(`https://api.whatsapp.com/send?phone=${num}&text=${msg}`, '_blank');
         }
+
+        function toggleMenuOpcoesProposta(e) {
+            if (e) e.stopPropagation();
+            const m = document.getElementById('menu-dropdown-opcoes-proposta');
+            if (m) m.classList.toggle('hidden');
+        }
+        function fecharMenuOpcoesProposta() {
+            const m = document.getElementById('menu-dropdown-opcoes-proposta');
+            if (m) m.classList.add('hidden');
+        }
+        document.addEventListener('click', (e) => {
+            const m = document.getElementById('menu-dropdown-opcoes-proposta');
+            const btn = document.getElementById('btn-opcoes-proposta');
+            if (m && !m.classList.contains('hidden')) {
+                if (!m.contains(e.target) && (!btn || !btn.contains(e.target))) {
+                    fecharMenuOpcoesProposta();
+                }
+            }
+        });
 
         function formatarMoeda(v) {
             return (parseFloat(v) || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
