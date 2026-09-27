@@ -65,6 +65,8 @@
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
+        .hidden { display: none !important; }
+
         /* Estilo de Impressão Limpo A4 - Exatamente 1 Página sem corte */
         @media print {
             @page { 
@@ -776,10 +778,14 @@
                 const sep = query ? (query.startsWith('?') ? '' : '?') : '';
                 const endpoint = `${this.url}/rest/v1/${table}${sep}${query}`;
                 try {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 7000);
                     const res = await fetch(endpoint, {
                         method: 'GET',
-                        headers: this.getHeaders()
+                        headers: this.getHeaders(),
+                        signal: controller.signal
                     });
+                    clearTimeout(timeoutId);
                     if (res.ok) return await res.json();
                     throw new Error(`HTTP ${res.status}: ${await res.text()}`);
                 } catch (fetchErr) {
@@ -797,11 +803,15 @@
             async update(table, id, payload) {
                 const endpoint = `${this.url}/rest/v1/${table}?id=eq.${encodeURIComponent(id)}`;
                 try {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 10000);
                     const res = await fetch(endpoint, {
                         method: 'PATCH',
                         headers: this.getHeaders(),
-                        body: JSON.stringify(payload)
+                        body: JSON.stringify(payload),
+                        signal: controller.signal
                     });
+                    clearTimeout(timeoutId);
                     if (res.ok) return await res.json();
                     throw new Error(`HTTP ${res.status}: ${await res.text()}`);
                 } catch (fetchErr) {
@@ -817,31 +827,113 @@
             }
         };
 
+        // CONTROLE RESILIENTE DE VISIBILIDADE DE TELA
+        function ocultarLoading() {
+            const el = document.getElementById('prop-loading');
+            if (el) {
+                el.classList.add('hidden');
+                el.style.display = 'none';
+            }
+        }
+
+        function mostrarConteudo() {
+            ocultarLoading();
+            const err = document.getElementById('prop-error');
+            if (err) {
+                err.classList.add('hidden');
+                err.style.display = 'none';
+            }
+            const content = document.getElementById('prop-content');
+            if (content) {
+                content.classList.remove('hidden');
+                content.style.display = 'block';
+            }
+            const bar = document.getElementById('prop-action-bar');
+            if (bar) {
+                bar.classList.remove('hidden');
+                bar.style.display = 'flex';
+            }
+        }
+
+        function mostrarErro(mensagem) {
+            ocultarLoading();
+            const content = document.getElementById('prop-content');
+            if (content) {
+                content.classList.add('hidden');
+                content.style.display = 'none';
+            }
+            const bar = document.getElementById('prop-action-bar');
+            if (bar) {
+                bar.classList.add('hidden');
+                bar.style.display = 'none';
+            }
+            const err = document.getElementById('prop-error');
+            if (err) {
+                err.classList.remove('hidden');
+                err.style.display = 'block';
+            }
+            const msgEl = document.getElementById('prop-error-msg');
+            if (msgEl && mensagem) {
+                msgEl.innerText = mensagem;
+            }
+        }
+
         let dadosServico = null;
         let dadosCliente = null;
 
         async function carregarProposta() {
             const urlParams = new URLSearchParams(window.location.search);
-            const servId = urlParams.get('id');
+            const rawParam = urlParams.get('id') || urlParams.get('os') || urlParams.get('os_number') || urlParams.get('proposta');
+            const servId = rawParam ? rawParam.trim() : '';
 
             try {
                 let sData = null;
                 let cData = null;
 
                 if (servId) {
+                    // 1. Se for numérico puro (ex: id bigint do Supabase: 209, 210)
+                    if (/^\d+$/.test(servId)) {
+                        try {
+                            const resId = await BRvoltsDB.select('servicos', `id=eq.${encodeURIComponent(servId)}&select=*`);
+                            if (resId && resId.length > 0) sData = resId[0];
+                        } catch (e) {
+                            console.warn('Busca por id falhou:', e);
+                        }
+                    }
+
+                    // 2. Se não encontrou ou não for puramente numérico, buscar por os_number exato
+                    if (!sData) {
+                        const cleanOs = servId.replace(/^OS[-_\s]*/i, '').trim();
+                        try {
+                            const resOs = await BRvoltsDB.select('servicos', `os_number=eq.${encodeURIComponent(cleanOs)}&select=*`);
+                            if (resOs && resOs.length > 0) sData = resOs[0];
+                        } catch (e) {
+                            console.warn('Busca por os_number exato falhou:', e);
+                        }
+
+                        // 3. Fallback: busca por ilike
+                        if (!sData) {
+                            try {
+                                const resIlike = await BRvoltsDB.select('servicos', `os_number=ilike.%${encodeURIComponent(cleanOs)}%&select=*`);
+                                if (resIlike && resIlike.length > 0) sData = resIlike[0];
+                            } catch (e) {
+                                console.warn('Busca por os_number ilike falhou:', e);
+                            }
+                        }
+                    }
+                } else {
+                    // Sem ID fornecido: buscar a OS mais recente no banco como fallback de prévia
                     try {
-                        const res = await BRvoltsDB.select('servicos', `id=eq.${encodeURIComponent(servId)}&select=*`);
-                        if (res && res.length > 0) sData = res[0];
+                        const resRecent = await BRvoltsDB.select('servicos', 'order=id.desc&limit=1&select=*');
+                        if (resRecent && resRecent.length > 0) sData = resRecent[0];
                     } catch (e) {
-                        console.warn('Erro ao buscar OS por ID:', e);
+                        console.warn('Falha ao obter OS mais recente:', e);
                     }
                 }
 
-                if (!servId) {
-                    throw new Error('Identificador da proposta não informado. Por favor, utilize o link seguro enviado pela equipe da BRvolts no WhatsApp.');
+                if (!sData) {
+                    throw new Error('Ordem de serviço ou proposta não encontrada no banco de dados. Verifique o link ou número da OS.');
                 }
-
-                if (!sData) throw new Error('Ordem de serviço / proposta não encontrada no banco de dados.');
 
                 dadosServico = sData;
 
@@ -858,15 +950,13 @@
                 dadosCliente = cData || {
                     nome: 'Prezado(a) Cliente',
                     telefone: '(21) 97649-3932',
-                    endereco: 'Maricá - RJ'
+                    endereco: 'Maricá / Niterói - RJ'
                 };
 
                 renderizarTelaProposta();
             } catch (err) {
                 console.error('Falha ao buscar proposta:', err);
-                document.getElementById('prop-loading').classList.add('hidden');
-                document.getElementById('prop-error').classList.remove('hidden');
-                document.getElementById('prop-error-msg').innerText = err.message;
+                mostrarErro(err.message || 'Erro ao carregar dados da proposta.');
             }
         }
 
@@ -1058,14 +1148,6 @@
             // Status Badge
             atualizarBadgeStatus(dadosServico.status, dadosServico.pago);
 
-            // REGISTRO DE VISUALIZAÇÃO EM TEMPO REAL NO SUPABASE
-            if (dadosServico && dadosServico.id && dadosServico.status !== 'Concluído') {
-                const agoraIso = new Date().toISOString();
-                BRvoltsDB.update('servicos', dadosServico.id, {
-                    visualizado_em: agoraIso
-                }).catch(e => console.warn('Tracking ping notice:', e));
-            }
-
             // REGRA: SIMULADOR DE PAYBACK EV SOMENTE PARA CLIENTE WALLBOX
             const elSimuladorEV = document.getElementById('prop-simulador-payback-ev');
             const btnMenuSimuladorEV = document.getElementById('btn-menu-opcao-economia-ev');
@@ -1078,10 +1160,11 @@
                 if (btnMenuSimuladorEV) btnMenuSimuladorEV.classList.add('hidden');
             }
 
-            // Exibe conteúdo
-            document.getElementById('prop-loading').classList.add('hidden');
-            document.getElementById('prop-content').classList.remove('hidden');
-            document.getElementById('prop-action-bar').classList.remove('hidden');
+            // Renderiza o bloco de assinatura digital e status de aceite
+            renderizarBlocoAssinatura();
+
+            // Exibe conteúdo de forma garantida
+            mostrarConteudo();
         }
 
         // ==================== SIMULADOR DE ECONOMIA & PAYBACK EV ====================
