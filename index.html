@@ -974,9 +974,6 @@
             document.getElementById('prop-subtotal-materiais').innerText = formatarMoeda(valMat);
             document.getElementById('prop-bar-valor').innerText = formatarMoeda(total);
 
-            // Identifica se a OS já está paga ou concluída (regra: Concluído = Pago)
-            const isPago = !!(dadosServico.pago || dadosServico.status === 'Concluído' || dadosServico.status === 'Paga');
-
             const elTotalDestaque = document.getElementById('prop-valor-total-destaque');
             if (elTotalDestaque) {
                 if (isPago) {
