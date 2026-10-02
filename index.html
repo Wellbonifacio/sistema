@@ -201,12 +201,21 @@
             <p class="text-xs text-zinc-400 font-medium">Buscando proposta no Supabase...</p>
         </div>
 
-        <!-- TELA DE ERRO (SE NÃO ENCONTRAR) -->
-        <div id="prop-error" class="hidden doc-panel p-8 text-center space-y-3 max-w-md mx-auto my-12 border-rose-500/40">
-            <div class="w-12 h-12 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center mx-auto text-xl font-bold">✕</div>
-            <h3 class="text-base font-bold text-white">Proposta não encontrada</h3>
+        <!-- TELA DE ERRO (SE NÃO ENCONTRAR OU ACESSO DIRETO) -->
+        <div id="prop-error" class="hidden doc-panel p-8 text-center space-y-4 max-w-md mx-auto my-12 border-rose-500/40">
+            <div id="prop-error-icon" class="w-12 h-12 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center mx-auto text-xl font-bold">✕</div>
+            <h3 id="prop-error-title" class="text-base font-bold text-white">Proposta não encontrada</h3>
             <p id="prop-error-msg" class="text-xs text-zinc-400 leading-relaxed">Não foi possível carregar os dados desta ordem de serviço. Por favor, verifique o link recebido.</p>
-            <a href="https://api.whatsapp.com/send?phone=5521976493932&text=Ol%C3%A1%2C%20gostaria%20de%20consultar%20minha%20proposta%20BRvolts." target="_blank" class="inline-flex items-center gap-2 mt-3 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md transition">
+            
+            <!-- Campo de Consulta Direta por Número de OS -->
+            <div id="prop-error-form-wrap" class="pt-2">
+                <form onsubmit="buscarOSPorInput(event)" class="flex gap-2">
+                    <input type="text" id="prop-input-os-manual" placeholder="Nº da OS (ex: 2026-0165)" class="flex-1 px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-zinc-700 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500 transition">
+                    <button type="submit" class="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs transition">Consultar</button>
+                </form>
+            </div>
+
+            <a href="https://api.whatsapp.com/send?phone=5521976493932&text=Ol%C3%A1%2C%20gostaria%20de%20consultar%20minha%20proposta%20BRvolts." target="_blank" class="inline-flex items-center gap-2 mt-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md transition">
                 <span>💬 Falar com a BRvolts no WhatsApp</span>
             </a>
         </div>
@@ -855,6 +864,49 @@
             }
         }
 
+        function mostrarAcessoSemParametro() {
+            ocultarLoading();
+            const content = document.getElementById('prop-content');
+            if (content) {
+                content.classList.add('hidden');
+                content.style.display = 'none';
+            }
+            const bar = document.getElementById('prop-action-bar');
+            if (bar) {
+                bar.classList.add('hidden');
+                bar.style.display = 'none';
+            }
+            const err = document.getElementById('prop-error');
+            if (err) {
+                err.classList.remove('hidden');
+                err.style.display = 'block';
+                err.classList.remove('border-rose-500/40');
+                err.classList.add('border-blue-500/40');
+            }
+            const icon = document.getElementById('prop-error-icon');
+            if (icon) {
+                icon.className = 'w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center mx-auto text-xl font-bold';
+                icon.innerText = '📋';
+            }
+            const title = document.getElementById('prop-error-title');
+            if (title) {
+                title.innerText = 'Acesso à Proposta Comercial & OS';
+            }
+            const msgEl = document.getElementById('prop-error-msg');
+            if (msgEl) {
+                msgEl.innerText = 'Para visualizar sua proposta técnica ou ordem de serviço, acesse o link exclusivo enviado pelo nosso atendimento no WhatsApp ou consulte informando o número da sua OS abaixo:';
+            }
+        }
+
+        function buscarOSPorInput(e) {
+            if (e) e.preventDefault();
+            const input = document.getElementById('prop-input-os-manual');
+            const val = input ? input.value.trim() : '';
+            if (!val) return;
+            const clean = val.replace(/^OS[-_\s]*/i, '').trim();
+            window.location.search = `?os=${encodeURIComponent(clean)}`;
+        }
+
         function mostrarErro(mensagem) {
             ocultarLoading();
             const content = document.getElementById('prop-content');
@@ -871,6 +923,17 @@
             if (err) {
                 err.classList.remove('hidden');
                 err.style.display = 'block';
+                err.classList.remove('border-blue-500/40');
+                err.classList.add('border-rose-500/40');
+            }
+            const icon = document.getElementById('prop-error-icon');
+            if (icon) {
+                icon.className = 'w-12 h-12 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center mx-auto text-xl font-bold';
+                icon.innerText = '✕';
+            }
+            const title = document.getElementById('prop-error-title');
+            if (title) {
+                title.innerText = 'Proposta não encontrada';
             }
             const msgEl = document.getElementById('prop-error-msg');
             if (msgEl && mensagem) {
@@ -886,48 +949,44 @@
             const rawParam = urlParams.get('id') || urlParams.get('os') || urlParams.get('os_number') || urlParams.get('proposta');
             const servId = rawParam ? rawParam.trim() : '';
 
+            // SEGURANÇA E PRIVACIDADE: Jamais expor a última OS para acessos sem identificador na URL
+            if (!servId) {
+                mostrarAcessoSemParametro();
+                return;
+            }
+
             try {
                 let sData = null;
                 let cData = null;
 
-                if (servId) {
-                    // 1. Se for numérico puro (ex: id bigint do Supabase: 209, 210)
-                    if (/^\d+$/.test(servId)) {
-                        try {
-                            const resId = await BRvoltsDB.select('servicos', `id=eq.${encodeURIComponent(servId)}&select=*`);
-                            if (resId && resId.length > 0) sData = resId[0];
-                        } catch (e) {
-                            console.warn('Busca por id falhou:', e);
-                        }
-                    }
-
-                    // 2. Se não encontrou ou não for puramente numérico, buscar por os_number exato
-                    if (!sData) {
-                        const cleanOs = servId.replace(/^OS[-_\s]*/i, '').trim();
-                        try {
-                            const resOs = await BRvoltsDB.select('servicos', `os_number=eq.${encodeURIComponent(cleanOs)}&select=*`);
-                            if (resOs && resOs.length > 0) sData = resOs[0];
-                        } catch (e) {
-                            console.warn('Busca por os_number exato falhou:', e);
-                        }
-
-                        // 3. Fallback: busca por ilike
-                        if (!sData) {
-                            try {
-                                const resIlike = await BRvoltsDB.select('servicos', `os_number=ilike.%${encodeURIComponent(cleanOs)}%&select=*`);
-                                if (resIlike && resIlike.length > 0) sData = resIlike[0];
-                            } catch (e) {
-                                console.warn('Busca por os_number ilike falhou:', e);
-                            }
-                        }
-                    }
-                } else {
-                    // Sem ID fornecido: buscar a OS mais recente no banco como fallback de prévia
+                // 1. Se for numérico puro (ex: id bigint do Supabase: 209, 210)
+                if (/^\d+$/.test(servId)) {
                     try {
-                        const resRecent = await BRvoltsDB.select('servicos', 'order=id.desc&limit=1&select=*');
-                        if (resRecent && resRecent.length > 0) sData = resRecent[0];
+                        const resId = await BRvoltsDB.select('servicos', `id=eq.${encodeURIComponent(servId)}&select=*`);
+                        if (resId && resId.length > 0) sData = resId[0];
                     } catch (e) {
-                        console.warn('Falha ao obter OS mais recente:', e);
+                        console.warn('Busca por id falhou:', e);
+                    }
+                }
+
+                // 2. Se não encontrou ou não for puramente numérico, buscar por os_number exato
+                if (!sData) {
+                    const cleanOs = servId.replace(/^OS[-_\s]*/i, '').trim();
+                    try {
+                        const resOs = await BRvoltsDB.select('servicos', `os_number=eq.${encodeURIComponent(cleanOs)}&select=*`);
+                        if (resOs && resOs.length > 0) sData = resOs[0];
+                    } catch (e) {
+                        console.warn('Busca por os_number exato falhou:', e);
+                    }
+
+                    // 3. Fallback: busca por ilike
+                    if (!sData) {
+                        try {
+                            const resIlike = await BRvoltsDB.select('servicos', `os_number=ilike.%${encodeURIComponent(cleanOs)}%&select=*`);
+                            if (resIlike && resIlike.length > 0) sData = resIlike[0];
+                        } catch (e) {
+                            console.warn('Busca por os_number ilike falhou:', e);
+                        }
                     }
                 }
 
