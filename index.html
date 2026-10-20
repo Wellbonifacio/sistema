@@ -126,17 +126,16 @@
             h3 { font-size: 8.5pt !important; }
             h4 { font-size: 8pt !important; }
             p, span, td, th { font-size: 7.5pt !important; line-height: 1.2 !important; }
-            #prop-pix-qrcode-img { width: 56px !important; height: 56px !important; }
             .print-text-dark { color: #000000 !important; }
             .print-text-muted { color: #1e293b !important; }
             .print-border { border-color: #cbd5e1 !important; }
             .print-bg-gray { background: #f8fafc !important; }
-            #prop-pix-box-chave, #prop-pix-box-qrcode {
+            #prop-pix-box-chave {
                 background: #f8fafc !important;
                 background-color: #f8fafc !important;
                 border: 1px solid #cbd5e1 !important;
             }
-            #prop-pix-box-chave *, #prop-pix-box-qrcode * {
+            #prop-pix-box-chave * {
                 color: #000000 !important;
             }
         }
@@ -171,9 +170,7 @@
                         <button onclick="tirarDuvidasWhatsApp(); fecharMenuOpcoesProposta();" class="w-full text-left px-3.5 py-2.5 hover:bg-emerald-600/20 text-slate-200 hover:text-emerald-300 font-medium flex items-center gap-2 transition">
                             <span>💬</span> Falar no WhatsApp
                         </button>
-                        <button id="menu-btn-pix-copia" onclick="copiarPixCopiaECola(); fecharMenuOpcoesProposta();" class="w-full text-left px-3.5 py-2.5 hover:bg-emerald-600/20 text-slate-200 hover:text-emerald-300 font-medium flex items-center gap-2 transition">
-                            <span>💳</span> Copiar Código PIX
-                        </button>
+
                         <button id="menu-btn-pix-chave" onclick="copiarChavePixBRvolts(); fecharMenuOpcoesProposta();" class="w-full text-left px-3.5 py-2.5 hover:bg-emerald-600/20 text-slate-200 hover:text-emerald-300 font-medium flex items-center gap-2 transition">
                             <span>🔑</span> Copiar Chave Celular PIX
                         </button>
@@ -396,44 +393,29 @@
             </div>
 
             <!-- ÁREA DE PAGAMENTO PIX OFICIAL BRVOLTS (OCULTADA SE ESTIVER PAGA) -->
-            <div id="prop-area-cobranca-pix" class="grid sm:grid-cols-3 gap-6 items-center pt-2">
-                <div class="sm:col-span-2 space-y-3">
-                    <h3 class="text-sm font-bold text-white print-text-dark flex items-center gap-2">
-                        <img src="Pix_logo.png" alt="Pix" class="h-4 w-auto inline">
-                        Pague com PIX — Chave CNPJ Oficial BRvolts
-                    </h3>
-                    
-                    <!-- CONDIÇÕES DE PAGAMENTO DINÂMICAS: 50% SOMENTE PARA WALLBOX -->
-                    <div id="prop-condicao-pagamento-box" class="space-y-1">
-                        <!-- Renderizado via JavaScript conforme dadosServico.is_wallbox -->
-                    </div>
-
-                    <div id="prop-pix-box-chave" class="p-3.5 rounded-xl bg-slate-50 border border-slate-300 print-border flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
-                        <div class="overflow-hidden">
-                            <span class="text-[10px] uppercase font-bold text-black print-text-dark block tracking-wider">Chave Oficial PIX (Celular)</span>
-                            <span id="prop-pix-chave-texto" class="text-sm sm:text-base font-mono font-black text-black print-text-dark select-all block">
-                                (21) 97649-3932
-                            </span>
-                        </div>
-                        <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap">
-                            <button onclick="copiarPixCopiaECola()" id="btn-copiar-pix-payload" class="no-print shrink-0 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition flex items-center justify-center gap-1.5 active:scale-95 shadow-sm" title="Copiar código PIX Copia e Cola com o valor preenchido">
-                                <span>📋 Copiar PIX Copia e Cola</span>
-                            </button>
-                            <button onclick="copiarChavePixBRvolts()" id="btn-copiar-pix" class="no-print shrink-0 px-3 py-1.5 rounded-lg bg-white hover:bg-slate-100 text-black text-xs font-bold border border-slate-300 transition flex items-center justify-center gap-1.5 active:scale-95 shadow-sm" title="Copiar apenas a chave celular">
-                                <span>🔑 Copiar Chave</span>
-                            </button>
-                        </div>
-                    </div>
+            <div id="prop-area-cobranca-pix" class="space-y-3 pt-2">
+                <h3 class="text-sm font-bold text-white print-text-dark flex items-center gap-2">
+                    <img src="Pix_logo.png" alt="Pix" class="h-4 w-auto inline">
+                    Pague com PIX — Chave CNPJ Oficial BRvolts
+                </h3>
+                
+                <!-- CONDIÇÕES DE PAGAMENTO DINÂMICAS: 50% SOMENTE PARA WALLBOX -->
+                <div id="prop-condicao-pagamento-box" class="space-y-1">
+                    <!-- Renderizado via JavaScript conforme dadosServico.is_wallbox -->
                 </div>
 
-                <!-- QR CODE PIX DINÂMICO EXCLUSIVO DESTA PROPOSTA -->
-                <div id="prop-pix-box-qrcode" class="flex flex-col items-center justify-center p-4 rounded-2xl bg-slate-50 border border-slate-300 print-border text-center shadow-sm">
-                    <div class="p-2.5 bg-white rounded-xl shadow-sm border border-slate-200 mb-2 relative group transform transition-transform hover:scale-105">
-                        <img id="prop-pix-qrcode-img" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=21976493932" alt="QR Code PIX Brvolts" class="w-28 h-28 sm:w-32 sm:h-32">
+                <div id="prop-pix-box-chave" class="p-3.5 rounded-xl bg-slate-50 border border-slate-300 print-border flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
+                    <div class="overflow-hidden">
+                        <span class="text-[10px] uppercase font-bold text-black print-text-dark block tracking-wider">Chave Oficial PIX (Celular)</span>
+                        <span id="prop-pix-chave-texto" class="text-sm sm:text-base font-mono font-black text-black print-text-dark select-all block">
+                            (21) 97649-3932
+                        </span>
                     </div>
-                    <span id="prop-pix-valor-legenda" class="text-sm font-black text-black print-text-dark font-mono block">R$ 0,00</span>
-                    <span id="prop-pix-tipo-legenda" class="text-[10px] font-bold text-black print-text-dark font-mono block">PIX Exclusivo desta OS</span>
-                    <span class="text-[9.5px] text-black print-text-dark font-medium mt-0.5 block">Aponte a câmera do aplicativo do seu banco</span>
+                    <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+                        <button onclick="copiarChavePixBRvolts()" id="btn-copiar-pix" class="no-print shrink-0 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition flex items-center justify-center gap-1.5 active:scale-95 shadow-sm" title="Copiar apenas a chave celular">
+                            <span>🔑 Copiar Chave</span>
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -1196,12 +1178,8 @@
                     txid: txidPix
                 });
 
-                document.getElementById('prop-pix-chave-texto').innerText = '(21) 97649-3932';
-                const elValLegenda = document.getElementById('prop-pix-valor-legenda');
-                const elTipoLegenda = document.getElementById('prop-pix-tipo-legenda');
-                if (elValLegenda) elValLegenda.innerText = formatarMoeda(valorPix);
-                if (elTipoLegenda) elTipoLegenda.innerText = isWallbox ? '⚡ Entrada 50% Wallbox' : '⚡ Valor Integral da Obra';
-                document.getElementById('prop-pix-qrcode-img').src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(pixPayloadGlobal)}`;
+                const chaveTextoEl = document.getElementById('prop-pix-chave-texto');
+                if (chaveTextoEl) chaveTextoEl.innerText = '(21) 97649-3932';
             }
 
             // Status Badge
@@ -1662,19 +1640,7 @@
         }
 
         function copiarPixCopiaECola() {
-            const payload = pixPayloadGlobal || '21976493932';
-            navigator.clipboard.writeText(payload).then(() => {
-                const btn = document.getElementById('btn-copiar-pix-payload');
-                if (btn) {
-                    const orig = btn.innerHTML;
-                    btn.innerHTML = '✓ Código PIX Copiado!';
-                    btn.classList.add('bg-emerald-500', 'text-zinc-950');
-                    setTimeout(() => {
-                        btn.innerHTML = orig;
-                        btn.classList.remove('bg-emerald-500', 'text-zinc-950');
-                    }, 2500);
-                }
-            });
+            copiarChavePixBRvolts();
         }
 
         function copiarChavePixBRvolts() {
